@@ -1,13 +1,11 @@
 # DiffyQ-SimCAD
 
-Clone this repo  
-cd DiffyQ-SimCAD  
-pipenv run python -m ipykernel install --user --name DiffyQ-SimCAD --display-name "DiffyQ-SimCAD Env"  
-pipenv run jupyter notebook  
+If you don't already have it installed, install [pipenv](https://pypi.org/project/pipenv/)
 
-Commands I ran  
-pipenv install ipykernel  
-pipenv install pandas  
-pipenv install jupyter  
-pipenv run python -m ipykernel install --user --name DiffyQ-SimCAD --display-name "DiffyQ-SimCAD Env"   
-pipenv run jupyter notebook   
+Clone this repo, then
+```
+cd DiffyQ-SimCAD
+pipenv run python -m ipykernel install --user --name DiffyQ-SimCAD --display-name "DiffyQ-SimCAD Env"
+pipenv run jupyter notebook
+```
+When you open `TestNotebook.ipynb`, you should see it running on the `DiffyQ-SimCAD Env` Kernel
