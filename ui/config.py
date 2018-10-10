@@ -33,7 +33,6 @@ def s1m1(step, sL, s, _input):
 def s2m1(step, sL, s, _input):
     s['s2'] = s['s2'] + _input
 
-
 def s1m2(step, sL, s, _input):
     s['s1'] = s['s1'] + _input
 def s2m2(step, sL, s, _input):
@@ -51,16 +50,16 @@ def es3p1(step, sL, s, _input):
     s['s3'] = s['s3'] * bound_norm_random(seed['a'], proc_one_coef_A, proc_one_coef_B)
 def es4p2(step, sL, s, _input):
     s['s4'] = s['s4'] * bound_norm_random(seed['b'], proc_one_coef_A, proc_one_coef_B)
-def es5p2(step, sL, s, _input):
+def es5p2(step, sL, s, _input): # accept timedelta instead of timedelta params
     s['timestamp'] = ep_time_step(s, s['timestamp'], seconds=1)
 
 # Environment States
 def env_a(x):
-    return x
+    return 10
 def env_b(x):
-    return x
-def what_ever(x):
-    return x + 1
+    return 10
+# def what_ever(x):
+#     return x + 1
 
 # Genesis States
 state_dict = {
@@ -82,10 +81,12 @@ env_processes = {
     "s4": env_proc('2018-10-01 15:16:25', env_b)
 }
 
+# test return vs. non-return functions as lambdas
+# test fully defined functions
 mechanisms = {
     "m1": {
         "behaviors": {
-            "b1": b1m1,
+            "b1": b1m1, # lambda step, sL, s: s['s1'] + 1,
             "b2": b2m1
         },
         "states": {

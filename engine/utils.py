@@ -42,11 +42,14 @@ def env_proc(trigger_step, update_f):
             return lambda x: x
     return partial(env_step_trigger, trigger_step, update_f)
 
+
+# accept timedelta instead of timedelta params
 def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', days=0, minutes=0, seconds=30):
     dt = datetime.strptime(dt_str, dt_format)
     t = dt + timedelta(days=days, minutes=minutes, seconds=seconds)
     return t.strftime(dt_format)
 
+# accept timedelta instead of timedelta params
 def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', days=0, minutes=0, seconds=1):
     if s['mech_step'] == 0:
         return time_step(dt_str, fromat_str, days, minutes, seconds)
