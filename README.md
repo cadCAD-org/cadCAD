@@ -1,4 +1,4 @@
-# DiffyQ-SimCAD
+# SimCad
 
 **Dependencies:**
 
