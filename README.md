@@ -18,13 +18,13 @@ Configurations:
 
 **Build Tool & Package Import:**
 
-Build & Install Package locally: 
+Step 1. Build & Install Package locally: 
 ```bash
 pip install .
 ```
 * [Package Creation Tutorial](https://python-packaging.readthedocs.io/en/latest/minimal.html)
 
-Import Package & Run:
+Step 2. Import Package & Run:
 ```python
 from engine import run
 run.main()
