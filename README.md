@@ -21,6 +21,7 @@ Configurations:
 Step 1. Build & Install Package locally: 
 ```bash
 pip install .
+pip install -e .
 ```
 * [Package Creation Tutorial](https://python-packaging.readthedocs.io/en/latest/minimal.html)
 
