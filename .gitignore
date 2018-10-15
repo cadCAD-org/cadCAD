@@ -1,3 +1,8 @@
-
 .ipynb_checkpoints/*
 .DS_Store
+.idea
+engine/__pycache__
+engine/.ipynb_checkpoints
+notebooks/.ipynb_checkpoints
+ui/__pycache__
+SimCAD.egg-info
