@@ -1,8 +1,9 @@
 # SimCad
 
 **Dependencies:**
-
-Install [pipenv](https://pypi.org/project/pipenv/)
+```bash
+pip install pipenv fn tabulate
+```
 
 **Project:**
 
