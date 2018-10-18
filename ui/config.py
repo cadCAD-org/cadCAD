@@ -29,29 +29,47 @@ def b2m3(step, sL, s):
 
 # Internal States per Mechanism
 def s1m1(step, sL, s, _input):
-    s['s1'] = s['s1'] + _input
+    y = 's1'
+    x = s['s1'] + _input
+    return (y, x)
 def s2m1(step, sL, s, _input):
-    s['s2'] = s['s2'] + _input
+    y = 's2'
+    x = s['s2'] + _input
+    return (y, x)
 
 def s1m2(step, sL, s, _input):
-    s['s1'] = s['s1'] + _input
+    y = 's1'
+    x =  s['s1'] + _input
+    return (y, x)
 def s2m2(step, sL, s, _input):
-    s['s2'] = s['s2'] + _input
+    y = 's2'
+    x =  s['s2'] + _input
+    return (y, x)
 
 def s1m3(step, sL, s, _input):
-    s['s1'] = s['s1'] + _input
+    y = 's1'
+    x = s['s1'] + _input
+    return (y, x)
 def s2m3(step, sL, s, _input):
-    s['s2'] = s['s2'] + _input
+    y = 's2'
+    x =  s['s2'] + _input
+    return (y, x)
 
 # Exogenous States
 proc_one_coef_A = 0.7
 proc_one_coef_B = 1.3
 def es3p1(step, sL, s, _input):
-    s['s3'] = s['s3'] * bound_norm_random(seed['a'], proc_one_coef_A, proc_one_coef_B)
+    y = 's3'
+    x = s['s3'] * bound_norm_random(seed['a'], proc_one_coef_A, proc_one_coef_B)
+    return (y, x)
 def es4p2(step, sL, s, _input):
-    s['s4'] = s['s4'] * bound_norm_random(seed['b'], proc_one_coef_A, proc_one_coef_B)
+    y = 's4'
+    x = s['s4'] * bound_norm_random(seed['b'], proc_one_coef_A, proc_one_coef_B)
+    return (y, x)
 def es5p2(step, sL, s, _input): # accept timedelta instead of timedelta params
-    s['timestamp'] = ep_time_step(s, s['timestamp'], seconds=1)
+    y = 'timestamp'
+    x = ep_time_step(s, s['timestamp'], seconds=1)
+    return (y, x)
 
 # Environment States
 def env_a(x):
