@@ -1,2 +1,4 @@
 from engine import run
-run.main()
+from tabulate import tabulate
+result = run.main()
+print(tabulate(result, headers='keys', tablefmt='psql'))
