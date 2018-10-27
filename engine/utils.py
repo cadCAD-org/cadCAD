@@ -27,6 +27,7 @@ def last_index(l):
 def retrieve_state(l, offset):
     return l[last_index(l) + offset + 1]
 
+# shouldn't
 def bound_norm_random(rng, low, high):
     # Add RNG Seed
     res = rng.normal((high+low)/2,(high-low)/6)

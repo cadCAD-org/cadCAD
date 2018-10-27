@@ -21,11 +21,6 @@ def mech_step(m_step, sL, state_funcs, behavior_funcs, env_processes, t_step):
 
     _input = getBehaviorInput(m_step, sL, last_in_obj, behavior_funcs)
 
-    # OLD: no bueno! Mutation Bad
-    # for f in state_funcs:
-    #     f(m_step, sL, last_mut_obj, _input)
-
-    # New
     last_mut_obj = dict([ f(m_step, sL, last_mut_obj, _input) for f in state_funcs ])
 
     apply_env_proc(env_processes, last_mut_obj, last_mut_obj['timestamp'])
