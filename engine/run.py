@@ -8,7 +8,11 @@ import pandas as pd
 
 def main():
     states_list = [state_dict]
-    configs = generate_config(mechanisms, exogenous_states)
+    ep = list(exogenous_states.values())
+    configs = generate_config(mechanisms, ep)
+    # print(configs)
+    # print(states_list)
+    # print(configs)
     # p = pipeline(states_list, configs, env_processes, range(10))
     T = range(5)
     N = sim_config['N']

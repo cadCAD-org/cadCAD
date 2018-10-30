@@ -109,7 +109,7 @@ mechanisms = {
         },
         "states": {
             "s1": s1m1,
-            "s2": s2m1,
+            # "s2": s2m1,
         }
     },
     "m2": {
@@ -118,18 +118,18 @@ mechanisms = {
             "b2": b2m2
         },
         "states": {
-            "s1": s1m2,
-            "s2": s2m2,
+            # "s1": s1m2,
+            # "s2": s2m2,
         }
     },
     "m3": {
         "behaviors": {
             "b1": b1m3,
-            "b2": b2m3
+            "b2": b2m3 #toggle for error
         },
         "states": {
-            "s1": s1m3,
-            "s2": s2m3,
+            # "s1": s1m3,
+            # "s2": s2m3,
         }
     }
 }

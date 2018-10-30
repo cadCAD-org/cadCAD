@@ -14,14 +14,24 @@ def apply_env_proc(env_processes, state_dict, step):
         if state in list(env_processes.keys()):
             state_dict[state] = env_processes[state](step)(state_dict[state])
 
+def exception_handler(f, m_step, sL, last_mut_obj, _input):
+    try:
+        return f(m_step, sL, last_mut_obj, _input)
+    except KeyError:
+        print("Exception")
+        return f(m_step, sL, sL[-2], _input)
+
 
 def mech_step(m_step, sL, state_funcs, behavior_funcs, env_processes, t_step):
     in_copy, mutatable_copy, out_copy = deepcopy(sL), deepcopy(sL), deepcopy(sL)
     last_in_obj, last_mut_obj = in_copy[-1], mutatable_copy[-1]
 
-    _input = getBehaviorInput(m_step, sL, last_in_obj, behavior_funcs)
+    _input = exception_handler(getBehaviorInput, m_step, sL, last_in_obj, behavior_funcs)
 
-    last_mut_obj = dict([ f(m_step, sL, last_mut_obj, _input) for f in state_funcs ])
+    last_mut_obj = dict([
+        exception_handler(f, m_step, sL, last_mut_obj, _input) for f in state_funcs
+    ])
+    print(str(m_step) + ': ' + str(last_mut_obj))
 
     apply_env_proc(env_processes, last_mut_obj, last_mut_obj['timestamp'])
 
@@ -44,6 +54,7 @@ def block_gen(states_list, configs, env_processes, t_step):
     for config in configs:
         s_conf, b_conf = config[0], config[1]
         states_list = mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step)
+        print(b_conf)
         m_step += 1
 
     t_step += 1
@@ -51,6 +62,7 @@ def block_gen(states_list, configs, env_processes, t_step):
     return states_list
 
 
+# rename pipe
 def pipeline(states_list, configs, env_processes, time_seq):
     time_seq = [x + 1 for x in time_seq]
     simulation_list = [states_list]
