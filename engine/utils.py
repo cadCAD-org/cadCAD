@@ -56,3 +56,11 @@ def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', days=0, minutes=0, s
         return time_step(dt_str, fromat_str, days, minutes, seconds)
     else:
         return dt_str
+
+# def create_tensor_field(mechanisms, env_poc, keys=['behaviors', 'states']):
+#     dfs = [ create_matrix_field(mechanisms, k) for k in keys ]
+#     df = pd.concat(dfs, axis=1)
+#     for es, i in zip(env_poc, range(len(env_poc))):
+#         df['es'+str(i)] = es
+#     df['m'] = df.index + 1
+#     return df
