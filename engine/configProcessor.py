@@ -8,7 +8,7 @@ def state_identity(k):
 
 def behavior_identity(k):
     def identity(step, sL, s):
-        return s[k]
+        return 0
     return identity
 
 def key_filter(mechanisms, keyname):
