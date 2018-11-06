@@ -4,10 +4,8 @@ from fn import op, _
 def getColResults(step, sL, s, funcs):
     return list(map(lambda f: f(step, sL, s), funcs))
 
-
 def getBehaviorInput(step, sL, s, funcs):
     return op.foldr(_ + _)(getColResults(step, sL, s, funcs))
-
 
 def apply_env_proc(env_processes, state_dict, step):
     for state in state_dict.keys():
@@ -28,10 +26,12 @@ def mech_step(m_step, sL, state_funcs, behavior_funcs, env_processes, t_step):
 
     _input = exception_handler(getBehaviorInput, m_step, sL, last_in_obj, behavior_funcs)
 
+    # print(len(state_funcs))
+
     last_mut_obj = dict([
         exception_handler(f, m_step, sL, last_mut_obj, _input) for f in state_funcs
     ])
-    print(str(m_step) + ': ' + str(last_mut_obj))
+    # print(str(m_step) + ': ' + str(last_mut_obj))
 
     apply_env_proc(env_processes, last_mut_obj, last_mut_obj['timestamp'])
 
@@ -45,11 +45,7 @@ def mech_step(m_step, sL, state_funcs, behavior_funcs, env_processes, t_step):
 
 def block_gen(states_list, configs, env_processes, t_step):
     m_step = 0
-    print("states_list")
-    print(states_list)
     states_list_copy = deepcopy(states_list)
-    print("states_list_copy")
-    print(states_list_copy)
     genesis_states = states_list_copy[-1]
     genesis_states['mech_step'], genesis_states['time_step'] = m_step, t_step
     states_list = [genesis_states]

@@ -31,18 +31,39 @@ def create_matrix_field(mechanisms, key):
         return pd.DataFrame({'empty' : []})
 
 
-def generate_config(mechanisms, env_poc):
+def generate_config(state_dict, mechanisms, exo_proc):
     def no_behavior_handler(bdf, sdf):
         if bdf.empty == False:
             sdf_values, bdf_values = sdf.values.tolist(), bdf.values.tolist()
         else:
             sdf_values = sdf.values.tolist()
-            bdf_values = [[b_identity] * len(sdf_values)]
+            # print(sdf_values)
+            bdf_values = [ [b_identity] * len(sdf_values) for n in range(mechanisms) ]
+            # print(bdf_values)
         return sdf_values, bdf_values
 
-    bdf = create_matrix_field(mechanisms, 'behaviors')
-    sdf = create_matrix_field(mechanisms, 'states')
-    sdf_values, bdf_values = no_behavior_handler(bdf, sdf)
-    zipped_list = list(zip(sdf_values, bdf_values))
+    def only_ep_handler(state_dict):
+        sdf_functions = [ lambda step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values()) ]
+        sdf_values = [ sdf_functions ]
+        bdf_values = [ [b_identity] * len(sdf_values) ]
+        return sdf_values, bdf_values
 
-    return list(map(lambda x: (x[0] + env_poc, x[1]), zipped_list))
+    zipped_list = []
+    if len(mechanisms) != 0:
+        bdf = create_matrix_field(mechanisms, 'behaviors')
+        sdf = create_matrix_field(mechanisms, 'states')
+        sdf_values, bdf_values = no_behavior_handler(bdf, sdf)
+        zipped_list = list(zip(sdf_values, bdf_values))
+    else:
+        sdf_values, bdf_values = only_ep_handler(state_dict)
+        zipped_list = list(zip(sdf_values, bdf_values))
+
+    return list(map(lambda x: (x[0] + exo_proc, x[1]), zipped_list))
+
+def create_tensor_field(mechanisms, exo_proc, keys=['behaviors', 'states']):
+    dfs = [ create_matrix_field(mechanisms, k) for k in keys ]
+    df = pd.concat(dfs, axis=1)
+    for es, i in zip(exo_proc, range(len(exo_proc))):
+        df['es'+str(i)] = es
+    df['m'] = df.index + 1
+    return df

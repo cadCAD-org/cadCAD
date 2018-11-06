@@ -1,15 +1,18 @@
 from ui.config import state_dict, mechanisms, exogenous_states, env_processes, sim_config
-from engine.configProcessor import generate_config
+from engine.configProcessor import generate_config, create_tensor_field
 from engine.mechanismExecutor import simulation
 from engine.utils import flatten
-
+from tabulate import tabulate
 #from tabulate import tabulate
 import pandas as pd
 
 def main():
     states_list = [state_dict]
     ep = list(exogenous_states.values())
-    configs = generate_config(mechanisms, ep)
+    configs = generate_config(state_dict, mechanisms, ep)
+    print(len(configs))
+    print(tabulate(create_tensor_field(mechanisms, ep), headers='keys', tablefmt='psql'))
+    print
     # print(configs)
     # print(states_list)
     # print(configs)
