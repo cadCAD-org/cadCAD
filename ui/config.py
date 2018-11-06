@@ -52,7 +52,7 @@ def s1m3(step, sL, s, _input):
     return (y, x)
 def s2m3(step, sL, s, _input):
     y = 's2'
-    x =  s['s2'] + _input
+    x =  s['s2'] + s['s3'] + _input
     return (y, x)
 
 # Exogenous States
@@ -101,15 +101,16 @@ env_processes = {
 
 # test return vs. non-return functions as lambdas
 # test fully defined functions
+# genesis Sites should always be there
 mechanisms = {
     "m1": {
         "behaviors": {
             "b1": b1m1, # lambda step, sL, s: s['s1'] + 1,
             "b2": b2m1
         },
-        "states": {
+        "states": { # exclude only. TypeError: reduce() of empty sequence with no initial value
             "s1": s1m1,
-            # "s2": s2m1,
+            "s2": s2m1
         }
     },
     "m2": {
@@ -118,8 +119,8 @@ mechanisms = {
             "b2": b2m2
         },
         "states": {
-            # "s1": s1m2,
-            # "s2": s2m2,
+            "s1": s1m2,
+            "s2": s2m2
         }
     },
     "m3": {
@@ -128,8 +129,8 @@ mechanisms = {
             "b2": b2m3 #toggle for error
         },
         "states": {
-            # "s1": s1m3,
-            # "s2": s2m3,
+            "s1": s1m3,
+            "s2": s2m3
         }
     }
 }
