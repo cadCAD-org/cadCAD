@@ -35,14 +35,13 @@ def bound_norm_random(rng, low, high):
         res = bound_norm_random(rng, low, high)
     return Decimal(res)
 
-def env_proc(trigger_step, update_f):
-    def env_step_trigger(trigger_step, update_f, step):
+def proc_trigger(trigger_step, update_f):
+    def step_trigger(trigger_step, update_f, step):
         if step == trigger_step:
             return update_f
         else:
             return lambda x: x
-    return partial(env_step_trigger, trigger_step, update_f)
-
+    return partial(step_trigger, trigger_step, update_f)
 
 # accept timedelta instead of timedelta params
 def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', days=0, minutes=0, seconds=30):
@@ -64,3 +63,25 @@ def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', days=0, minutes=0, s
 #         df['es'+str(i)] = es
 #     df['m'] = df.index + 1
 #     return df
+#################
+
+# def exo_proc_trigger(mech_step, update_f, y):
+#     if mech_step == 1:
+#         return update_f
+#     else:
+#         return lambda step, sL, s, _input: (y, s[y])
+
+
+
+# def apply_exo_proc(s, x, y):
+#     if s['mech_step'] == 1:
+#         return x
+#     else:
+#         return s[y]
+
+# def es5p2(step, sL, s, _input): # accept timedelta instead of timedelta params
+#     y = 'timestamp'
+#     x = ep_time_step(s, s['timestamp'], seconds=1)
+#     return (y, x)
+
+
