@@ -45,7 +45,11 @@ def mech_step(m_step, sL, state_funcs, behavior_funcs, env_processes, t_step):
 
 def block_gen(states_list, configs, env_processes, t_step):
     m_step = 0
+    print("states_list")
+    print(states_list)
     states_list_copy = deepcopy(states_list)
+    print("states_list_copy")
+    print(states_list_copy)
     genesis_states = states_list_copy[-1]
     genesis_states['mech_step'], genesis_states['time_step'] = m_step, t_step
     states_list = [genesis_states]
@@ -54,7 +58,7 @@ def block_gen(states_list, configs, env_processes, t_step):
     for config in configs:
         s_conf, b_conf = config[0], config[1]
         states_list = mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step)
-        print(b_conf)
+        # print(b_conf)
         m_step += 1
 
     t_step += 1
