@@ -107,39 +107,40 @@ env_processes = {
     "s4": proc_trigger('2018-10-01 15:16:25', env_b)
 }
 
-# test return vs. non-return functions as lambdas
-# test fully defined functions
+# lambdas
 # genesis Sites should always be there
-behavior_ops = [foldr(_ + _), lambda x: x + 0]
+# [1, 2]
+behavior_ops = [ foldr(_ + _), lambda x: x + 0 ]
+# need at least 1 behaviour and 1 state function for the 1st mech with behaviors
 mechanisms = {
     "m1": {
         "behaviors": {
-            # "b1": b1m1, # lambda step, sL, s: s['s1'] + 1,
-            # "b2": b2m1
+            "b1": b1m1, # lambda step, sL, s: s['s1'] + 1,
+            "b2": b2m1
         },
         "states": { # exclude only. TypeError: reduce() of empty sequence with no initial value
             "s1": s1m1,
-            # "s2": s2m1
+            "s2": s2m1
         }
     },
     "m2": {
         "behaviors": {
             "b1": b1m2,
-            # "b2": b2m2
+            "b2": b2m2
         },
         "states": {
-            # "s1": s1m2,
-            # "s2": s2m2
+            "s1": s1m2,
+            "s2": s2m2
         }
     },
     "m3": {
         "behaviors": {
-            # "b1": b1m3,
-            # "b2": b2m3 #toggle for error
+            "b1": b1m3,
+            "b2": b2m3
         },
         "states": {
-            # "s1": s1m3,
-            # "s2": s2m3
+            "s1": s1m3,
+            "s2": s2m3
         }
     }
 }

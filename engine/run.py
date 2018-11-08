@@ -10,7 +10,7 @@ def main():
     states_list = [state_dict]
     ep = list(exogenous_states.values())
     configs = generate_config(state_dict, mechanisms, ep)
-    print(len(configs))
+    # print(len(configs))
     print(tabulate(create_tensor_field(mechanisms, ep), headers='keys', tablefmt='psql'))
     print
     # print(configs)
