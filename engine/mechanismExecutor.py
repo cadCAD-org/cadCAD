@@ -1,11 +1,14 @@
 from copy import deepcopy
-from fn import op, _
+from fn.op import foldr, call
+from fn import _
+from ui.config import behavior_ops
 
 def getColResults(step, sL, s, funcs):
     return list(map(lambda f: f(step, sL, s), funcs))
 
-def getBehaviorInput(step, sL, s, funcs):
-    return op.foldr(_ + _)(getColResults(step, sL, s, funcs))
+# Data Type reduction
+def getBehaviorInput(step, sL, s, funcs, ops = behavior_ops[::-1]):
+    return foldr(call, getColResults(step, sL, s, funcs))(ops)
 
 def apply_env_proc(env_processes, state_dict, step):
     for state in state_dict.keys():
@@ -21,26 +24,23 @@ def exception_handler(f, m_step, sL, last_mut_obj, _input):
 
 
 def mech_step(m_step, sL, state_funcs, behavior_funcs, env_processes, t_step):
-    in_copy, mutatable_copy, out_copy = deepcopy(sL), deepcopy(sL), deepcopy(sL)
-    last_in_obj, last_mut_obj = in_copy[-1], mutatable_copy[-1]
+    last_in_obj = sL[-1]
 
     _input = exception_handler(getBehaviorInput, m_step, sL, last_in_obj, behavior_funcs)
+    # del last_in_obj
 
-    # print(len(state_funcs))
+    last_in_copy = dict([ exception_handler(f, m_step, sL, last_in_obj, _input) for f in state_funcs ])
+    # print(str(m_step) + ': ' + str(last_in_copy))
 
-    last_mut_obj = dict([
-        exception_handler(f, m_step, sL, last_mut_obj, _input) for f in state_funcs
-    ])
-    # print(str(m_step) + ': ' + str(last_mut_obj))
+    # mutating last_in_copy
+    apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp'])
 
-    apply_env_proc(env_processes, last_mut_obj, last_mut_obj['timestamp'])
+    last_in_copy["mech_step"], last_in_copy["time_step"] = m_step, t_step
+    sL.append(last_in_copy)
 
-    last_mut_obj["mech_step"], last_mut_obj["time_step"] = m_step, t_step
-    out_copy.append(last_mut_obj)
+    del last_in_copy
 
-    del last_in_obj, last_mut_obj, in_copy, mutatable_copy,
-
-    return out_copy
+    return sL
 
 
 def block_gen(states_list, configs, env_processes, t_step):
@@ -68,12 +68,13 @@ def pipeline(states_list, configs, env_processes, time_seq):
     simulation_list = [states_list]
     for time_step in time_seq:
         pipeline_run = block_gen(simulation_list[-1], configs, env_processes, time_step)
-        head, *pipeline_run = pipeline_run
+        _, *pipeline_run = pipeline_run
         simulation_list.append(pipeline_run)
 
     return simulation_list
 
 
+# Del head
 def simulation(states_list, configs, env_processes, time_seq, runs):
     pipeline_run = []
     for run in range(runs):
@@ -84,7 +85,7 @@ def simulation(states_list, configs, env_processes, time_seq, runs):
             pipeline_run += simulation_list
         else:
             transient_states_list = [pipeline_run[-1][-1]]
-            head, *tail = pipeline(transient_states_list, configs, env_processes, time_seq)
+            _, *tail = pipeline(transient_states_list, configs, env_processes, time_seq)
             pipeline_run += tail
 
     return pipeline_run

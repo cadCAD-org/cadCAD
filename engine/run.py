@@ -17,7 +17,7 @@ def main():
     # print(states_list)
     # print(configs)
     # p = pipeline(states_list, configs, env_processes, range(10))
-    T = range(5)
+    T = sim_config['T']
     N = sim_config['N']
 
     # Dimensions: N x r x mechs

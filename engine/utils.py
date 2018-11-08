@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
-from functools import partial
+from fn.func import curried
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 
@@ -35,13 +35,12 @@ def bound_norm_random(rng, low, high):
         res = bound_norm_random(rng, low, high)
     return Decimal(res)
 
-def proc_trigger(trigger_step, update_f):
-    def step_trigger(trigger_step, update_f, step):
-        if step == trigger_step:
-            return update_f
-        else:
-            return lambda x: x
-    return partial(step_trigger, trigger_step, update_f)
+@curried
+def proc_trigger(trigger_step, update_f, step):
+    if step == trigger_step:
+        return update_f
+    else:
+        return lambda x: x
 
 # accept timedelta instead of timedelta params
 def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', days=0, minutes=0, seconds=30):
@@ -55,6 +54,15 @@ def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', days=0, minutes=0, s
         return time_step(dt_str, fromat_str, days, minutes, seconds)
     else:
         return dt_str
+
+def exo_update_per_ts(ep):
+    @curried
+    def ep_decorator(f, y, step, sL, s, _input):
+        if s['mech_step'] + 1 == 1:  # inside f body to reduce performance costs
+            return f(step, sL, s, _input)
+        else:
+            return (y, s[y])
+    return {es: ep_decorator(f, es) for es, f in ep.items()}
 
 # def create_tensor_field(mechanisms, env_poc, keys=['behaviors', 'states']):
 #     dfs = [ create_matrix_field(mechanisms, k) for k in keys ]
