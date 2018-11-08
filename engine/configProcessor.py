@@ -1,5 +1,5 @@
 import pandas as pd
-from functools import partial, reduce
+from functools import reduce
 
 def state_identity(k):
     return lambda step, sL, s, _input: (k, s[k])
@@ -37,9 +37,7 @@ def generate_config(state_dict, mechanisms, exo_proc):
             sdf_values, bdf_values = sdf.values.tolist(), bdf.values.tolist()
         else:
             sdf_values = sdf.values.tolist()
-            # print(sdf_values)
             bdf_values = [ [b_identity] * len(sdf_values) for n in range(mechanisms) ]
-            # print(bdf_values)
         return sdf_values, bdf_values
 
     def only_ep_handler(state_dict):
