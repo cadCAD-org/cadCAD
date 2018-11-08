@@ -23,7 +23,7 @@ def main():
     # Dimensions: N x r x mechs
     s = simulation(states_list, configs, env_processes, T, N)
     result = pd.DataFrame(flatten(s))
-    print('Test')
+    # print('Test')
 #    print(tabulate(result, headers='keys', tablefmt='psql'))
 # remove print and tabulate functions, so it returns a dataframe
     return result

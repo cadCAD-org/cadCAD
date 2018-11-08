@@ -27,17 +27,14 @@ def mech_step(m_step, sL, state_funcs, behavior_funcs, env_processes, t_step):
     last_in_obj = sL[-1]
 
     _input = exception_handler(getBehaviorInput, m_step, sL, last_in_obj, behavior_funcs)
-    # del last_in_obj
 
     last_in_copy = dict([ exception_handler(f, m_step, sL, last_in_obj, _input) for f in state_funcs ])
-    # print(str(m_step) + ': ' + str(last_in_copy))
+    del last_in_obj # print(str(m_step) + ': ' + str(last_in_copy))
 
-    # mutating last_in_copy
-    apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp'])
+    apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp']) # mutating last_in_copy
 
     last_in_copy["mech_step"], last_in_copy["time_step"] = m_step, t_step
     sL.append(last_in_copy)
-
     del last_in_copy
 
     return sL
