@@ -1,6 +1,7 @@
 from engine.utils import bound_norm_random, ep_time_step, proc_trigger, exo_update_per_ts
 from fn.op import foldr
 from fn import _
+from fn.func import curried
 
 import numpy as np
 from decimal import Decimal
@@ -94,6 +95,7 @@ state_dict = {
     'timestamp': '2018-10-01 15:16:24'
 }
 
+# remove `exo_update_per_ts` to update every ts
 exogenous_states = exo_update_per_ts(
     {
     "s3": es3p1,
@@ -101,6 +103,7 @@ exogenous_states = exo_update_per_ts(
     "timestamp": es5p2
     }
 )
+
 
 env_processes = {
     "s3": proc_trigger('2018-10-01 15:16:25', env_a),
@@ -110,7 +113,24 @@ env_processes = {
 # lambdas
 # genesis Sites should always be there
 # [1, 2]
-behavior_ops = [ foldr(_ + _), lambda x: x + 0 ]
+# behavior_ops = [ foldr(_ + _), lambda x: x + 0 ]
+def print_fwd(x):
+    print(x)
+    return x
+
+def behavior_to_dict(v):
+    return dict(list(zip(map(lambda n: 'b_' + str(n), list(range(len(v)))), v)))
+
+
+def foldr_dict_vals(d, f = _ + _):
+    return foldr(f)(list(d.values()))
+
+def sum_dict_values(d):
+    return foldr_dict_vals(d)
+
+# behavior_ops = [ behavior_to_dict, print_fwd, sum_dict_values, lambda x: x + 0 ]
+behavior_ops = []
+
 # need at least 1 behaviour and 1 state function for the 1st mech with behaviors
 mechanisms = {
     "m1": {

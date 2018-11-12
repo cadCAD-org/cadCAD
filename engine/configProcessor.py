@@ -1,6 +1,9 @@
 import pandas as pd
 from functools import reduce
 
+def no_state_identity(step, sL, s, _input):
+    return None
+
 def state_identity(k):
     return lambda step, sL, s, _input: (k, s[k])
 
@@ -31,17 +34,27 @@ def create_matrix_field(mechanisms, key):
         return pd.DataFrame({'empty' : []})
 
 
+# Maybe Refactor to only use dictionary BUT I used dfs to fill NAs. Perhaps fill
 def generate_config(state_dict, mechanisms, exo_proc):
-    def no_behavior_handler(bdf, sdf):
-        if bdf.empty == False:
-            sdf_values, bdf_values = sdf.values.tolist(), bdf.values.tolist()
+
+    def no_update_handler(bdf, sdf):
+        if (bdf.empty == False) and (sdf.empty == True):
+            bdf_values = bdf.values.tolist()
+            sdf_values = [ [no_state_identity] * len(bdf_values) for m in range(len(mechanisms)) ]
+            return sdf_values, bdf_values
+        elif (bdf.empty == True) and (sdf.empty == False):
+            sdf_values = sdf.values.tolist()
+            bdf_values = [ [b_identity] * len(sdf_values) for m in range(len(mechanisms)) ]
+            return sdf_values, bdf_values
         else:
             sdf_values = sdf.values.tolist()
-            bdf_values = [ [b_identity] * len(sdf_values) for n in range(mechanisms) ]
-        return sdf_values, bdf_values
+            bdf_values = bdf.values.tolist()
+            return sdf_values, bdf_values
 
     def only_ep_handler(state_dict):
-        sdf_functions = [ lambda step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values()) ]
+        sdf_functions = [
+            lambda step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
+        ]
         sdf_values = [ sdf_functions ]
         bdf_values = [ [b_identity] * len(sdf_values) ]
         return sdf_values, bdf_values
@@ -50,7 +63,7 @@ def generate_config(state_dict, mechanisms, exo_proc):
     if len(mechanisms) != 0:
         bdf = create_matrix_field(mechanisms, 'behaviors')
         sdf = create_matrix_field(mechanisms, 'states')
-        sdf_values, bdf_values = no_behavior_handler(bdf, sdf)
+        sdf_values, bdf_values = no_update_handler(bdf, sdf)
         zipped_list = list(zip(sdf_values, bdf_values))
     else:
         sdf_values, bdf_values = only_ep_handler(state_dict)

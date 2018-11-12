@@ -1,13 +1,19 @@
 from copy import deepcopy
-from fn.op import foldr, call
 from fn import _
+from fn.op import foldr, call
 from ui.config import behavior_ops
 
 def getColResults(step, sL, s, funcs):
     return list(map(lambda f: f(step, sL, s), funcs))
 
 # Data Type reduction
-def getBehaviorInput(step, sL, s, funcs, ops = behavior_ops[::-1]):
+def getBehaviorInput(step, sL, s, funcs, ops = behavior_ops):
+
+    if len(ops) == 0:
+        ops = [foldr(_ + _)]
+    else:
+        ops = ops[::-1]
+
     return foldr(call, getColResults(step, sL, s, funcs))(ops)
 
 def apply_env_proc(env_processes, state_dict, step):
@@ -72,7 +78,7 @@ def pipe(states_list, configs, env_processes, time_seq, run):
     return simulation_list
 
 
-# Del head
+# Del _ / head
 def simulation(states_list, configs, env_processes, time_seq, runs):
     pipe_run = []
     for run in range(runs):
