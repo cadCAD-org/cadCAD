@@ -27,47 +27,47 @@ seed = {
 # Behaviors per Mechanism
 # Different return types per mechanism ??
 def b1m1(step, sL, s):
-    return {'param1': 1, 'param2': 2}
+    return {'param1': 1}
 def b2m1(step, sL, s):
-    return {'param1': 3, 'param2': 4}
+    return {'param2': 4}
 
 def b1m2(step, sL, s):
-    return {'param1': 1, 'param2': 2}
+    return {'param1': 'a', 'param2': 2}
 def b2m2(step, sL, s):
-    return {'param1': 3, 'param2': 4}
+    return {'param1': 'b', 'param2': 4}
 
 def b1m3(step, sL, s):
-    return {'param1': 1, 'param2': 2}
+    return {'param1': ['c'], 'param2': np.array([10, 100])}
 def b2m3(step, sL, s):
-    return {'param1': 3, 'param2': 4}
+    return {'param1': ['d'], 'param2': np.array([20, 200])}
 
 
 # Internal States per Mechanism
 def s1m1(step, sL, s, _input):
     y = 's1'
-    x = s['s1'] + _input['param1']
+    x = _input['param1']
     return (y, x)
 def s2m1(step, sL, s, _input):
     y = 's2'
-    x = s['s2'] + _input['param2']
+    x = _input['param2']
     return (y, x)
 
 def s1m2(step, sL, s, _input):
     y = 's1'
-    x = s['s1'] + _input['param1']
+    x = _input['param1']
     return (y, x)
 def s2m2(step, sL, s, _input):
     y = 's2'
-    x = s['s2'] + _input['param2']
+    x = _input['param2']
     return (y, x)
 
 def s1m3(step, sL, s, _input):
     y = 's1'
-    x = s['s1'] + _input['param1']
+    x = _input['param1']
     return (y, x)
 def s2m3(step, sL, s, _input):
     y = 's2'
-    x = s['s2'] + s['s3'] + _input['param2']
+    x = _input['param2']
     return (y, x)
 
 # Exogenous States
@@ -140,9 +140,30 @@ def foldr_dict_vals(f, d):
 def sum_dict_values(f = _ + _):
     return foldr_dict_vals(f)
 
+def get_neutral_element(datatype):
+    if datatype is str:
+        return ''
+    elif datatype is int:
+        return 0
+    elif datatype is list:
+        return []
+    return 0
+
+
 @curried
 def dict_op(f, d1, d2):
-    return {k: f(d1[k], d2[k]) for k in d2}
+    res = {}
+    for k in set(list(d1.keys())+list(d2.keys())):
+        try:
+            a = d1[k]
+        except KeyError:
+            a = get_neutral_element(type(d2[k]))
+        try:
+            b = d2[k]
+        except KeyError:
+            b = get_neutral_element(type(d1[k]))
+        res.update({k: f(a,b)})
+    return res
 
 def dict_elemwise_sum(f = _ + _):
     return dict_op(f)
