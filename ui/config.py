@@ -149,7 +149,7 @@ def dict_elemwise_sum(f = _ + _):
 
 # [1, 2] = {'b1': ['a'], 'b2', [1]} =
 # behavior_ops = [ behavior_to_dict, print_fwd, sum_dict_values ]
-behavior_ops = [ print_fwd, foldr(dict_elemwise_sum()) ]
+behavior_ops = [ foldr(dict_elemwise_sum(_ + _)) ]
 # behavior_ops = []
 
 # need at least 1 behaviour and 1 state function for the 1st mech with behaviors
@@ -162,7 +162,7 @@ mechanisms = {
         },
         "states": { # exclude only. TypeError: reduce() of empty sequence with no initial value
             "s1": s1m1,
-            "s2": s2m1
+            # "s2": s2m1
         }
     },
     "m2": {
@@ -172,7 +172,7 @@ mechanisms = {
         },
         "states": {
             "s1": s1m2,
-            "s2": s2m2
+            # "s2": s2m2
         }
     },
     "m3": {
