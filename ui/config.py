@@ -153,7 +153,7 @@ def get_neutral_element(datatype):
 @curried
 def dict_op(f, d1, d2):
     res = {}
-    for k in list(d1.keys())+list(d2.keys()):
+    for k in set(list(d1.keys())+list(d2.keys())):
         try:
             a = d1[k]
         except KeyError:
