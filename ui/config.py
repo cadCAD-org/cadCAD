@@ -137,8 +137,8 @@ def behavior_to_dict(v):
 def foldr_dict_vals(f, d):
     return foldr(f)(list(d.values()))
 
-def sum_dict_values(f = _ + _):
-    return foldr_dict_vals(f)
+def sum_dict_values():
+    return foldr_dict_vals(_ + _)
 
 def get_base_value(datatype):
     if datatype is str:
@@ -163,12 +163,12 @@ def dict_op(f, d1, d2):
 
     return {k: f(set_base_value(d1, d2, k), set_base_value(d2, d1, k)) for k in key_set}
 
-def dict_elemwise_sum(f = _ + _):
-    return dict_op(f)
+def dict_elemwise_sum():
+    return dict_op(_ + _)
 
 # [1, 2] = {'b1': ['a'], 'b2', [1]} =
 # behavior_ops = [ behavior_to_dict, print_fwd, sum_dict_values ]
-behavior_ops = [ foldr(dict_elemwise_sum(_ + _)) ]
+behavior_ops = [ foldr(dict_elemwise_sum()) ]
 # behavior_ops = []
 
 # need at least 1 behaviour and 1 state function for the 1st mech with behaviors

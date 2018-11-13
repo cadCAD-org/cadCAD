@@ -6,3 +6,6 @@ engine/.ipynb_checkpoints
 notebooks/.ipynb_checkpoints
 ui/__pycache__
 SimCAD.egg-info
+__pycache__
+Pipfile
+Pipfile.lock
