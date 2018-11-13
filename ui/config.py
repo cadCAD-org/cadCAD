@@ -13,49 +13,61 @@ seed = {
     'c': np.random.RandomState(3)
 }
 
+# # Behaviors per Mechanism
+# def b1m1(step, sL, s):
+#     return np.array([1, 2])
+# def b2m1(step, sL, s):
+#     return np.array([3, 4])
+# # Internal States per Mechanism
+# def s1m1(step, sL, s, _input):
+#     y = 's1'
+#     x = _input['b1'] * s['s1'] + _input['b2']
+#     return (y, x)
+
 # Behaviors per Mechanism
+# Different return types per mechanism ??
 def b1m1(step, sL, s):
-    return s['s1'] + 1
+    return {'param1': 1, 'param2': 2}
 def b2m1(step, sL, s):
-    return s['s1'] + 1
+    return {'param1': 3, 'param2': 4}
 
 def b1m2(step, sL, s):
-    return s['s1'] + 1
+    return {'param1': 1, 'param2': 2}
 def b2m2(step, sL, s):
-    return s['s1'] + 1
+    return {'param1': 3, 'param2': 4}
 
 def b1m3(step, sL, s):
-    return s['s1'] + 1
+    return {'param1': 1, 'param2': 2}
 def b2m3(step, sL, s):
-    return s['s2'] + 1
+    return {'param1': 3, 'param2': 4}
 
 
 # Internal States per Mechanism
 def s1m1(step, sL, s, _input):
     y = 's1'
-    x = s['s1'] + _input
+    x = s['s1'] + _input['param1']
     return (y, x)
 def s2m1(step, sL, s, _input):
     y = 's2'
-    x = s['s2'] + _input
+    x = s['s2'] + _input['param2']
     return (y, x)
 
 def s1m2(step, sL, s, _input):
     y = 's1'
-    x =  s['s1'] + _input
+    x = s['s1'] + _input['param1']
     return (y, x)
 def s2m2(step, sL, s, _input):
     y = 's2'
-    x =  s['s2'] + _input
+    x = s['s2'] + _input['param2']
     return (y, x)
 
 def s1m3(step, sL, s, _input):
     y = 's1'
-    x = s['s1'] + _input
+    x = s['s1'] + _input['param1']
     return (y, x)
 def s2m3(step, sL, s, _input):
     y = 's2'
-    x =  s['s2'] + s['s3'] + _input
+    x = s['s2'] + s['s3'] + _input['param2']
     return (y, x)
 
 # Exogenous States
@@ -104,7 +116,7 @@ exogenous_states = exo_update_per_ts(
     }
 )
 
-
+#	make env proc trigger field agnostic
 env_processes = {
     "s3": proc_trigger('2018-10-01 15:16:25', env_a),
     "s4": proc_trigger('2018-10-01 15:16:25', env_b)
@@ -119,19 +131,29 @@ def print_fwd(x):
     return x
 
 def behavior_to_dict(v):
-    return dict(list(zip(map(lambda n: 'b_' + str(n), list(range(len(v)))), v)))
+    return dict(list(zip(map(lambda n: 'b' + str(n), list(range(len(v)))), v)))
 
-
-def foldr_dict_vals(d, f = _ + _):
+@curried
+def foldr_dict_vals(f, d):
     return foldr(f)(list(d.values()))
 
-def sum_dict_values(d):
-    return foldr_dict_vals(d)
+def sum_dict_values(f = _ + _):
+    return foldr_dict_vals(f)
 
-# behavior_ops = [ behavior_to_dict, print_fwd, sum_dict_values, lambda x: x + 0 ]
-behavior_ops = []
+@curried
+def dict_op(f, d1, d2):
+    return {k: f(d1[k], d2[k]) for k in d2}
+
+def dict_elemwise_sum(f = _ + _):
+    return dict_op(f)
+
+# [1, 2] = {'b1': ['a'], 'b2', [1]} =
+# behavior_ops = [ behavior_to_dict, print_fwd, sum_dict_values ]
+behavior_ops = [ print_fwd, foldr(dict_elemwise_sum()) ]
+# behavior_ops = []
 
 # need at least 1 behaviour and 1 state function for the 1st mech with behaviors
+# mechanisms = {}
 mechanisms = {
     "m1": {
         "behaviors": {

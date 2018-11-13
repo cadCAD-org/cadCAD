@@ -15,12 +15,14 @@ def getBehaviorInput(step, sL, s, funcs, ops = behavior_ops):
         ops = ops[::-1]
 
     return foldr(call, getColResults(step, sL, s, funcs))(ops)
+    # return getColResults(step, sL, s, funcs)
 
 def apply_env_proc(env_processes, state_dict, step):
     for state in state_dict.keys():
         if state in list(env_processes.keys()):
             state_dict[state] = env_processes[state](step)(state_dict[state])
 
+# remove / modify
 def exception_handler(f, m_step, sL, last_mut_obj, _input):
     try:
         return f(m_step, sL, last_mut_obj, _input)
@@ -35,8 +37,9 @@ def mech_step(m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, ru
     _input = exception_handler(getBehaviorInput, m_step, sL, last_in_obj, behavior_funcs)
 
     last_in_copy = dict([ exception_handler(f, m_step, sL, last_in_obj, _input) for f in state_funcs ])
-    del last_in_obj # print(str(m_step) + ': ' + str(last_in_copy))
+    del last_in_obj
 
+    #	make env proc trigger field agnostic
     apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp']) # mutating last_in_copy
 
     last_in_copy["mech_step"], last_in_copy["time_step"], last_in_copy['run'] = m_step, t_step, run
