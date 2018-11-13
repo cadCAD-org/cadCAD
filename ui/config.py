@@ -25,7 +25,7 @@ seed = {
 #     return (y, x)
 
 # Behaviors per Mechanism
-# Different return types per mechanism ??
+# Different return types per mechanism ?? *** No ***
 def b1m1(step, sL, s):
     return {'param1': 1}
 def b2m1(step, sL, s):
@@ -131,7 +131,7 @@ def print_fwd(x):
     return x
 
 def behavior_to_dict(v):
-    return dict(list(zip(map(lambda n: 'b' + str(n), list(range(len(v)))), v)))
+    return dict(list(zip(map(lambda n: 'b' + str(n+1), list(range(len(v)))), v)))
 
 @curried
 def foldr_dict_vals(f, d):
@@ -140,7 +140,7 @@ def foldr_dict_vals(f, d):
 def sum_dict_values(f = _ + _):
     return foldr_dict_vals(f)
 
-def get_neutral_element(datatype):
+def get_base_value(datatype):
     if datatype is str:
         return ''
     elif datatype is int:
@@ -152,18 +152,16 @@ def get_neutral_element(datatype):
 
 @curried
 def dict_op(f, d1, d2):
-    res = {}
-    for k in set(list(d1.keys())+list(d2.keys())):
-        try:
-            a = d1[k]
-        except KeyError:
-            a = get_neutral_element(type(d2[k]))
-        try:
-            b = d2[k]
-        except KeyError:
-            b = get_neutral_element(type(d1[k]))
-        res.update({k: f(a,b)})
-    return res
+
+    def set_base_value(target_dict, source_dict, key):
+        if key not in target_dict:
+            return get_base_value(type(source_dict[key]))
+        else:
+            return target_dict[key]
+
+    key_set = set(list(d1.keys())+list(d2.keys()))
+
+    return {k: f(set_base_value(d1, d2, k), set_base_value(d2, d1, k)) for k in key_set}
 
 def dict_elemwise_sum(f = _ + _):
     return dict_op(f)
