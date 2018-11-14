@@ -1,7 +1,7 @@
 from copy import deepcopy
 from fn import _
 from fn.op import foldr, call
-from ui.config import behavior_ops
+from ui.config2 import behavior_ops
 
 
 def getColResults(step, sL, s, funcs):
