@@ -28,7 +28,7 @@ class Executor(object):
         def execute():
             ec = ExecutionContext()
             print(configs)
-            states_lists, Ts, Ns, eps, configs_struct, env_processes, mechanisms, simulation_execs = \
+            states_lists, Ts, Ns, eps, configs_structs, env_processes_list, mechanisms, simulation_execs = \
                 [], [], [], [], [], [], [], []
             config_idx = 0
             for x in configs:
@@ -36,8 +36,8 @@ class Executor(object):
                 Ts.append(x.sim_config['T'])
                 Ns.append(x.sim_config['N'])
                 eps.append(list(x.exogenous_states.values()))
-                configs_struct.append(generate_config(x.state_dict, x.mechanisms, eps[config_idx]))
-                env_processes.append(x.env_processes)
+                configs_structs.append(generate_config(x.state_dict, x.mechanisms, eps[config_idx]))
+                env_processes_list.append(x.env_processes)
                 mechanisms.append(x.mechanisms)
                 simulation_execs.append(Executor(x.behavior_ops).simulation)
 
@@ -46,20 +46,18 @@ class Executor(object):
             # Dimensions: N x r x mechs
 
             if len(configs) > 1:
-                simulations = ec.parallelize_simulations(simulation_execs, states_lists, configs_struct, env_processes, Ts, Ns)
-
+                simulations = ec.parallelize_simulations(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns)
+                results = []
                 for result, mechanism, ep in list(zip(simulations, mechanisms, eps)):
                     print(tabulate(create_tensor_field(mechanism, ep), headers='keys', tablefmt='psql'))
-                    print(tabulate(pd.DataFrame(flatten(result)), headers='keys', tablefmt='psql'))
+                    results.append(flatten(result))
+                return results
             else:
-                print('single note')
-                simulation, states_list, config = simulation_execs.pop(), states_lists.pop(), configs_struct.pop()
-                env_process = env_processes.pop()
-                # simulations = [simulation(states_list, config, env_processes, T, N)]
-
-            # behavior_ops, states_list, configs, env_processes, time_seq, runs
-            # result = simulation(states_list1, config1, conf1.env_processes, T, N)
-            # return pd.DataFrame(flatten(result))
+                simulation, states_list, config = simulation_execs.pop(), states_lists.pop(), configs_structs.pop()
+                env_processes, T, N = env_processes_list.pop(), Ts.pop(), Ns.pop()
+                result = simulation(states_list, config, env_processes, T, N)
+                # print(flatten(result))
+                return flatten(result)
 
         self.ExecutionContext = ExecutionContext
         self.main = execute
