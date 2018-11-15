@@ -1,8 +1,10 @@
-from configuration import Config, configs
-from utils.configuration import *
-from fn.op import foldr
-import numpy as np
 from decimal import Decimal
+import numpy as np
+from fn.op import foldr
+
+from SimCAD import Configuration, configs
+from SimCAD.utils.configuration import exo_update_per_ts, proc_trigger, dict_elemwise_sum, bound_norm_random, \
+    ep_time_step
 
 
 seed = {
@@ -161,4 +163,4 @@ sim_config = {
     "T": range(5)
 }
 
-configs.append(Config(sim_config, state_dict, seed, exogenous_states, env_processes, behavior_ops, mechanisms))
+configs.append(Configuration(sim_config, state_dict, seed, exogenous_states, env_processes, behavior_ops, mechanisms))
