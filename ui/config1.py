@@ -1,4 +1,4 @@
-from engine.utils import bound_norm_random, ep_time_step, proc_trigger, exo_update_per_ts
+from utils.configuration import *
 from fn.op import foldr
 from fn import _
 from fn.func import curried
@@ -12,17 +12,6 @@ seed = {
     'b': np.random.RandomState(3),
     'c': np.random.RandomState(3)
 }
-
-# # Behaviors per Mechanism
-# def b1m1(step, sL, s):
-#     return np.array([1, 2])
-# def b2m1(step, sL, s):
-#     return np.array([3, 4])
-# # Internal States per Mechanism
-# def s1m1(step, sL, s, _input):
-#     y = 's1'
-#     x = _input['b1'] * s['s1'] + _input['b2']
-#     return (y, x)
 
 # Behaviors per Mechanism
 # Different return types per mechanism ?? *** No ***
@@ -126,45 +115,6 @@ env_processes = {
 # genesis Sites should always be there
 # [1, 2]
 # behavior_ops = [ foldr(_ + _), lambda x: x + 0 ]
-def print_fwd(x):
-    print(x)
-    return x
-
-def behavior_to_dict(v):
-    return dict(list(zip(map(lambda n: 'b' + str(n+1), list(range(len(v)))), v)))
-
-@curried
-def foldr_dict_vals(f, d):
-    return foldr(f)(list(d.values()))
-
-def sum_dict_values():
-    return foldr_dict_vals(_ + _)
-
-def get_base_value(datatype):
-    if datatype is str:
-        return ''
-    elif datatype is int:
-        return 0
-    elif datatype is list:
-        return []
-    return 0
-
-
-@curried
-def dict_op(f, d1, d2):
-
-    def set_base_value(target_dict, source_dict, key):
-        if key not in target_dict:
-            return get_base_value(type(source_dict[key]))
-        else:
-            return target_dict[key]
-
-    key_set = set(list(d1.keys())+list(d2.keys()))
-
-    return {k: f(set_base_value(d1, d2, k), set_base_value(d2, d1, k)) for k in key_set}
-
-def dict_elemwise_sum():
-    return dict_op(_ + _)
 
 # [1, 2] = {'b1': ['a'], 'b2', [1]} =
 # behavior_ops = [ behavior_to_dict, print_fwd, sum_dict_values ]

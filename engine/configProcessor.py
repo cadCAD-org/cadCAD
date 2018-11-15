@@ -70,11 +70,3 @@ def generate_config(state_dict, mechanisms, exo_proc):
         zipped_list = list(zip(sdf_values, bdf_values))
 
     return list(map(lambda x: (x[0] + exo_proc, x[1]), zipped_list))
-
-def create_tensor_field(mechanisms, exo_proc, keys=['behaviors', 'states']):
-    dfs = [ create_matrix_field(mechanisms, k) for k in keys ]
-    df = pd.concat(dfs, axis=1)
-    for es, i in zip(exo_proc, range(len(exo_proc))):
-        df['es'+str(i+1)] = es
-    df['m'] = df.index + 1
-    return df
