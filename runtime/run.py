@@ -1,10 +1,10 @@
 import pandas as pd
 from tabulate import tabulate
 from configuration import configs
-from utils.engine import flatten
+from utils import flatten
 from utils.ui import create_tensor_field
-from engine.configProcessor import generate_config
-from engine.mechanism import Executor
+from utils.configProcessor import generate_config
+from engine.simulation import Executor
 from runtime.multiproc import parallelize_simulations
 
 # from ui import config1, config2
