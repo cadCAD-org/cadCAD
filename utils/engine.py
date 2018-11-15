@@ -1,11 +1,5 @@
 from datetime import datetime
 
-flatten = lambda l: [item for sublist in l for item in sublist]
-
-def flatmap(f, items):
-        return list(map(f, items))
-
-
 def datetime_range(start, end, delta, dt_format='%Y-%m-%d %H:%M:%S'):
     reverse_head = end
     [start, end] = [datetime.strptime(x, dt_format) for x in [start, end]]
