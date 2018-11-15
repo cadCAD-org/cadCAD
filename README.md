@@ -8,7 +8,32 @@ pip install pipenv fn tabulate
 **Project:**
 
 Example Run File:
-`/DiffyQ-SimCAD/test.py`
+`/DiffyQ-SimCAD/sandboxUX/`
+```python
+import pandas as pd
+from tabulate import tabulate
+
+from SimCAD.engine import ExecutionContext, Executor
+from sandboxUX import config1, config2
+
+print("Simulation Run 1")
+print()
+single_config = [config1]
+run1 = Executor(ExecutionContext, single_config)
+run1_raw_result = run1.main()
+result = pd.DataFrame(run1_raw_result)
+print(tabulate(result, headers='keys', tablefmt='psql'))
+print()
+
+print("Simulation Run 2: Pairwise Execution")
+print()
+configs = [config1, config2]
+run2 = Executor(ExecutionContext, configs)
+run2_raw_results = run2.main()
+for result in run2_raw_results:
+    print(tabulate(result, headers='keys', tablefmt='psql'))
+print()
+```
 
 **User Interface: Simulation Configuration**
 
