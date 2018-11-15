@@ -1,7 +1,6 @@
+from configuration import Config, configs
 from utils.configuration import *
 from fn.op import foldr
-
-
 import numpy as np
 from decimal import Decimal
 
@@ -161,3 +160,5 @@ sim_config = {
     "N": 2,
     "T": range(5)
 }
+
+configs.append(Config(sim_config, state_dict, seed, exogenous_states, env_processes, behavior_ops, mechanisms))
