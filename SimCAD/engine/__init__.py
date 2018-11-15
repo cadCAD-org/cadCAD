@@ -1,13 +1,11 @@
-
-
 from pathos.multiprocessing import ProcessingPool as Pool
 
 import pandas as pd
 from tabulate import tabulate
 
-from utils import flatten
-from utils.ui import create_tensor_field
-from utils.configProcessor import generate_config
+from SimCAD.utils import flatten
+from SimCAD.utils.ui import create_tensor_field
+from SimCAD.utils.configProcessor import generate_config
 
 class ExecutionContext(object):
 
@@ -25,7 +23,7 @@ class ExecutionContext(object):
 class Executor(object):
 
     def __init__(self, ExecutionContext, configs):
-        from engine.simulation import Executor
+        from SimCAD.engine.simulation import Executor
 
         def execute():
             ec = ExecutionContext()
