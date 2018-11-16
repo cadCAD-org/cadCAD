@@ -18,7 +18,8 @@ print()
 configs = [config1, config2]
 run2 = Executor(ExecutionContext, configs)
 run2_raw_results = run2.main()
-for result in run2_raw_results:
+for raw_result in run2_raw_results:
+    result = pd.DataFrame(raw_result)
     print(tabulate(result, headers='keys', tablefmt='psql'))
 print()
 
