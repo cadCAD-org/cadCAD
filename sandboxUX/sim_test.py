@@ -22,6 +22,3 @@ for raw_result in run2_raw_results:
     result = pd.DataFrame(raw_result)
     print(tabulate(result, headers='keys', tablefmt='psql'))
 print()
-
-
-

@@ -118,7 +118,7 @@ env_processes = {
 
 # [1, 2] = {'b1': ['a'], 'b2', [1]} =
 # behavior_ops = [ behavior_to_dict, print_fwd, sum_dict_values ]
-behavior_ops = [ foldr(dict_elemwise_sum()) ]
+behavior_ops = [foldr(dict_elemwise_sum())]
 # behavior_ops = []
 
 # need at least 1 behaviour and 1 state function for the 1st mech with behaviors

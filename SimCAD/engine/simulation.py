@@ -25,7 +25,7 @@ class Executor(object):
                 state_dict[state] = env_processes[state](step)(state_dict[state])
 
     # remove / modify
-    def exception_handler(f, m_step, sL, last_mut_obj, _input):
+    def exception_handler(self, f, m_step, sL, last_mut_obj, _input):
         try:
             return f(m_step, sL, last_mut_obj, _input)
         except KeyError:
@@ -36,12 +36,12 @@ class Executor(object):
     def mech_step(self, m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, run):
         last_in_obj = sL[-1]
 
-        _input = Executor.getBehaviorInput(self, m_step, sL, last_in_obj, behavior_funcs)
+        _input = self.getBehaviorInput(m_step, sL, last_in_obj, behavior_funcs)
 
         # print(sL)
 
         # *** add env_proc value here as wrapper function ***
-        last_in_copy = dict([ Executor.exception_handler(f, m_step, sL, last_in_obj, _input) for f in state_funcs ])
+        last_in_copy = dict([ self.exception_handler(f, m_step, sL, last_in_obj, _input) for f in state_funcs ])
 
         for k in last_in_obj:
             if k not in last_in_copy:
@@ -71,7 +71,7 @@ class Executor(object):
         m_step += 1
         for config in configs:
             s_conf, b_conf = config[0], config[1]
-            states_list = Executor.mech_step(self, m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
+            states_list = self.mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
             m_step += 1
 
         t_step += 1
@@ -84,7 +84,7 @@ class Executor(object):
         time_seq = [x + 1 for x in time_seq]
         simulation_list = [states_list]
         for time_step in time_seq:
-            pipe_run = Executor.block_gen(self, simulation_list[-1], configs, env_processes, time_step, run)
+            pipe_run = self.block_gen(simulation_list[-1], configs, env_processes, time_step, run)
             _, *pipe_run = pipe_run
             simulation_list.append(pipe_run)
 
@@ -97,13 +97,13 @@ class Executor(object):
         for run in range(runs):
             run += 1
             if run == 1:
-                head, *tail = Executor.pipe(self, states_list, configs, env_processes, time_seq, run)
+                head, *tail = self.pipe(states_list, configs, env_processes, time_seq, run)
                 head[-1]['mech_step'], head[-1]['time_step'], head[-1]['run'] = 0, 0, 0
                 simulation_list = [head] + tail
                 pipe_run += simulation_list
             else:
                 transient_states_list = [pipe_run[-1][-1]]
-                _, *tail = Executor.pipe(self, transient_states_list, configs, env_processes, time_seq, run)
+                _, *tail = self.pipe(transient_states_list, configs, env_processes, time_seq, run)
                 pipe_run += tail
 
         return pipe_run
