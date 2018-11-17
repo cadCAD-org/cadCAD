@@ -7,5 +7,5 @@ setup(name='SimCAD',
       author='Joshua E. Jodesty',
       author_email='joshua@block.science',
       # license='?????',
-      packages=['engine'],
+      packages=['SimCAD'],
       zip_safe=False)
