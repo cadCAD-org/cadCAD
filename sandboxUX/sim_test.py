@@ -4,6 +4,8 @@ from tabulate import tabulate
 from SimCAD.engine import ExecutionContext, Executor
 from sandboxUX import config1, config2
 
+# pass ExecutionContext function instead of class
+
 print("Simulation Run 1")
 print()
 single_config = [config1]

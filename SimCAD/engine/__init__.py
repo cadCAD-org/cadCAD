@@ -6,8 +6,8 @@ from SimCAD.utils.ui import create_tensor_field
 from SimCAD.utils.configProcessor import generate_config
 from SimCAD.engine.simulation import Executor as SimExecutor
 
-class ExecutionContext:
 
+class ExecutionContext:
     def parallelize_simulations(self, fs, states_list, configs, env_processes, Ts, Ns):
         l = list(zip(fs, states_list, configs, env_processes, Ts, Ns))
         with Pool(len(configs)) as p:

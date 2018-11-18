@@ -7,8 +7,26 @@ pip install pipenv fn tabulate
 
 **Project:**
 
-Example Run File:
+Example Runs:
 `/DiffyQ-SimCAD/sandboxUX/`
+
+**User Interface: Simulation Configuration**
+
+Configurations:
+```bash
+/DiffyQ-SimCAD/ui/config.py
+```
+
+**Build Tool & Package Import:**
+
+Step 1. Build & Install Package locally: 
+```bash
+pip install .
+pip install -e .
+```
+* [Package Creation Tutorial](https://python-packaging.readthedocs.io/en/latest/minimal.html)
+
+Step 2. Import Package & Run:  
 ```python
 import pandas as pd
 from tabulate import tabulate
@@ -34,28 +52,6 @@ for raw_result in run2_raw_results:
     result = pd.DataFrame(raw_result)
     print(tabulate(result, headers='keys', tablefmt='psql'))
 print()
-```
-
-**User Interface: Simulation Configuration**
-
-Configurations:
-```bash
-/DiffyQ-SimCAD/ui/config.py
-```
-
-**Build Tool & Package Import:**
-
-Step 1. Build & Install Package locally: 
-```bash
-pip install .
-pip install -e .
-```
-* [Package Creation Tutorial](https://python-packaging.readthedocs.io/en/latest/minimal.html)
-
-Step 2. Import Package & Run:  
-```python
-from engine import run
-run.main()
 ```
 
 Same can be run in Jupyter . 

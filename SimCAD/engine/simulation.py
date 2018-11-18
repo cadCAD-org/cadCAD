@@ -19,7 +19,7 @@ class Executor(object):
 
         return foldr(call, getColResults(step, sL, s, funcs))(ops)
 
-    def apply_env_proc(env_processes, state_dict, step):
+    def apply_env_proc(self, env_processes, state_dict, step):
         for state in state_dict.keys():
             if state in list(env_processes.keys()):
                 state_dict[state] = env_processes[state](step)(state_dict[state])
@@ -41,7 +41,7 @@ class Executor(object):
         # print(sL)
 
         # *** add env_proc value here as wrapper function ***
-        last_in_copy = dict([ self.exception_handler(f, m_step, sL, last_in_obj, _input) for f in state_funcs ])
+        last_in_copy = dict([self.exception_handler(f, m_step, sL, last_in_obj, _input) for f in state_funcs])
 
         for k in last_in_obj:
             if k not in last_in_copy:
@@ -50,10 +50,9 @@ class Executor(object):
         del last_in_obj
 
         #	make env proc trigger field agnostic
-        Executor.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp']) # mutating last_in_copy
+        self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp']) # mutating last_in_copy
 
         last_in_copy["mech_step"], last_in_copy["time_step"], last_in_copy['run'] = m_step, t_step, run
-        # print(last_in_copy)
         sL.append(last_in_copy)
         del last_in_copy
 
