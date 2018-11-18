@@ -4,7 +4,7 @@ from tabulate import tabulate
 from SimCAD.engine import ExecutionContext, Executor
 from sandboxUX import config1, config2
 
-# pass ExecutionContext function instead of class
+# ToDo: pass ExecutionContext with execution method as ExecutionContext input
 
 print("Simulation Run 1")
 print()
