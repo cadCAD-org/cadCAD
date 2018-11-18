@@ -1,25 +1,34 @@
 import pandas as pd
 from functools import reduce
 
+
 def no_state_identity(step, sL, s, _input):
     return None
+
 
 def state_identity(k):
     return lambda step, sL, s, _input: (k, s[k])
 
+
 def b_identity(step, sL, s):
     return 0
+
+
 def behavior_identity(k):
     return b_identity
+
 
 def key_filter(mechanisms, keyname):
     return [ v[keyname] for k, v in mechanisms.items() ]
 
+
 def fillna_with_id_func(identity, df, col):
     return df[[col]].fillna(value=identity(col))
 
+
 def apply_identity_funcs(identity, df, cols):
     return list(map(lambda col: fillna_with_id_func(identity, df, col), cols))
+
 
 def create_matrix_field(mechanisms, key):
     if key == 'states':
@@ -37,14 +46,15 @@ def create_matrix_field(mechanisms, key):
 # Maybe Refactor to only use dictionary BUT I used dfs to fill NAs. Perhaps fill
 def generate_config(state_dict, mechanisms, exo_proc):
 
+    # include False / False case
     def no_update_handler(bdf, sdf):
         if (bdf.empty == False) and (sdf.empty == True):
             bdf_values = bdf.values.tolist()
-            sdf_values = [ [no_state_identity] * len(bdf_values) for m in range(len(mechanisms)) ]
+            sdf_values = [[no_state_identity] * len(bdf_values) for m in range(len(mechanisms))]
             return sdf_values, bdf_values
         elif (bdf.empty == True) and (sdf.empty == False):
             sdf_values = sdf.values.tolist()
-            bdf_values = [ [b_identity] * len(sdf_values) for m in range(len(mechanisms)) ]
+            bdf_values = [[b_identity] * len(sdf_values) for m in range(len(mechanisms))]
             return sdf_values, bdf_values
         else:
             sdf_values = sdf.values.tolist()
@@ -55,8 +65,8 @@ def generate_config(state_dict, mechanisms, exo_proc):
         sdf_functions = [
             lambda step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
         ]
-        sdf_values = [ sdf_functions ]
-        bdf_values = [ [b_identity] * len(sdf_values) ]
+        sdf_values = [sdf_functions]
+        bdf_values = [[b_identity] * len(sdf_values)]
         return sdf_values, bdf_values
 
     zipped_list = []

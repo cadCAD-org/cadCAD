@@ -1,6 +1,8 @@
 import pandas as pd
 from SimCAD.utils.configProcessor import create_matrix_field
 
+
+# dont for-loop to apply exo_procs, use exo_proc struct
 def create_tensor_field(mechanisms, exo_proc, keys=['behaviors', 'states']):
     dfs = [create_matrix_field(mechanisms, k) for k in keys]
     df = pd.concat(dfs, axis=1)
