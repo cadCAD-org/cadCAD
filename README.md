@@ -2,13 +2,16 @@
 
 **Dependencies:**
 ```bash
-pip install pipenv fn tabulate
+pip install pathos pipenv fn tabulate
 ```
 
 **Project:**
 
 Example Runs:
-`/DiffyQ-SimCAD/sandboxUX/`
+`/DiffyQ-SimCAD/sandboxUX/sim_test.py`
+
+Example Configurations:
+`/DiffyQ-SimCAD/sandboxUX/connfig#.py`
 
 **User Interface: Simulation Configuration**
 
