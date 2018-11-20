@@ -1,0 +1,4 @@
+pathos
+pipenv
+fn
+tabulate

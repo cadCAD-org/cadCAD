@@ -2,18 +2,15 @@ from copy import deepcopy
 from fn import _
 from fn.op import foldr, call
 
-class Executor(object):
+
+class Executor:
     def __init__(self, behavior_ops):
         self.behavior_ops = behavior_ops
 
     # Data Type reduction
     def getBehaviorInput(self, step, sL, s, funcs):
 
-        if len(self.behavior_ops) == 0:
-            ops = [foldr(_ + _)]
-        else:
-            ops = self.behavior_ops[::-1]
-
+        ops = self.behavior_ops[::-1]
         def getColResults(step, sL, s, funcs):
             return list(map(lambda f: f(step, sL, s), funcs))
 
