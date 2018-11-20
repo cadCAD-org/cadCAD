@@ -2,7 +2,7 @@
 
 **Dependencies:**
 ```bash
-pip install pathos pipenv fn tabulate
+pip install -r requirements.txt
 ```
 
 **Project:**

@@ -69,7 +69,7 @@ def generate_config(state_dict, mechanisms, exo_proc):
         bdf_values = [[b_identity] * len(sdf_values)]
         return sdf_values, bdf_values
 
-    zipped_list = []
+    # zipped_list = []
     if len(mechanisms) != 0:
         bdf = create_matrix_field(mechanisms, 'behaviors')
         sdf = create_matrix_field(mechanisms, 'states')
