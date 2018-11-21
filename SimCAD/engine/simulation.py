@@ -1,11 +1,11 @@
 from copy import deepcopy
-from fn import _
 from fn.op import foldr, call
 
 
 class Executor:
     def __init__(self, behavior_ops):
         self.behavior_ops = behavior_ops
+
 
     # Data Type reduction
     def getBehaviorInput(self, step, sL, s, funcs):
@@ -16,10 +16,12 @@ class Executor:
 
         return foldr(call, getColResults(step, sL, s, funcs))(ops)
 
+
     def apply_env_proc(self, env_processes, state_dict, step):
         for state in state_dict.keys():
             if state in list(env_processes.keys()):
                 state_dict[state] = env_processes[state](step)(state_dict[state])
+
 
     # remove / modify
     def exception_handler(self, f, m_step, sL, last_mut_obj, _input):
@@ -98,8 +100,7 @@ class Executor:
                 simulation_list = [head] + tail
                 pipe_run += simulation_list
             else:
-                transient_states_list = [pipe_run[-1][-1]]
-                _, *tail = self.pipe(transient_states_list, configs, env_processes, time_seq, run)
+                _, *tail = self.pipe(states_list, configs, env_processes, time_seq, run)
                 pipe_run += tail
 
         return pipe_run
