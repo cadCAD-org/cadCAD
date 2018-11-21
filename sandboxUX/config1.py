@@ -3,7 +3,7 @@ import numpy as np
 from fn.op import foldr
 
 from SimCAD import Configuration, configs
-from SimCAD.utils.configuration import exo_update_per_ts, proc_trigger, dict_elemwise_sum, bound_norm_random, \
+from SimCAD.utils.configuration import exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
 
 seed = {
@@ -30,15 +30,15 @@ def b1m3(step, sL, s):
 def b2m3(step, sL, s):
     return {'param1': ['d'], 'param2': np.array([20, 200])}
 
-
+# deff not more than 2
 # Internal States per Mechanism
 def s1m1(step, sL, s, _input):
     y = 's1'
-    x = _input['param1']
+    x = _input['param1'] #+ [Coef1 x 5]
     return (y, x)
 def s2m1(step, sL, s, _input):
     y = 's2'
-    x = _input['param2']
+    x = _input['param2'] #+ [Coef2 x 5]
     return (y, x)
 
 def s1m2(step, sL, s, _input):
@@ -118,7 +118,7 @@ env_processes = {
 
 # [1, 2] = {'b1': ['a'], 'b2', [1]} =
 # behavior_ops = [ behavior_to_dict, print_fwd, sum_dict_values ]
-behavior_ops = [foldr(dict_elemwise_sum())]
+# behavior_ops = [foldr(dict_elemwise_sum())]
 # behavior_ops = []
 
 # need at least 1 behaviour and 1 state function for the 1st mech with behaviors
@@ -161,4 +161,4 @@ sim_config = {
     "T": range(5)
 }
 
-configs.append(Configuration(sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms, behavior_ops))
+configs.append(Configuration(sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms))
