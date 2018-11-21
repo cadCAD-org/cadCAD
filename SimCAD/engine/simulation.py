@@ -94,13 +94,9 @@ class Executor:
         pipe_run = []
         for run in range(runs):
             run += 1
-            if run == 1:
-                head, *tail = self.pipe(states_list, configs, env_processes, time_seq, run)
-                head[-1]['mech_step'], head[-1]['time_step'], head[-1]['run'] = 0, 0, 0
-                simulation_list = [head] + tail
-                pipe_run += simulation_list
-            else:
-                _, *tail = self.pipe(states_list, configs, env_processes, time_seq, run)
-                pipe_run += tail
+            head, *tail = self.pipe(states_list, configs, env_processes, time_seq, run)
+            head[-1]['mech_step'], head[-1]['time_step'], head[-1]['run'] = 0, 0, run
+            simulation_list = [head] + tail
+            pipe_run += simulation_list
 
         return pipe_run
