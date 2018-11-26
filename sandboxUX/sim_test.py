@@ -2,12 +2,13 @@ import pandas as pd
 from tabulate import tabulate
 
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
-from sandboxUX import config1, config2
+# from sandboxUX import config1, config2
 from SimCAD import configs
 
 # ToDo: pass ExecutionContext with execution method as ExecutionContext input
 
 exec_mode = ExecutionMode()
+
 
 print("Simulation Run 1")
 print()

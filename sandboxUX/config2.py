@@ -98,6 +98,7 @@ state_dict = {
 }
 
 # remove `exo_update_per_ts` to update every ts
+# why `exo_update_per_ts` here instead of `env_processes`
 exogenous_states = exo_update_per_ts(
     {
     "s3": es3p1,
