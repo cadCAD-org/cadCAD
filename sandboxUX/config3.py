@@ -101,7 +101,7 @@ def s3m1(step, sL, s, _input):
 
 def s4m2(step, sL, s, _input):
     y = 'Sell_Log'
-    x = _input['sell_order1'] #+ _input['sell_order2'] # / Psignal_int
+    x = _input['sell_order1'] + _input['sell_order2'] # / Psignal_int
     return (y, x)
 
 
@@ -169,8 +169,7 @@ def env_proc_id(x):
     return x
 
 env_processes = {
-    "P_Ext_Markets": env_proc_id,
-    "timestamp": env_proc_id
+    # "P_Ext_Markets": env_proc_id
 }
 
 exogenous_states = exo_update_per_ts(
@@ -197,22 +196,22 @@ mechanisms = {
             "Buy_Log": s3m1
         }
     },
-    # "m2": {
-    #      "behaviors": {
-    #         "b1": b1m2,
-    #         # "b4": b4m2
-    #      },
-    #      "states": {
-    #          "Sell_Log": s4m2
-    #     }
-    # },
-    # "m3": {
-    #         "behaviors": {
-    #     },
-    #         "states": {
-    #             "Price": s2m3
-    #     }
-    # }
+    "m2": {
+         "behaviors": {
+            "b1": b1m2,
+            "b4": b4m2
+         },
+         "states": {
+             "Sell_Log": s4m2
+        }
+    },
+    "m3": {
+            "behaviors": {
+        },
+            "states": {
+                "Price": s2m3
+        }
+    }
 }
 
 configs.append(Configuration(sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms))

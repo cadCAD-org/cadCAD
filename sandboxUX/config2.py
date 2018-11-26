@@ -130,7 +130,7 @@ mechanisms = {
     "m1": {
         "behaviors": {
             "b1": b1m1, # lambda step, sL, s: s['s1'] + 1,
-            "b2": b2m1
+            # "b2": b2m1
         },
         "states": { # exclude only. TypeError: reduce() of empty sequence with no initial value
             "s1": s1m1,
@@ -140,7 +140,7 @@ mechanisms = {
     "m2": {
         "behaviors": {
             "b1": b1m2,
-            "b2": b2m2
+            # "b2": b2m2
         },
         "states": {
             "s1": s1m2,
