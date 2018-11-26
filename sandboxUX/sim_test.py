@@ -3,6 +3,7 @@ from tabulate import tabulate
 
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
 # from sandboxUX import config1, config2
+from sandboxUX import config3
 from SimCAD import configs
 
 # ToDo: pass ExecutionContext with execution method as ExecutionContext input
@@ -19,13 +20,13 @@ run1_raw_result = run1.main()
 result = pd.DataFrame(run1_raw_result)
 print(tabulate(result, headers='keys', tablefmt='psql'))
 print()
-
-print("Simulation Run 2: Pairwise Execution")
-print()
-multi_proc_ctx = ExecutionContext(exec_mode.multi_proc)
-run2 = Executor(multi_proc_ctx, configs)
-run2_raw_results = run2.main()
-for raw_result in run2_raw_results:
-    result = pd.DataFrame(raw_result)
-    print(tabulate(result, headers='keys', tablefmt='psql'))
-print()
+#
+# print("Simulation Run 2: Pairwise Execution")
+# print()
+# multi_proc_ctx = ExecutionContext(exec_mode.multi_proc)
+# run2 = Executor(multi_proc_ctx, configs)
+# run2_raw_results = run2.main()
+# for raw_result in run2_raw_results:
+#     result = pd.DataFrame(raw_result)
+#     print(tabulate(result, headers='keys', tablefmt='psql'))
+# print()

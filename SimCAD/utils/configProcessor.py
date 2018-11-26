@@ -12,7 +12,7 @@ def state_identity(k):
 
 # fix
 def b_identity(step, sL, s):
-    return {'identity': 0}
+    return {'indentity': 0}
 
 
 def behavior_identity(k):
