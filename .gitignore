@@ -9,3 +9,4 @@ SimCAD.egg-info
 __pycache__
 Pipfile
 Pipfile.lock
+scrapbox/

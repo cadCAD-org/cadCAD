@@ -4,7 +4,7 @@ from SimCAD.utils.configuration import dict_elemwise_sum
 
 configs = []
 
-
+#Configuration(sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms)
 class Configuration:
     def __init__(self, sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms, behavior_ops=[foldr(dict_elemwise_sum())]):
         self.sim_config = sim_config

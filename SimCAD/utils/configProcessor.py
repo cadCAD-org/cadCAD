@@ -10,8 +10,9 @@ def state_identity(k):
     return lambda step, sL, s, _input: (k, s[k])
 
 
+# fix
 def b_identity(step, sL, s):
-    return 0
+    return {'identity': 0}
 
 
 def behavior_identity(k):
@@ -19,7 +20,7 @@ def behavior_identity(k):
 
 
 def key_filter(mechanisms, keyname):
-    return [ v[keyname] for k, v in mechanisms.items() ]
+    return [v[keyname] for k, v in mechanisms.items()]
 
 
 def fillna_with_id_func(identity, df, col):
