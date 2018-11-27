@@ -63,8 +63,9 @@ class Executor:
         # Dimensions: N x r x mechs
 
         def single_proc_exec(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns):
-            simulation, states_list, config = simulation_execs.pop(), states_lists.pop(), configs_structs.pop()
-            env_processes, T, N = env_processes_list.pop(), Ts.pop(), Ns.pop()
+            l = [simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns]
+            simulation, states_list, config, env_processes, T, N = list(map(lambda x: x.pop(), l))
+            # print(states_list)
             result = simulation(states_list, config, env_processes, T, N)
             return flatten(result)
 

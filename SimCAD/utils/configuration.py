@@ -79,11 +79,6 @@ def sum_dict_values():
 # config7c
 @curried
 def dict_op(f, d1, d2):
-    print('d1')
-    print(d1)
-    print('d2')
-    print(d2)
-    print()
     def set_base_value(target_dict, source_dict, key):
         if key not in target_dict:
             return get_base_value(type(source_dict[key]))
