@@ -1,6 +1,7 @@
 from copy import deepcopy
 from fn.op import foldr, call
-
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 class Executor:
     def __init__(self, behavior_ops):
@@ -61,6 +62,7 @@ class Executor:
     def block_gen(self, states_list, configs, env_processes, t_step, run):
         m_step = 0
         states_list_copy = deepcopy(states_list)
+        # print(states_list_copy)
         # remove copy
         genesis_states = states_list_copy[-1]
         genesis_states['mech_step'], genesis_states['time_step'] = m_step, t_step
@@ -82,6 +84,7 @@ class Executor:
         time_seq = [x + 1 for x in time_seq]
         simulation_list = [states_list]
         for time_step in time_seq:
+            # print(run)
             pipe_run = self.block_gen(simulation_list[-1], configs, env_processes, time_step, run)
             _, *pipe_run = pipe_run
             simulation_list.append(pipe_run)
@@ -94,9 +97,13 @@ class Executor:
         pipe_run = []
         for run in range(runs):
             run += 1
-            head, *tail = self.pipe(states_list, configs, env_processes, time_seq, run)
-            head[-1]['mech_step'], head[-1]['time_step'], head[-1]['run'] = 0, 0, run
-            simulation_list = [head] + tail
-            pipe_run += simulation_list
+            # print("Run: "+str(run))
+            states_list_copy = deepcopy(states_list) # WHY ???
+            head, *tail = self.pipe(states_list_copy, configs, env_processes, time_seq, run)
+            genesis = head.pop()
+            genesis['mech_step'], genesis['time_step'], genesis['run'] = 0, 0, run
+            first_timestep = [genesis] + tail.pop(0)
+            pipe_run += [first_timestep] + tail
+            del states_list_copy
 
         return pipe_run
