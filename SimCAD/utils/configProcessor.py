@@ -10,7 +10,7 @@ def state_identity(k):
     return lambda step, sL, s, _input: (k, s[k])
 
 
-# fix
+# Make returntype chosen by user. Must Classify Configs
 def b_identity(step, sL, s):
     return {'indentity': 0}
 

@@ -19,6 +19,12 @@ class ExecutionContext:
         self.name = context
         self.method = None
 
+        def single_proc_exec(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns):
+            l = [simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns]
+            simulation, states_list, config, env_processes, T, N = list(map(lambda x: x.pop(), l))
+            result = simulation(states_list, config, env_processes, T, N)
+            return flatten(result)
+
         def parallelize_simulations(fs, states_list, configs, env_processes, Ts, Ns):
             l = list(zip(fs, states_list, configs, env_processes, Ts, Ns))
             with Pool(len(configs)) as p:
@@ -27,7 +33,7 @@ class ExecutionContext:
             return results
 
         if context == 'single_proc':
-            self.method = None
+            self.method = single_proc_exec
         elif context == 'multi_proc':
             self.method = parallelize_simulations
 
@@ -62,16 +68,7 @@ class Executor:
 
         # Dimensions: N x r x mechs
 
-        def single_proc_exec(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns):
-            l = [simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns]
-            simulation, states_list, config, env_processes, T, N = list(map(lambda x: x.pop(), l))
-            # print(states_list)
-            result = simulation(states_list, config, env_processes, T, N)
-            return flatten(result)
-
-        if self.exec_context == ExecutionMode.single_proc:
-            return single_proc_exec(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns)
-        elif self.exec_context == ExecutionMode.multi_proc:
+        if self.exec_context == ExecutionMode.multi_proc:
             if len(self.configs) > 1:
                 simulations = self.exec_method(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns)
                 results = []
@@ -79,5 +76,5 @@ class Executor:
                     print(tabulate(create_tensor_field(mechanism, ep), headers='keys', tablefmt='psql'))
                     results.append(flatten(result))
                 return results
-            else:
-                return single_proc_exec(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns)
+        else:
+            return self.exec_method(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns)

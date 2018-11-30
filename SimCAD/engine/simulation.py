@@ -59,7 +59,7 @@ class Executor:
         return sL
 
 
-    def block_gen(self, states_list, configs, env_processes, t_step, run):
+    def mech_pipeline(self, states_list, configs, env_processes, t_step, run):
         m_step = 0
         states_list_copy = deepcopy(states_list)
         # print(states_list_copy)
@@ -80,12 +80,14 @@ class Executor:
 
 
     # rename pipe
-    def pipe(self, states_list, configs, env_processes, time_seq, run):
+    def block_pipeline(self, states_list, configs, env_processes, time_seq, run):
         time_seq = [x + 1 for x in time_seq]
         simulation_list = [states_list]
         for time_step in time_seq:
             # print(run)
-            pipe_run = self.block_gen(simulation_list[-1], configs, env_processes, time_step, run)
+            pipe_run = self.mech_pipeline(simulation_list[-1], configs, env_processes, time_step, run)
+            # pp.pprint(pipe_run)
+            # exit()
             _, *pipe_run = pipe_run
             simulation_list.append(pipe_run)
 
@@ -99,11 +101,11 @@ class Executor:
             run += 1
             # print("Run: "+str(run))
             states_list_copy = deepcopy(states_list) # WHY ???
-            head, *tail = self.pipe(states_list_copy, configs, env_processes, time_seq, run)
+            head, *tail = self.block_pipeline(states_list_copy, configs, env_processes, time_seq, run)
             genesis = head.pop()
             genesis['mech_step'], genesis['time_step'], genesis['run'] = 0, 0, run
-            first_timestep = [genesis] + tail.pop(0)
-            pipe_run += [first_timestep] + tail
+            first_timestep_per_run = [genesis] + tail.pop(0)
+            pipe_run += [first_timestep_per_run] + tail
             del states_list_copy
 
         return pipe_run
