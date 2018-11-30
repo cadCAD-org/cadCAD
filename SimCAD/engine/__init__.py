@@ -2,8 +2,8 @@ from pathos.multiprocessing import ProcessingPool as Pool
 from tabulate import tabulate
 
 from SimCAD.utils import flatten
-from SimCAD.utils.ui import create_tensor_field
-from SimCAD.utils.configProcessor import generate_config
+from SimCAD.configuration import Processor
+from SimCAD.configuration.utils import TensorFieldReport
 from SimCAD.engine.simulation import Executor as SimExecutor
 
 
@@ -50,6 +50,9 @@ class Executor:
 
     def execute(self):
 
+        config_proc = Processor()
+        create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
+
         print(self.exec_context+": "+str(self.configs))
         states_lists, Ts, Ns, eps, configs_structs, env_processes_list, mechanisms, simulation_execs = \
             [], [], [], [], [], [], [], []
@@ -59,7 +62,7 @@ class Executor:
             Ts.append(x.sim_config['T'])
             Ns.append(x.sim_config['N'])
             eps.append(list(x.exogenous_states.values()))
-            configs_structs.append(generate_config(x.state_dict, x.mechanisms, eps[config_idx]))
+            configs_structs.append(config_proc.generate_config(x.state_dict, x.mechanisms, eps[config_idx]))
             env_processes_list.append(x.env_processes)
             mechanisms.append(x.mechanisms)
             simulation_execs.append(SimExecutor(x.behavior_ops).simulation)

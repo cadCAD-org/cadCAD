@@ -1,7 +1,20 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from fn.func import curried
-from fn.op import foldr
+import pandas as pd
+
+class TensorFieldReport:
+    def __init__(self, config_proc):
+        self.config_proc = config_proc
+
+    # dont for-loop to apply exo_procs, use exo_proc struct
+    def create_tensor_field(self, mechanisms, exo_proc, keys=['behaviors', 'states']):
+        dfs = [self.config_proc.create_matrix_field(mechanisms, k) for k in keys]
+        df = pd.concat(dfs, axis=1)
+        for es, i in zip(exo_proc, range(len(exo_proc))):
+            df['es' + str(i + 1)] = es
+        df['m'] = df.index + 1
+        return df
 
 
 def bound_norm_random(rng, low, high):
@@ -45,52 +58,3 @@ def exo_update_per_ts(ep):
         else:
             return (y, s[y])
     return {es: ep_decorator(f, es) for es, f in ep.items()}
-
-
-def print_fwd(x):
-    print(x)
-    return x
-
-
-def get_base_value(datatype):
-    if datatype is str:
-        return ''
-    elif datatype is int:
-        return 0
-    elif datatype is list:
-        return []
-    return 0
-
-
-def behavior_to_dict(v):
-    return dict(list(zip(map(lambda n: 'b' + str(n + 1), list(range(len(v)))), v)))
-
-
-add = lambda a, b: a + b
-
-
-@curried
-def foldr_dict_vals(f, d):
-    return foldr(f)(list(d.values()))
-
-
-def sum_dict_values():
-    return foldr_dict_vals(add)
-
-# AttributeError: 'int' object has no attribute 'keys'
-# config7c
-@curried
-def dict_op(f, d1, d2):
-    def set_base_value(target_dict, source_dict, key):
-        if key not in target_dict:
-            return get_base_value(type(source_dict[key]))
-        else:
-            return target_dict[key]
-
-    key_set = set(list(d1.keys()) + list(d2.keys()))
-
-    return {k: f(set_base_value(d1, d2, k), set_base_value(d2, d1, k)) for k in key_set}
-
-
-def dict_elemwise_sum():
-    return dict_op(add)

@@ -1,5 +1,5 @@
 from fn.op import foldr
-from SimCAD.utils.configuration import dict_elemwise_sum
+from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 
 
 configs = []
