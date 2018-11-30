@@ -3,10 +3,10 @@ from fn.op import foldr, call
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
+
 class Executor:
     def __init__(self, behavior_ops):
         self.behavior_ops = behavior_ops
-
 
     # Data Type reduction
     def getBehaviorInput(self, step, sL, s, funcs):
@@ -17,12 +17,10 @@ class Executor:
 
         return foldr(call, getColResults(step, sL, s, funcs))(ops)
 
-
     def apply_env_proc(self, env_processes, state_dict, step):
         for state in state_dict.keys():
             if state in list(env_processes.keys()):
                 state_dict[state] = env_processes[state](step)(state_dict[state])
-
 
     # remove / modify
     def exception_handler(self, f, m_step, sL, last_mut_obj, _input):
@@ -31,7 +29,6 @@ class Executor:
         except KeyError:
             print("Exception")
             return f(m_step, sL, sL[-2], _input)
-
 
     def mech_step(self, m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, run):
         last_in_obj = sL[-1]
@@ -57,7 +54,6 @@ class Executor:
         del last_in_copy
 
         return sL
-
 
     def mech_pipeline(self, states_list, configs, env_processes, t_step, run):
         m_step = 0

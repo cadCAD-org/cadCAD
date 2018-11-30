@@ -5,7 +5,7 @@ from decimal import Decimal
 import numpy as np
 
 from SimCAD import Configuration, configs
-from SimCAD.utils.configuration import exo_update_per_ts, proc_trigger, bound_norm_random, \
+from SimCAD.configuration import exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
 
 seed = {
