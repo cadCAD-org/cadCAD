@@ -21,16 +21,18 @@ def proc_trigger(trigger_step, update_f, step):
 
 
 # accept timedelta instead of timedelta params
-def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', days=0, minutes=0, seconds=30):
+t_delta = timedelta(days=0, minutes=0, seconds=30)
+def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = t_delta):
     dt = datetime.strptime(dt_str, dt_format)
-    t = dt + timedelta(days=days, minutes=minutes, seconds=seconds)
+    t = dt + _timedelta
     return t.strftime(dt_format)
 
 
 # accept timedelta instead of timedelta params
-def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', days=0, minutes=0, seconds=1):
+t_delta = timedelta(days=0, minutes=0, seconds=1)
+def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = t_delta):
     if s['mech_step'] == 0:
-        return time_step(dt_str, fromat_str, days, minutes, seconds)
+        return time_step(dt_str, fromat_str, _timedelta)
     else:
         return dt_str
 

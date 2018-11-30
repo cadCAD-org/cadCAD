@@ -2,8 +2,9 @@ import pandas as pd
 from tabulate import tabulate
 
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
-from sandboxUX import config1, config2
-# from sandboxUX import config4
+from sandbox.validation import config1, config2
+# from sandbox import config4
+# from sandbox import config_zx
 from SimCAD import configs
 
 # ToDo: pass ExecutionContext with execution method as ExecutionContext input
@@ -25,6 +26,7 @@ print()
 print("Simulation Run 2: Pairwise Execution")
 print()
 multi_proc_ctx = ExecutionContext(exec_mode.multi_proc)
+# configs = [config1, config1]
 run2 = Executor(multi_proc_ctx, configs)
 run2_raw_results = run2.main()
 for raw_result in run2_raw_results:
