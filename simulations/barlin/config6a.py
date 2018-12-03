@@ -2,7 +2,8 @@ from decimal import Decimal
 import numpy as np
 from datetime import timedelta
 
-from SimCAD import Configuration, configs
+from SimCAD import configs
+from SimCAD.configuration import Configuration
 from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
 
@@ -50,11 +51,9 @@ def b1m1(step, sL, s):
         price = s['Price']
         return {'EMH_buy': buy, 'EMH_buy_P': price}
     elif s['Price'] > (theta*EMH_Ext_Hold * s['P_Ext_Markets'])/(s['Z']*EMH_portion*(1-theta)):
-        price = 0
-        return {'EMH_buy': 0, 'EMH_buy_P': price}
+        return {'EMH_buy': 0}
     else:
-        price = 0
-        return {'EMH_buy': 0, 'EMH_buy_P': price}
+        return {'EMH_buy': 0}
 
 
 def b1m2(step, sL, s):
@@ -88,7 +87,7 @@ def b3m2(step, sL, s):
         price = s['Price'] + (s['Price'] / s['Price_Signal']) 
         return {'herd_sell': 0, 'herd_buy': buy, 'herd_buy_P': price}
     else:
-        return {'herd_sell': 0, 'herd_buy': 0, 'herd_buy_P':0}
+        return {'herd_sell': 0, 'herd_buy': 0}
 
 # BEHAVIOR 4: HODLers
 HODL_belief = Decimal('10.0')
@@ -169,13 +168,8 @@ def s1m1(step, sL, s, _input):
 
 def s3m1(step, sL, s, _input):
     y = 'Buy_Log'
-    x = np.zeros(4)
-    x[0] = _input['EMH_buy']
-    x[1] = _input['EMH_buy_P']
-    x[2] = _input['herd_buy']
-    x[3] = _input['herd_buy_P']
-    # = _input['EMH_buy'] + _input['herd_buy'] + _input['EIU_buy'] + _input['HEIU_buy'] # / Psignal_int
-    return (y, x) #[0], x[1])
+    x = _input['EMH_buy'] + _input['herd_buy'] + _input['EIU_buy'] + _input['HEIU_buy'] # / Psignal_int
+    return (y, x)
 
 
 def s4m2(step, sL, s, _input):
@@ -195,8 +189,7 @@ def s2m3(step, sL, s, _input):
 
     y = 'Price'
     #var1 = Decimal.from_float(s['Buy_Log'])
-
-    x = s['Price'] + (Decimal(s['Buy_Log'][0] )) /s['Z'] # - (s['Sell_Log']/s['Z'] ) # for buy log term /s['Z'] )
+    x = s['Price'] + (s['Buy_Log'] /s['Z'] ) - (s['Sell_Log']/s['Z'] )
      #+ np.divide(s['Buy_Log'],s['Z']) - np.divide() # / Psignal_int
     return (y, x)
 
@@ -235,11 +228,9 @@ def es4p2(step, sL, s, _input):
     return (y,x)
 
 
-ts_format = '%Y-%m-%d %H:%M:%S'
-t_delta = timedelta(days=0, minutes=0, seconds=1)
-def es5p2(step, sL, s, _input):
+def es5p2(step, sL, s, _input): # accept timedelta instead of timedelta params
     y = 'timestamp'
-    x = ep_time_step(s, dt_str=s['timestamp'], fromat_str=ts_format, _timedelta=t_delta)
+    x = ep_time_step(s, s['timestamp'], seconds=1)
     return (y, x)
 
 #Environment States

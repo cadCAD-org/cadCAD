@@ -1,6 +1,20 @@
 from functools import reduce
+from fn.op import foldr
 import pandas as pd
+
 from SimCAD.utils import key_filter
+from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
+
+#Configuration(sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms)
+class Configuration:
+    def __init__(self, sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms, behavior_ops=[foldr(dict_elemwise_sum())]):
+        self.sim_config = sim_config
+        self.state_dict = state_dict
+        self.seed = seed
+        self.exogenous_states = exogenous_states
+        self.env_processes = env_processes
+        self.behavior_ops = behavior_ops
+        self.mechanisms = mechanisms
 
 class Identity:
     def __init__(self, behavior_id={'indentity': 0}):
