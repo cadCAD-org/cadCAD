@@ -35,7 +35,7 @@ import pandas as pd
 from tabulate import tabulate
 
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
-sandbox
+from sandbox.validation import config1, config2
 from SimCAD import configs
 
 # ToDo: pass ExecutionContext with execution method as ExecutionContext input
