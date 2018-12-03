@@ -1,8 +1,9 @@
 from decimal import Decimal
 import numpy as np
+from datetime import timedelta
 
 from SimCAD import Configuration, configs
-from SimCAD.utils.configuration import exo_update_per_ts, proc_trigger, bound_norm_random, \
+from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
 
 seed = {
