@@ -196,7 +196,7 @@ def s2m3(step, sL, s, _input):
     y = 'Price'
     #var1 = Decimal.from_float(s['Buy_Log'])
 
-    x = s['Price'] + (Decimal(s['Buy_Log'][0] )) /s['Z'] # - (s['Sell_Log']/s['Z'] ) # for buy log term /s['Z'] )
+    x = s['Price'] + (Decimal(s['Buy_Log'][0])) / s['Z'] # - (s['Sell_Log']/s['Z'] ) # for buy log term /s['Z'] )
      #+ np.divide(s['Buy_Log'],s['Z']) - np.divide() # / Psignal_int
     return (y, x)
 
