@@ -3,8 +3,8 @@ from tabulate import tabulate
 
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
 # from sandbox.validation import config1, config2
-# from sandbox import config4
-# from sandbox import config_zx
+# from sandbox.barlin import config4
+# from sandbox.zx import config_zx
 from sandbox.barlin import config6atemp #config6aworks,
 from SimCAD import configs
 
