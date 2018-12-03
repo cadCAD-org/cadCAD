@@ -2,29 +2,25 @@ from decimal import Decimal
 import numpy as np
 from datetime import timedelta
 
-from SimCAD import Configuration, configs
+from SimCAD import configs
+from SimCAD.configuration import Configuration
 from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
-
 seed = {
-    'z': np.random.RandomState(1)
+   'z': np.random.RandomState(1)
 }
 
 # Signals
 # Pr_signal
 beta = Decimal('0.25') # agent response gain
 beta_LT = Decimal('0.1') # LT agent response gain
-# alpha = .67, 2 block moving average
-alpha = Decimal('0.67') # 21 day EMA forgetfullness between 0 and 1, closer to 1 discounts older obs quicker, should be 2/(N+1)
+alpha = Decimal('0.091') # 21 day EMA forgetfullness between 0 and 1, closer to 1 discounts older obs quicker, should be 2/(N+1)
 max_withdraw_factor = Decimal('0.9')
 external_draw = Decimal('0.01') # between 0 and 1 to draw Buy_Log to external
 
-
-#alpha * s['Zeus_ST'] + (1 - alpha)*s['Zeus_LT']
-
 # Stochastic process factors
 correction_factor = Decimal('0.01')
-volatility =  Decimal('5.0')
+volatility = Decimal('5.0')
 
 # Buy_Log_signal =
 # Z_signal =
@@ -40,7 +36,7 @@ EMH_Ext_Hold = Decimal('42000.0')
 
 
 def b1m1(step, sL, s):
-#    print('b1m1')
+    print('b1m1')
     theta = (s['Z']*EMH_portion*s['Price'])/(s['Z']*EMH_portion*s['Price'] + EMH_Ext_Hold * s['P_Ext_Markets'])
     if s['Price'] < (theta*EMH_Ext_Hold * s['P_Ext_Markets'])/(s['Z']*EMH_portion*(1-theta)):
         buy = beta * theta*EMH_Ext_Hold * s['P_Ext_Markets']/(s['Price']*EMH_portion*(1-theta))
@@ -52,7 +48,7 @@ def b1m1(step, sL, s):
 
 
 def b1m2(step, sL, s):
-#    print('b1m2')
+    print('b1m2')
     theta = (s['Z']*EMH_portion*s['Price'])/(s['Z']*EMH_portion*s['Price'] + EMH_Ext_Hold * s['P_Ext_Markets'])
     if s['Price'] < (theta*EMH_Ext_Hold * s['P_Ext_Markets'])/(s['Z']*EMH_portion*(1-theta)):
         return {'sell_order1': 0}
@@ -63,23 +59,7 @@ def b1m2(step, sL, s):
         return {'sell_order1': 0}
 
 # BEHAVIOR 3: Herding
-Herd_portion = Decimal('0.250')
-Herd_Ext_Hold = Decimal('42000.0')
-Herd_UB = Decimal('0.10') # UPPER BOUND
-Herd_LB = Decimal('0.10') # LOWER BOUND
-def b3m2(step, sL, s):
-    theta = (s['Z']*Herd_portion*s['Price'])/(s['Z']*Herd_portion*s['Price'] + Herd_Ext_Hold * s['P_Ext_Markets'])
-#    if s['Price'] - s['Price_Signal'] <  (theta*Herd_Ext_Hold * s['P_Ext_Markets'])/(s['Z']*Herd_portion*(1-theta)) - Herd_LB:
-    if (s['Price'] - s['Price_Signal']) < - Herd_LB:
 
-        sell = beta * theta*Herd_Ext_Hold * s['P_Ext_Markets']/(s['Price']*Herd_portion*(1-theta))
-        return {'herd_sell': sell, 'herd_buy': 0}
-      #  elif s['Price'] > Herd_UB - (theta*Herd_Ext_Hold * s['P_Ext_Markets'])/(s['Z']*Herd_portion*(1-theta)):
-    elif (s['Price'] - s['Price_Signal']) > Herd_UB:
-        buy = beta * theta*Herd_Ext_Hold * s['P_Ext_Markets']/(s['Price']*Herd_portion*(1-theta))
-        return {'herd_sell': 0, 'herd_buy': buy}
-    else:
-        return {'herd_sell': 0, 'herd_buy': 0}
 
 # BEHAVIOR 4: HODLers
 HODL_belief = Decimal('10.0')
@@ -88,7 +68,7 @@ HODL_Ext_Hold = Decimal('4200.0')
 
 
 def b4m2(step, sL, s):
-#    print('b4m2')
+    print('b4m2')
     theta = (s['Z']*HODL_portion*s['Price'])/(s['Z']*HODL_portion*s['Price'] + HODL_Ext_Hold * s['P_Ext_Markets'])
     if s['Price'] <  1/HODL_belief*(theta*HODL_Ext_Hold * s['P_Ext_Markets'])/(s['Z']*HODL_portion*(1-theta)):
         sell = beta * theta*HODL_Ext_Hold * s['P_Ext_Markets']/(s['Price']*HODL_portion*(1-theta))
@@ -98,24 +78,6 @@ def b4m2(step, sL, s):
     else:
         return {'sell_order2': 0}
 
-# BEHAVIOR 7: Endogenous Information Updating (EIU)
-EIU_portion = Decimal('0.250')
-EIU_Ext_Hold = Decimal('42000.0')
-EIU_UB = Decimal('0.50') # UPPER BOUND
-EIU_LB = Decimal('0.50') # LOWER BOUND
-def b7m2(step, sL, s):
-    theta = (s['Z']*EIU_portion*s['Price'])/(s['Z']*EIU_portion*s['Price'] + EIU_Ext_Hold * s['P_Ext_Markets'])
-#    if s['Price'] - s['Price_Signal'] <  (theta*Herd_Ext_Hold * s['P_Ext_Markets'])/(s['Z']*Herd_portion*(1-theta)) - Herd_LB:
-    if (s['Price'] - s['Price_Signal']) < - EIU_LB:
-
-        sell = beta * theta*EIU_Ext_Hold * s['P_Ext_Markets']/(s['Price']*EIU_portion*(1-theta))
-        return {'EIU_sell': sell, 'EIU_buy': 0}
-      #  elif s['Price'] > Herd_UB - (theta*Herd_Ext_Hold * s['P_Ext_Markets'])/(s['Z']*Herd_portion*(1-theta)):
-    elif (s['Price'] - s['Price_Signal']) > EIU_UB:
-        buy = beta * theta* EIU_Ext_Hold * s['P_Ext_Markets']/(s['Price']* EIU_portion*(1-theta))
-        return {'EIU_sell': 0, 'EIU_buy': buy}
-    else:
-        return {'EIU_sell': 0, 'EIU_buy': 0}
 
 # STATES
 # ZEUS Fixed Supply
@@ -125,29 +87,29 @@ def s1m1(step, sL, s, _input):
     return (y, x)
 
 
-# def s2m1(step, sL, s, _input):
-#     y = 'Price'
-#     x = (s['P_Ext_Markets'] - _input['buy_order1']) / s['Z'] * 10000
-#     #x= alpha * s['Z'] + (1 - alpha)*s['Price']
-#     return (y, x)
+def s2m1(step, sL, s, _input):
+    y = 'Price'
+    x = (s['P_Ext_Markets'] - _input['buy_order1']) / s['Z'] * 10000
+    #x= alpha * s['Z'] + (1 - alpha)*s['Price']
+    return (y, x)
 
 
 def s3m1(step, sL, s, _input):
     y = 'Buy_Log'
-    x = _input['buy_order1'] + _input['herd_buy'] + _input['EIU_buy'] # / Psignal_int
+    x = _input['buy_order1'] # / Psignal_int
     return (y, x)
 
 
 def s4m2(step, sL, s, _input):
     y = 'Sell_Log'
-    x = _input['sell_order1'] + _input['sell_order2'] + _input['herd_sell'] + _input['EIU_sell'] # / Psignal_int
+    x = _input['sell_order1'] + _input['sell_order2'] # / Psignal_int
     return (y, x)
 
 
-# def s3m3(step, sL, s, _input):
-#     y = 'Buy_Log'
-#     x = s['Buy_Log'] +  _input # / Psignal_int
-#     return (y, x)
+def s3m3(step, sL, s, _input):
+    y = 'Buy_Log'
+    x = s['Buy_Log'] +  _input # / Psignal_int
+    return (y, x)
 
 
 # Price Update
@@ -155,14 +117,10 @@ def s2m3(step, sL, s, _input):
 
     y = 'Price'
     #var1 = Decimal.from_float(s['Buy_Log'])
-    x = s['Price'] + s['Buy_Log'] /s['Z'] /(Decimal('0.10') * s['Price']) - s['Sell_Log'] / s['Z'] / (Decimal('0.10')*s['Price'])
+    x = s['Price'] + s['Buy_Log'] * 1/s['Z'] - s['Sell_Log']/s['Z']
      #+ np.divide(s['Buy_Log'],s['Z']) - np.divide() # / Psignal_int
     return (y, x)
 
-def s5m3(step, sL, s, _input):
-    y = 'Price_Signal'
-    x = alpha * s['Price'] + (1 - alpha)*s['Price_Signal']
-    return (y, x)
 
 def s6m1(step, sL, s, _input):
     y = 'P_Ext_Markets'
@@ -189,9 +147,11 @@ def es4p2(step, sL, s, _input):
     return (y,x)
 
 
-def es5p2(step, sL, s, _input): # accept timedelta instead of timedelta params
+ts_format = '%Y-%m-%d %H:%M:%S'
+t_delta = timedelta(days=0, minutes=0, seconds=1)
+def es5p2(step, sL, s, _input):
     y = 'timestamp'
-    x = ep_time_step(s, s['timestamp'], seconds=1)
+    x = ep_time_step(s, dt_str=s['timestamp'], fromat_str=ts_format, _timedelta=t_delta)
     return (y, x)
 
 #Environment States
@@ -203,7 +163,6 @@ state_dict = {
     'Price': Decimal(100.0),  # Initialize = Z for EMA
     'Buy_Log': Decimal(0.0),
     'Sell_Log': Decimal(0.0),
-    'Price_Signal': Decimal(100.0),
     'Trans': Decimal(0.0),
     'P_Ext_Markets': Decimal(25000.0),
     'timestamp': '2018-10-01 15:16:24'
@@ -224,7 +183,7 @@ exogenous_states = exo_update_per_ts(
 )
 
 sim_config = {
-    "N": 100,
+    "N": 1,
     "T": range(1000)
 }
 
@@ -233,9 +192,7 @@ sim_config = {
 mechanisms = {
     "m1": {
         "behaviors": {
-            "b1": b1m1,
-            "b3": b3m2,
-            "b7": b7m2
+            "b1": b1m1
         },
         "states": {
             "Z": s1m1,
@@ -245,9 +202,7 @@ mechanisms = {
     "m2": {
          "behaviors": {
             "b1": b1m2,
-            "b3": b3m2,
-            "b4": b4m2,
-            "b7": b7m2
+            "b4": b4m2
          },
          "states": {
              "Sell_Log": s4m2
@@ -257,8 +212,7 @@ mechanisms = {
             "behaviors": {
         },
             "states": {
-                "Price": s2m3,
-                "Price_Signal": s5m3
+                "Price": s2m3
         }
     }
 }
