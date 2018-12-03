@@ -8,7 +8,6 @@ from SimCAD.engine.simulation import Executor as SimExecutor
 
 
 class ExecutionMode:
-
     single_proc = 'single_proc'
     multi_proc = 'multi_proc'
 

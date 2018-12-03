@@ -74,7 +74,6 @@ class Executor:
 
         return states_list
 
-
     # rename pipe
     def block_pipeline(self, states_list, configs, env_processes, time_seq, run):
         time_seq = [x + 1 for x in time_seq]
@@ -88,7 +87,6 @@ class Executor:
             simulation_list.append(pipe_run)
 
         return simulation_list
-
 
     # Del _ / head
     def simulation(self, states_list, configs, env_processes, time_seq, runs):

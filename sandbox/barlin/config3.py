@@ -1,8 +1,9 @@
 from decimal import Decimal
 import numpy as np
+from datetime import timedelta
 
 from SimCAD import Configuration, configs
-from SimCAD.configuration import exo_update_per_ts, bound_norm_random, \
+from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
 
 seed = {
@@ -146,9 +147,11 @@ def es4p2(step, sL, s, _input):
     return (y,x)
 
 
-def es5p2(step, sL, s, _input): # accept timedelta instead of timedelta params
+ts_format = '%Y-%m-%d %H:%M:%S'
+t_delta = timedelta(days=0, minutes=0, seconds=1)
+def es5p2(step, sL, s, _input):
     y = 'timestamp'
-    x = ep_time_step(s, s['timestamp'], seconds=1)
+    x = ep_time_step(s, dt_str=s['timestamp'], fromat_str=ts_format, _timedelta=t_delta)
     return (y, x)
 
 #Environment States
