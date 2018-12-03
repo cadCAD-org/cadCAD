@@ -164,4 +164,13 @@ sim_config = {
     "T": range(5)
 }
 
-configs.append(Configuration(sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms))
+configs.append(
+    Configuration(
+        sim_config=sim_config,
+        state_dict=state_dict,
+        seed=seed,
+        exogenous_states=exogenous_states,
+        env_processes=env_processes,
+        mechanisms=mechanisms
+    )
+)
