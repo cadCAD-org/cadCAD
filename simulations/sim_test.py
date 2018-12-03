@@ -1,6 +1,7 @@
 import pandas as pd
 from tabulate import tabulate
 
+# The following imports NEED to be in the exact same order
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
 from simulations.validation import config1, config2
 # from simulations.barlin import config4
