@@ -34,6 +34,7 @@ Step 2. Import Package & Run:
 import pandas as pd
 from tabulate import tabulate
 
+# The following imports NEED to be in the exact same order
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
 from sandbox.validation import config1, config2
 from SimCAD import configs
