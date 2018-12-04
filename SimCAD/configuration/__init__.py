@@ -5,7 +5,7 @@ import pandas as pd
 from SimCAD.utils import key_filter
 from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 
-#Configuration(sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms)
+
 class Configuration:
     def __init__(self, sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms, behavior_ops=[foldr(dict_elemwise_sum())]):
         self.sim_config = sim_config
@@ -15,6 +15,7 @@ class Configuration:
         self.env_processes = env_processes
         self.behavior_ops = behavior_ops
         self.mechanisms = mechanisms
+
 
 class Identity:
     def __init__(self, behavior_id={'indentity': 0}):
@@ -48,11 +49,11 @@ class Processor:
         self.state_identity = id.state_identity
         self.apply_identity_funcs = id.apply_identity_funcs
 
-    # Make returntype chosen by user. Must Classify Configs
+    # Make returntype chosen by user.
     def create_matrix_field(self, mechanisms, key):
         if key == 'states':
             identity = self.state_identity
-        else:
+        elif key == 'behaviors':
             identity = self.behavior_identity
         df = pd.DataFrame(key_filter(mechanisms, key))
         col_list = self.apply_identity_funcs(identity, df, list(df.columns))
