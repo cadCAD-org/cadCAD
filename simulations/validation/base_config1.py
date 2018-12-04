@@ -7,7 +7,6 @@ from SimCAD.configuration import Configuration
 from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
 
-
 seed = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
@@ -20,46 +19,45 @@ seed = {
 def b1m1(step, sL, s):
     return {'param1': 1}
 def b2m1(step, sL, s):
-    return {'param2': 4}
+    return {'param1': 1}
 
 def b1m2(step, sL, s):
-    return {'param1': 'a', 'param2': 2}
+    return {'param1': 1, 'param2': 2}
 def b2m2(step, sL, s):
-    return {'param1': 'b', 'param2': 4}
-
+    return {'param1': 1, 'param2': 4}
 
 def b1m3(step, sL, s):
-    return {'param1': ['c'], 'param2': np.array([10, 100])}
+    return {'param1': 1, 'param2': np.array([10, 100])}
 def b2m3(step, sL, s):
-    return {'param1': ['d'], 'param2': np.array([20, 200])}
+    return {'param1': 1, 'param2': np.array([20, 200])}
 
-
+# deff not more than 2
 # Internal States per Mechanism
 def s1m1(step, sL, s, _input):
     y = 's1'
-    x = _input['param1']
+    x = s['s1'] + _input['param1']
     return (y, x)
 def s2m1(step, sL, s, _input):
     y = 's2'
-    x = _input['param2']
+    x = s['s2'] + _input['param1']
     return (y, x)
 
 def s1m2(step, sL, s, _input):
     y = 's1'
-    x = _input['param1']
+    x = s['s1'] + _input['param1']
     return (y, x)
 def s2m2(step, sL, s, _input):
     y = 's2'
-    x = _input['param2']
+    x = s['s2'] + _input['param1']
     return (y, x)
 
 def s1m3(step, sL, s, _input):
     y = 's1'
-    x = _input['param1']
+    x = s['s1'] + _input['param1']
     return (y, x)
 def s2m3(step, sL, s, _input):
     y = 's2'
-    x = _input['param2']
+    x = s['s2'] + _input['param1']
     return (y, x)
 
 # Exogenous States
@@ -102,7 +100,6 @@ genesis_states = {
 }
 
 # remove `exo_update_per_ts` to update every ts
-# why `exo_update_per_ts` here instead of `env_processes`
 exogenous_states = exo_update_per_ts(
     {
     "s3": es3p1,
@@ -112,21 +109,15 @@ exogenous_states = exo_update_per_ts(
 )
 
 #	make env proc trigger field agnostic
+
+# ToDo: Bug - Can't use environments without proc_trigger. TypeError: 'int' object is not callable
+# "/Users/jjodesty/Projects/DiffyQ-SimCAD/SimCAD/engine/simulation.py"
 env_processes = {
+    # "s3": env_a,
+    # "s4": env_b
     "s3": proc_trigger('2018-10-01 15:16:25', env_a),
     "s4": proc_trigger('2018-10-01 15:16:25', env_b)
 }
-
-# lambdas
-# genesis Sites should always be there
-# [1, 2]
-# behavior_ops = [ foldr(_ + _), lambda x: x + 0 ]
-
-
-# [1, 2] = {'b1': ['a'], 'b2', [1]} =
-# behavior_ops = [behavior_to_dict, print_fwd, sum_dict_values]
-# behavior_ops = [foldr(dict_elemwise_sum())]
-# behavior_ops = []
 
 # need at least 1 behaviour and 1 state function for the 1st mech with behaviors
 # mechanisms = {}
@@ -134,21 +125,21 @@ mechanisms = {
     "m1": {
         "behaviors": {
             "b1": b1m1, # lambda step, sL, s: s['s1'] + 1,
-            # "b2": b2m1
+            "b2": b2m1
         },
         "states": { # exclude only. TypeError: reduce() of empty sequence with no initial value
             "s1": s1m1,
-            # "s2": s2m1
+            "s2": s2m1
         }
     },
     "m2": {
         "behaviors": {
             "b1": b1m2,
-            # "b2": b2m2
+            "b2": b2m2
         },
         "states": {
             "s1": s1m2,
-            # "s2": s2m2
+            "s2": s2m2
         }
     },
     "m3": {
