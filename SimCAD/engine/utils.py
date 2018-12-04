@@ -1,4 +1,5 @@
 from datetime import datetime
+from fn.func import curried
 
 
 def datetime_range(start, end, delta, dt_format='%Y-%m-%d %H:%M:%S'):
@@ -21,3 +22,20 @@ def last_index(l):
 
 def retrieve_state(l, offset):
     return l[last_index(l) + offset + 1]
+
+
+@curried
+def engine_exception(ErrorType, error_message, exception_function, try_function):
+    try:
+        return try_function
+    except ErrorType:
+        print(error_message)
+        return exception_function
+
+
+# def exception_handler(f, m_step, sL, last_mut_obj, _input):
+#     try:
+#         return f(m_step, sL, last_mut_obj, _input)
+#     except KeyError:
+#         print("Exception")
+#         return f(m_step, sL, sL[-2], _input)
