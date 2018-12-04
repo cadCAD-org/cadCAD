@@ -91,7 +91,7 @@ def env_b(x):
 #     return x + 1
 
 # Genesis States
-state_dict = {
+genesis_states = {
     's1': Decimal(0.0),
     's2': Decimal(0.0),
     's3': Decimal(1.0),
@@ -167,7 +167,7 @@ sim_config = {
 configs.append(
     Configuration(
         sim_config=sim_config,
-        state_dict=state_dict,
+        state_dict=genesis_states,
         seed=seed,
         exogenous_states=exogenous_states,
         env_processes=env_processes,

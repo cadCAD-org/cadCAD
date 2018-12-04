@@ -40,7 +40,6 @@ class Identity:
 
 
 class Processor:
-
     def __init__(self, id=Identity()):
         self.id = id
         self.b_identity = id.b_identity
@@ -65,7 +64,8 @@ class Processor:
     # Maybe Refactor to only use dictionary BUT I used dfs to fill NAs. Perhaps fill
     def generate_config(self, state_dict, mechanisms, exo_proc):
 
-        # include False / False case
+        # ToDo: include False / False case
+        # ToDo: Use Range multiplier instead for loop iterator
         def no_update_handler(bdf, sdf):
             if (bdf.empty == False) and (sdf.empty == True):
                 bdf_values = bdf.values.tolist()
@@ -88,7 +88,6 @@ class Processor:
             bdf_values = [[self.b_identity] * len(sdf_values)]
             return sdf_values, bdf_values
 
-        # zipped_list = []
         if len(mechanisms) != 0:
             bdf = self.create_matrix_field(mechanisms, 'behaviors')
             sdf = self.create_matrix_field(mechanisms, 'states')
