@@ -3,6 +3,7 @@ from decimal import Decimal
 from fn.func import curried
 import pandas as pd
 
+
 class TensorFieldReport:
     def __init__(self, config_proc):
         self.config_proc = config_proc
