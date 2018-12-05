@@ -69,14 +69,13 @@ class Executor:
 
         # Dimensions: N x r x mechs
 
-        if self.exec_context == ExecutionMode.single_proc:
-            tensor_field = create_tensor_field(mechanisms.pop(), eps.pop())
-            result = self.exec_method(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns)
-            return (result, tensor_field)
-        elif self.exec_context == ExecutionMode.multi_proc:
+        if self.exec_context == ExecutionMode.multi_proc:
             if len(self.configs) > 1:
                 simulations = self.exec_method(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns)
                 results = []
                 for result, mechanism, ep in list(zip(simulations, mechanisms, eps)):
-                    results.append((flatten(result), create_tensor_field(mechanism, ep)))
+                    print(tabulate(create_tensor_field(mechanism, ep), headers='keys', tablefmt='psql'))
+                    results.append(flatten(result))
                 return results
+        else:
+            return self.exec_method(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns)
