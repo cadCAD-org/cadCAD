@@ -8,7 +8,7 @@ class TensorFieldReport:
     def __init__(self, config_proc):
         self.config_proc = config_proc
 
-    # ??? dont for-loop to apply exo_procs, use exo_proc struct
+    # dont for-loop to apply exo_procs, use exo_proc struct
     def create_tensor_field(self, mechanisms, exo_proc, keys=['behaviors', 'states']):
         dfs = [self.config_proc.create_matrix_field(mechanisms, k) for k in keys]
         df = pd.concat(dfs, axis=1)
