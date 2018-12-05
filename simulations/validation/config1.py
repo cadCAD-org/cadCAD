@@ -2,6 +2,7 @@ from decimal import Decimal
 import numpy as np
 from datetime import timedelta
 
+
 from SimCAD import configs
 from SimCAD.configuration import Configuration
 from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
@@ -167,7 +168,7 @@ sim_config = {
 configs.append(
     Configuration(
         sim_config=sim_config,
-        state_dict=genesis_states,
+        genesis_states=genesis_states,
         seed=seed,
         exogenous_states=exogenous_states,
         env_processes=env_processes,

@@ -56,11 +56,11 @@ class Executor:
             [], [], [], [], [], [], [], []
         config_idx = 0
         for x in self.configs:
-            states_lists.append([x.state_dict])
+            states_lists.append([x.genesis_states])
             Ts.append(x.sim_config['T'])
             Ns.append(x.sim_config['N'])
             eps.append(list(x.exogenous_states.values()))
-            configs_structs.append(config_proc.generate_config(x.state_dict, x.mechanisms, eps[config_idx]))
+            configs_structs.append(config_proc.generate_config(x.genesis_states, x.mechanisms, eps[config_idx]))
             env_processes_list.append(x.env_processes)
             mechanisms.append(x.mechanisms)
             simulation_execs.append(SimExecutor(x.behavior_ops).simulation)

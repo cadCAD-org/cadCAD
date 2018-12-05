@@ -1,15 +1,25 @@
 from functools import reduce
 from fn.op import foldr
 import pandas as pd
+from decimal import Decimal
+from typing import Dict
+from numpy.random import RandomState
 
 from SimCAD.utils import key_filter
 from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 
 
 class Configuration:
-    def __init__(self, sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms, behavior_ops=[foldr(dict_elemwise_sum())]):
+    def __init__(self,
+                 sim_config,
+                 genesis_states: Dict[str, object],
+                 seed: Dict[str, RandomState],
+                 exogenous_states,
+                 env_processes,
+                 mechanisms,
+                 behavior_ops=[foldr(dict_elemwise_sum())]):
         self.sim_config = sim_config
-        self.state_dict = state_dict
+        self.genesis_states = genesis_states
         self.seed = seed
         self.exogenous_states = exogenous_states
         self.env_processes = env_processes
@@ -63,7 +73,7 @@ class Processor:
             return pd.DataFrame({'empty': []})
 
     # Maybe Refactor to only use dictionary BUT I used dfs to fill NAs. Perhaps fill
-    def generate_config(self, state_dict, mechanisms, exo_proc):
+    def generate_config(self, genesis_states, mechanisms, exo_proc):
 
         # ToDo: include False / False case
         # ToDo: Use Range multiplier instead for loop iterator
@@ -81,9 +91,9 @@ class Processor:
                 bdf_values = bdf.values.tolist()
                 return sdf_values, bdf_values
 
-        def only_ep_handler(state_dict):
+        def only_ep_handler(genesis_states):
             sdf_functions = [
-                lambda step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
+                lambda step, sL, s, _input: (k, v) for k, v in zip(genesis_states.keys(), genesis_states.values())
             ]
             sdf_values = [sdf_functions]
             bdf_values = [[self.b_identity] * len(sdf_values)]
@@ -95,7 +105,7 @@ class Processor:
             sdf_values, bdf_values = no_update_handler(bdf, sdf)
             zipped_list = list(zip(sdf_values, bdf_values))
         else:
-            sdf_values, bdf_values = only_ep_handler(state_dict)
+            sdf_values, bdf_values = only_ep_handler(genesis_states)
             zipped_list = list(zip(sdf_values, bdf_values))
 
         return list(map(lambda x: (x[0] + exo_proc, x[1]), zipped_list))
