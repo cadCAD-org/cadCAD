@@ -1,7 +1,6 @@
 from decimal import Decimal
 import numpy as np
 from datetime import timedelta
-from typing import Dict
 
 from SimCAD import configs
 from SimCAD.configuration import Configuration

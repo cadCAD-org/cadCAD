@@ -171,7 +171,7 @@ sim_config = {
 configs.append(
     Configuration(
         sim_config=sim_config,
-        state_dict=genesis_states,
+        genesis_states=genesis_states,
         seed=seed,
         exogenous_states=exogenous_states,
         env_processes=env_processes,

@@ -14,8 +14,8 @@ class Configuration:
                  sim_config,
                  genesis_states: Dict[str, object],
                  seed: Dict[str, RandomState],
-                 exogenous_states,
-                 env_processes,
+                 exogenous_states: Dict[str, function],
+                 env_processes: Dict[str, function],
                  mechanisms,
                  behavior_ops=[foldr(dict_elemwise_sum())]):
         self.sim_config = sim_config

@@ -7,7 +7,6 @@ from SimCAD.configuration import Configuration
 from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
 
-
 seed = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
