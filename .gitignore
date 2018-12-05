@@ -11,3 +11,4 @@ Pipfile
 Pipfile.lock
 scrapbox/
 results/
+.mypy_cache/

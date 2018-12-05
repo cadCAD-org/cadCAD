@@ -18,7 +18,7 @@ class Configuration:
 
 
 class Identity:
-    def __init__(self, behavior_id={'indentity': 0}):
+    def __init__(self, behavior_id={'identity': 0}):
         self.beh_id_return_val = behavior_id
 
     def b_identity(self, step, sL, s):
