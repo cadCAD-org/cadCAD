@@ -1,6 +1,7 @@
 from decimal import Decimal
 import numpy as np
 from datetime import timedelta
+from typing import Dict, List, Tuple
 
 
 from SimCAD import configs
@@ -17,7 +18,7 @@ seed = {
 
 # Behaviors per Mechanism
 # Different return types per mechanism ?? *** No ***
-def b1m1(step, sL, s):
+def b1m1(step: int, sL: List[Dict[str, object]], s: Dict[str, object]) -> Dict[str, object]:
     return {'param1': 1}
 def b2m1(step, sL, s):
     return {'param2': 4}
@@ -34,7 +35,7 @@ def b2m3(step, sL, s):
 
 # deff not more than 2
 # Internal States per Mechanism
-def s1m1(step, sL, s, _input):
+def s1m1(step: int, sL: List[Dict[str, object]], s: Dict[str, object], _input: Dict[str, object]) -> Tuple[int, str]:
     y = 's1'
     x = _input['param1'] #+ [Coef1 x 5]
     return (y, x)
