@@ -8,10 +8,10 @@ pip install -r requirements.txt
 **Project:**
 
 Example Runs:
-`/DiffyQ-SimCAD/sandboxUX/sim_test.py`
+`/simulations/sim_test.py`
 
 Example Configurations:
-`/DiffyQ-SimCAD/sandboxUX/connfig#.py`
+`/simulations/validation/`
 
 **User Interface: Simulation Configuration**
 
@@ -44,26 +44,33 @@ from SimCAD import configs
 exec_mode = ExecutionMode()
 
 
-print("Simulation Run 1")
+print("Simulation Execution 1")
 print()
 first_config = [configs[0]] # from config1
 single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
 run1 = Executor(exec_context=single_proc_ctx, configs=first_config)
-run1_raw_result = run1.main()
+run1_raw_result, tensor_field  = run1.main()
 result = pd.DataFrame(run1_raw_result)
-# result.to_csv('~/Projects/DiffyQ-SimCAD/results/config4csv', sep=',')
+# result.to_csv('~/Projects/DiffyQ-SimCAD/results/config4.csv', sep=',')
+print()
+print("Tensor Field:")
+print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
+print("Output:")
 print(tabulate(result, headers='keys', tablefmt='psql'))
 print()
 
-print("Simulation Run 2: Pairwise Execution")
+print("Simulation Execution 2: Pairwise Execution")
 print()
 multi_proc_ctx = ExecutionContext(context=exec_mode.multi_proc)
 run2 = Executor(exec_context=multi_proc_ctx, configs=configs)
-run2_raw_results = run2.main()
-for raw_result in run2_raw_results:
+for raw_result, tensor_field in run2.main():
     result = pd.DataFrame(raw_result)
+    print()
+    print("Tensor Field:")
+    print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
+    print("Output:")
     print(tabulate(result, headers='keys', tablefmt='psql'))
-print()
+    print()
 ```
 
 Same can be run in Jupyter . 
