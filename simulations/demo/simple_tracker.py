@@ -24,7 +24,6 @@ def add(step, sL, s, _input):
     return (y, x)
 
 # Exogenous States
-# amplitude = 0.7
 period = 50
 def sinusoid(step, sL, s, _input):
     y = 'signal'
@@ -60,7 +59,6 @@ exogenous_states = exo_update_per_ts(
     }
 )
 
-#	make env proc trigger field agnostic
 env_processes = {
 }
 
