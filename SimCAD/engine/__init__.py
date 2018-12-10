@@ -1,5 +1,4 @@
 from pathos.multiprocessing import ProcessingPool as Pool
-from tabulate import tabulate
 
 from SimCAD.utils import flatten
 from SimCAD.configuration import Processor
@@ -12,8 +11,8 @@ class ExecutionMode:
     multi_proc = 'multi_proc'
 
 
+# ToDo: switch / rename self.name & context ??
 class ExecutionContext:
-
     def __init__(self, context=ExecutionMode.multi_proc):
         self.name = context
         self.method = None
@@ -37,7 +36,6 @@ class ExecutionContext:
 
 
 class Executor:
-
     def __init__(self, exec_context, configs):
         self.SimExecutor = SimExecutor
         self.exec_method = exec_context.method
@@ -72,7 +70,7 @@ class Executor:
         if self.exec_context == ExecutionMode.single_proc:
             tensor_field = create_tensor_field(mechanisms.pop(), eps.pop())
             result = self.exec_method(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns)
-            return (result, tensor_field)
+            return result, tensor_field
         elif self.exec_context == ExecutionMode.multi_proc:
             if len(self.configs) > 1:
                 simulations = self.exec_method(simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns)

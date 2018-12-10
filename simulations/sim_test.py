@@ -20,7 +20,7 @@ print()
 first_config = [configs[0]] # from config1
 single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
 run1 = Executor(exec_context=single_proc_ctx, configs=first_config)
-run1_raw_result, tensor_field  = run1.main()
+run1_raw_result, tensor_field = run1.main()
 result = pd.DataFrame(run1_raw_result)
 # result.to_csv('~/Projects/DiffyQ-SimCAD/results/config4.csv', sep=',')
 print()
