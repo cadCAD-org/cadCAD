@@ -84,7 +84,7 @@ def es5p2(step, sL, s, _input):
 
 # Environment States
 def env_a(x):
-    return 10
+    return 5
 def env_b(x):
     return 10
 # def what_ever(x):
@@ -108,9 +108,10 @@ exogenous_states = exo_update_per_ts(
     }
 )
 
-#	make env proc trigger field agnostic
+# ToDo: make env proc trigger field agnostic
+# ToDo: input json into function renaming __name__
 env_processes = {
-    "s3": proc_trigger('2018-10-01 15:16:25', env_a),
+    "s3": env_a,
     "s4": proc_trigger('2018-10-01 15:16:25', env_b)
 }
 
@@ -126,6 +127,7 @@ env_processes = {
 
 # need at least 1 behaviour and 1 state function for the 1st mech with behaviors
 # mechanisms = {}
+
 mechanisms = {
     "m1": {
         "behaviors": {

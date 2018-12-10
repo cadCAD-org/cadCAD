@@ -27,7 +27,7 @@ class Executor:
         for state in state_dict.keys():
             if state in list(env_processes.keys()):
                 env_state = env_processes[state]
-                if env_state.__name__ == '_curried': # might want to change
+                if (env_state.__name__ == '_curried') or (env_state.__name__ == 'proc_trigger'): # might want to change
                     state_dict[state] = env_state(step)(state_dict[state])
                 else:
                     state_dict[state] = env_state(state_dict[state])
