@@ -27,7 +27,8 @@ def add(step, sL, s, _input):
 period = 50
 def sinusoid(step, sL, s, _input):
     y = 'signal'
-    x = np.sin(s['elapsed_time'] * 2 * np.pi / period)
+    x = s['elapsed_time'] + t_delta.seconds
+    x = np.sin(x * 2 * np.pi / period)
     return (y, x)
 
 def delta_time(step, sL, s, _input):
