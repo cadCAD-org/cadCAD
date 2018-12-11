@@ -33,7 +33,7 @@ def flatten(l):
         return flattenDict(l)
 
 
-def drop_right(l, n=1):
+def drop_right(l, n):
     return l[:len(l)-n]
 
 # def flatmap(f, items):

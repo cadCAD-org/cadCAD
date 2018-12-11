@@ -1,6 +1,7 @@
 from pathos.threading import ThreadPool
 from copy import deepcopy
 from fn.op import foldr, call
+import numpy as np
 import pprint
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -72,9 +73,7 @@ class Executor:
 
         # make env proc trigger field agnostic
         self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp']) # mutating last_in_copy
-        # print()
-        # pp.pprint(last_in_copy)
-        # exit()
+
 
         def set_sys_metrics(m_step, t_step, run):
             last_in_copy["mech_step"], last_in_copy["time_step"], last_in_copy['run'] = m_step, t_step, run
@@ -90,11 +89,8 @@ class Executor:
 
         del last_in_copy
 
-        # print()
-        # pp.pprint(sL)
-        # exit()
-
         return sL
+
 
     def mech_pipeline(self, states_list, configs, env_processes, t_step, run):
         m_step = 0
@@ -110,20 +106,27 @@ class Executor:
         for config in configs:
             s_conf, b_conf = config[0], config[1]
             last_states = states_list[-1]
-            dropped_right_sL = drop_right(states_list, 1)
-            print()
-            # print(states_list)
             if isinstance(last_states, list):
-                x = list(map(lambda last_state_dict: dropped_right_sL.append(last_state_dict), last_states))
-                print(x)
+                pool = ThreadPool(nodes=len(last_states)) # ToDo: Optimize
+                dropped_right_sL = drop_right(states_list, 1)
 
-            # states_list = self.mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
+                def multithreaded_mech_step(mod_states_list):
+                    return self.mech_step(m_step, mod_states_list, s_conf, b_conf, env_processes, t_step, run)
+
+                states_lists = pool.map(
+                    lambda last_state_dict: dropped_right_sL + [last_state_dict],
+                    last_states
+                )
+                print()
+                pp.pprint(configs)
+            else:
+                states_lists = self.mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
+
+
             m_step += 1
 
         t_step += 1
 
-        print()
-        # print(states_list)
         exit()
 
         return states_list
@@ -132,9 +135,17 @@ class Executor:
     def block_pipeline(self, states_list, configs, env_processes, time_seq, run):
         time_seq = [x + 1 for x in time_seq]
         simulation_list = [states_list]
+        print(len(configs))
         for time_step in time_seq:
-            pipe_run = self.mech_pipeline(simulation_list[-1], configs, env_processes, time_step, run)
+            # print(simulation_list)
+            if len(simulation_list) == 1:
+                pipe_run = self.mech_pipeline(simulation_list[-1], configs, env_processes, time_step, run)
+            exit()
+            # elif np.array(pipe_run[-1]) == 2:
+            #     pipe_run = self.mech_pipeline(simulation_list[-1], configs, env_processes, time_step, run)
+            # print(pipe_run)
             _, *pipe_run = pipe_run
+            # print(pipe_run)
             simulation_list.append(pipe_run)
 
         return simulation_list
