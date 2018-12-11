@@ -1,5 +1,7 @@
 from datetime import datetime
 from fn.func import curried
+from SimCAD.utils import rename
+# from SimCAD.configuration.utils import s_update
 
 
 def datetime_range(start, end, delta, dt_format='%Y-%m-%d %H:%M:%S'):
@@ -24,6 +26,8 @@ def retrieve_state(l, offset):
     return l[last_index(l) + offset + 1]
 
 
+# exception_function = f(m_step, sL, sL[-2], _input)
+# try_function = f(m_step, sL, last_mut_obj, _input)
 @curried
 def engine_exception(ErrorType, error_message, exception_function, try_function):
     try:
@@ -33,9 +37,11 @@ def engine_exception(ErrorType, error_message, exception_function, try_function)
         return exception_function
 
 
-# def exception_handler(f, m_step, sL, last_mut_obj, _input):
-#     try:
-#         return f(m_step, sL, last_mut_obj, _input)
-#     except KeyError:
-#         print("Exception")
-#         return f(m_step, sL, sL[-2], _input)
+@curried
+def fit_param(param, x):
+    return x + param
+
+# fit_param = lambda param: lambda x: x + param
+
+def sweep(params, sweep_f):
+    return [rename('sweep', sweep_f(param)) for param in params]

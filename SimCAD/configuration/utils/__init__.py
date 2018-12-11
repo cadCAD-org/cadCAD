@@ -2,7 +2,9 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from fn.func import curried
 import pandas as pd
+from pathos.threading import ThreadPool
 
+from SimCAD.utils import groupByKey
 
 class TensorFieldReport:
     def __init__(self, config_proc):
@@ -16,6 +18,14 @@ class TensorFieldReport:
             df['es' + str(i + 1)] = es
         df['m'] = df.index + 1
         return df
+
+
+# def s_update(y, x):
+#     return lambda step, sL, s, _input: (y, x)
+#
+#
+def state_update(y, x):
+    return lambda step, sL, s, _input: (y, x)
 
 
 def bound_norm_random(rng, low, high):
@@ -53,9 +63,15 @@ def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = t_delta
 
 def exo_update_per_ts(ep):
     @curried
-    def ep_decorator(f, y, step, sL, s, _input):
+    def ep_decorator(fs, y, step, sL, s, _input):
+        # print(s)
         if s['mech_step'] + 1 == 1:  # inside f body to reduce performance costs
-            return f(step, sL, s, _input)
+            if isinstance(fs, list):
+                pool = ThreadPool(nodes=len(fs))
+                fx = pool.map(lambda f: f(step, sL, s, _input), fs)
+                return groupByKey(fx)
+            else:
+                return fs(step, sL, s, _input)
         else:
             return (y, s[y])
     return {es: ep_decorator(f, es) for es, f in ep.items()}

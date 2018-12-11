@@ -1,7 +1,11 @@
+from pathos.threading import ThreadPool
 from copy import deepcopy
 from fn.op import foldr, call
+import pprint
 
-from SimCAD.utils import rename
+pp = pprint.PrettyPrinter(indent=4)
+
+from SimCAD.utils import groupByKey, flatten, drop_right
 from SimCAD.engine.utils import engine_exception
 
 
@@ -23,15 +27,30 @@ class Executor:
 
         return foldr(call, get_col_results(step, sL, s, funcs))(ops)
 
+    def xthreaded_env_proc(self, f, s_valx):
+        if isinstance(s_valx, list):
+            pool = ThreadPool(nodes=len(s_valx))  # ToDo: Optimize
+            return pool.map(lambda f: f(s_valx), s_valx)
+        else:
+            return f(s_valx)
+
     def apply_env_proc(self, env_processes, state_dict, step):
         for state in state_dict.keys():
             if state in list(env_processes.keys()):
                 env_state = env_processes[state]
                 if (env_state.__name__ == '_curried') or (env_state.__name__ == 'proc_trigger'): # might want to change
-                    state_dict[state] = env_state(step)(state_dict[state])
+                    state_dict[state] = self.xthreaded_env_proc(env_state(step), state_dict[state])
                 else:
-                    state_dict[state] = env_state(state_dict[state])
+                    state_dict[state] = self.xthreaded_env_proc(env_state, state_dict[state])
 
+
+    def xthreaded_state_update(self, fs, m_step, sL, last_in_obj, _input):
+        if isinstance(fs, list):
+            pool = ThreadPool(nodes=len(fs)) # ToDo: Optimize
+            fx = pool.map(lambda f: f(m_step, sL, last_in_obj, _input), fs)
+            return groupByKey(fx)
+        else:
+            return fs(m_step, sL, last_in_obj, _input)
 
     def mech_step(self, m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, run):
         last_in_obj = sL[-1]
@@ -39,7 +58,11 @@ class Executor:
         _input = self.state_update_exception(self.get_behavior_input(m_step, sL, last_in_obj, behavior_funcs))
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
-        last_in_copy = dict([self.behavior_update_exception(f(m_step, sL, last_in_obj, _input)) for f in state_funcs])
+        last_in_copy = dict([
+            self.behavior_update_exception(
+                self.xthreaded_state_update(f, m_step, sL, last_in_obj, _input)
+            ) for f in state_funcs
+        ])
 
         for k in last_in_obj:
             if k not in last_in_copy:
@@ -49,10 +72,27 @@ class Executor:
 
         # make env proc trigger field agnostic
         self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp']) # mutating last_in_copy
+        # print()
+        # pp.pprint(last_in_copy)
+        # exit()
 
-        last_in_copy["mech_step"], last_in_copy["time_step"], last_in_copy['run'] = m_step, t_step, run
-        sL.append(last_in_copy)
+        def set_sys_metrics(m_step, t_step, run):
+            last_in_copy["mech_step"], last_in_copy["time_step"], last_in_copy['run'] = m_step, t_step, run
+
+        if any(isinstance(x, list) for x in last_in_copy.values()):
+            last_in_copies = flatten(last_in_copy)
+            for last_in_copy in last_in_copies:
+                set_sys_metrics(m_step, t_step, run)
+            sL.append(last_in_copies)
+        else:
+            set_sys_metrics(m_step, t_step, run)
+            sL.append(last_in_copy)
+
         del last_in_copy
+
+        # print()
+        # pp.pprint(sL)
+        # exit()
 
         return sL
 
@@ -64,14 +104,27 @@ class Executor:
         genesis_states = states_list_copy[-1]
         genesis_states['mech_step'], genesis_states['time_step'] = m_step, t_step
         states_list = [genesis_states]
+        # print(genesis_states)
 
         m_step += 1
         for config in configs:
             s_conf, b_conf = config[0], config[1]
+            last_states = states_list[-1]
+            dropped_right_sL = drop_right(states_list, 1)
+            print()
+            # print(states_list)
+            # if isinstance(last_states, list):
+            #     x = list(map(lambda last_state_dict: states_list.pop().append(last_state_dict), last_states))
+            #     pp.pprint(states_list)
+
             states_list = self.mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
             m_step += 1
 
         t_step += 1
+
+        print()
+        # print(states_list)
+        exit()
 
         return states_list
 
