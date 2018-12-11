@@ -4,8 +4,9 @@ from datetime import timedelta
 
 from SimCAD import configs
 from SimCAD.configuration import Configuration
-from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
+from SimCAD.configuration.utils import state_update, exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
+from SimCAD.engine.utils import sweep
 
 seed = {
     'z': np.random.RandomState(1),
@@ -42,6 +43,14 @@ def s2m1(step, sL, s, _input):
     x = _input['param2'] #+ [Coef2 x 5]
     return (y, x)
 
+s2m1 = sweep(
+    params = [Decimal(11.0), Decimal(22.0)],
+    sweep_f = lambda param: lambda step, sL, s, _input: (
+        's2',
+        s['s2'] + param
+    )
+)
+
 def s1m2(step, sL, s, _input):
     y = 's1'
     x = _input['param1']
@@ -64,10 +73,20 @@ def s2m3(step, sL, s, _input):
 proc_one_coef_A = 0.7
 proc_one_coef_B = 1.3
 
-def es3p1(step, sL, s, _input):
-    y = 's3'
-    x = s['s3'] * bound_norm_random(seed['a'], proc_one_coef_A, proc_one_coef_B)
-    return (y, x)
+# def es3p1(step, sL, s, _input):
+#     y = 's3'
+#     x = s['s3'] * bound_norm_random(seed['a'], proc_one_coef_A, proc_one_coef_B)
+#     return (y, x)
+
+
+es3p1 = sweep(
+    params = [Decimal(11.0), Decimal(22.0)],
+    sweep_f = lambda param: lambda step, sL, s, _input: (
+        's3',
+        s['s3'] + param
+    )
+)
+
 
 def es4p2(step, sL, s, _input):
     y = 's4'
@@ -111,7 +130,7 @@ exogenous_states = exo_update_per_ts(
 # ToDo: make env proc trigger field agnostic
 # ToDo: input json into function renaming __name__
 env_processes = {
-    "s3": env_a,
+    # "s3": env_a,
     "s4": proc_trigger('2018-10-01 15:16:25', env_b)
 }
 
