@@ -74,18 +74,26 @@ class Executor:
         # make env proc trigger field agnostic
         self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp']) # mutating last_in_copy
 
+        print()
+        print(last_in_copy)
+        print()
 
-        def set_sys_metrics(m_step, t_step, run):
-            last_in_copy["mech_step"], last_in_copy["time_step"], last_in_copy['run'] = m_step, t_step, run
+
+        def set_sys_metrics(state_dict, m_step, t_step, run):
+            state_dict["mech_step"], state_dict["time_step"], state_dict['run'] = m_step, t_step, run
 
         if any(isinstance(x, list) for x in last_in_copy.values()):
             last_in_copies = flatten(last_in_copy)
             for last_in_copy in last_in_copies:
-                set_sys_metrics(m_step, t_step, run)
+                set_sys_metrics(last_in_copy, m_step, t_step, run)
             sL.append(last_in_copies)
         else:
-            set_sys_metrics(m_step, t_step, run)
+            set_sys_metrics(last_in_copy, m_step, t_step, run)
             sL.append(last_in_copy)
+
+        print()
+        pp.pprint(last_in_copies)
+        print()
 
         del last_in_copy
 
@@ -118,7 +126,7 @@ class Executor:
                     last_states
                 )
                 print()
-                pp.pprint(configs)
+                # pp.pprint(configs)
             else:
                 states_lists = self.mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
 
@@ -135,7 +143,7 @@ class Executor:
     def block_pipeline(self, states_list, configs, env_processes, time_seq, run):
         time_seq = [x + 1 for x in time_seq]
         simulation_list = [states_list]
-        print(len(configs))
+        # print(len(configs))
         for time_step in time_seq:
             # print(simulation_list)
             if len(simulation_list) == 1:
