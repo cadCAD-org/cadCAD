@@ -113,11 +113,11 @@ class Executor:
             dropped_right_sL = drop_right(states_list, 1)
             print()
             # print(states_list)
-            # if isinstance(last_states, list):
-            #     x = list(map(lambda last_state_dict: states_list.pop().append(last_state_dict), last_states))
-            #     pp.pprint(states_list)
+            if isinstance(last_states, list):
+                x = list(map(lambda last_state_dict: dropped_right_sL.append(last_state_dict), last_states))
+                print(x)
 
-            states_list = self.mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
+            # states_list = self.mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
             m_step += 1
 
         t_step += 1
