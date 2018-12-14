@@ -1,6 +1,7 @@
 from decimal import Decimal
 import numpy as np
 from datetime import timedelta
+from fn.func import curried
 
 from SimCAD import configs
 from SimCAD.configuration import Configuration
@@ -38,18 +39,32 @@ def s1m1(step, sL, s, _input):
     y = 's1'
     x = _input['param1'] #+ [Coef1 x 5]
     return (y, x)
+
+
+
+# curry to give sweep_f s2m1 and returning a s2m1 sweep_f(s2m1)(param)
+# decorator
+param = Decimal(11.0)
 def s2m1(step, sL, s, _input):
     y = 's2'
-    x = _input['param2'] #+ [Coef2 x 5]
+    x = _input['param2'] + param
     return (y, x)
 
-s2m1 = sweep(
-    params = [Decimal(11.0), Decimal(22.0)],
-    sweep_f = lambda param: lambda step, sL, s, _input: (
-        's2',
-        s['s2'] + param
-    )
-)
+s2m1_params =[Decimal(11.0), Decimal(22.0)]
+@curried
+def s2m1(param, step, sL, s, _input):
+    y = 's2'
+    x = _input['param2'] + param
+    return (y, x)
+
+
+# s2m1_sweep = s2m1(param=s2m1_params)
+
+#
+# s2m1_sweep = sweep(
+#     params = s2m1_params,
+#     sweep_f = s2m1_sweep
+# )
 
 def s1m2(step, sL, s, _input):
     y = 's1'
@@ -86,7 +101,6 @@ es3p1 = sweep(
         s['s3'] + param
     )
 )
-
 
 def es4p2(step, sL, s, _input):
     y = 's4'
@@ -146,7 +160,6 @@ env_processes = {
 
 # need at least 1 behaviour and 1 state function for the 1st mech with behaviors
 # mechanisms = {}
-
 mechanisms = {
     "m1": {
         "behaviors": {
@@ -155,7 +168,7 @@ mechanisms = {
         },
         "states": { # exclude only. TypeError: reduce() of empty sequence with no initial value
             "s1": s1m1,
-            "s2": s2m1
+            "s2": sweep(s2m1_params, s2m1)
         }
     },
     "m2": {
