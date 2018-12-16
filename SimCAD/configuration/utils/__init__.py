@@ -6,6 +6,7 @@ import pandas as pd
 from pathos.threading import ThreadPool
 
 from SimCAD.utils import groupByKey, dict_filter, contains_type
+from SimCAD.utils import flatMap
 
 class TensorFieldReport:
     def __init__(self, config_proc):
@@ -127,3 +128,15 @@ def sweep_states(state_type, states, in_config):
         configs = [in_config]
 
     return configs
+
+def param_sweep(config, raw_exogenous_states):
+    return flatMap(
+        sweep_states('environmental', config.env_processes),
+        flatMap(
+            sweep_states('exogenous', raw_exogenous_states),
+            flatMap(
+                sweep_mechs('states'),
+                sweep_mechs('behaviors', config)
+            )
+        )
+    )
