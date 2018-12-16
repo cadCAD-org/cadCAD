@@ -8,7 +8,7 @@ from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 
 # class ParameterSeep:
 
-class Configuration:
+class Configuration(object):
     def __init__(self, sim_config=None, state_dict=None, seed=None, env_processes=None,
                  exogenous_states=None, mechanisms=None, behavior_ops=[foldr(dict_elemwise_sum())]):
         self.sim_config = sim_config

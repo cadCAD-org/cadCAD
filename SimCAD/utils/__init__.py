@@ -50,21 +50,6 @@ def drop_right(l, n):
     return l[:len(l)-n]
 
 
-def mech_sweep_filter(mechanisms):
-    mech_states_dict = dict([(k, v['states']) for k, v in mechanisms.items()])
-    return dict([
-        (k, dict_filter(v, lambda v: isinstance(v, list))) for k, v in mech_states_dict.items()
-            if contains_type(list(v.values()), list)
-    ])
-
-
-def state_sweep_filter(raw_exogenous_states):
-    return dict([(k, v) for k, v in raw_exogenous_states.items() if isinstance(v, list)])
-
-# def flatmap(f, items):
-#     return list(map(f, items))
-
-
 def key_filter(l, keyname):
     return [v[keyname] for k, v in l.items()]
 
