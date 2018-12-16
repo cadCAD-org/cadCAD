@@ -1,21 +1,23 @@
 from functools import reduce
 from fn.op import foldr
 import pandas as pd
+from fn.func import curried
 
 from SimCAD.utils import key_filter
 from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 
+# class ParameterSeep:
 
 class Configuration:
-    def __init__(self, sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms, behavior_ops=[foldr(dict_elemwise_sum())]):
+    def __init__(self, sim_config=None, state_dict=None, seed=None, env_processes=None,
+                 exogenous_states=None, mechanisms=None, behavior_ops=[foldr(dict_elemwise_sum())]):
         self.sim_config = sim_config
         self.state_dict = state_dict
         self.seed = seed
-        self.exogenous_states = exogenous_states
         self.env_processes = env_processes
-        self.behavior_ops = behavior_ops
+        self.exogenous_states = exogenous_states
         self.mechanisms = mechanisms
-
+        self.behavior_ops = behavior_ops
 
 class Identity:
     def __init__(self, behavior_id={'identity': 0}):

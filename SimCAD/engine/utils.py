@@ -43,5 +43,5 @@ def fit_param(param, x):
 
 # fit_param = lambda param: lambda x: x + param
 
-def sweep(params, sweep_f):
-    return [rename('sweep', sweep_f(param)) for param in params]
+def sweep(params, sweep_f, f_name='sweep'):
+    return [rename(f_name+"_"+str(i), sweep_f(param)) for param, i in zip(params, range(len(params)))]
