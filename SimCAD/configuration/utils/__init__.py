@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
+from copy import deepcopy
 from fn.func import curried
 import pandas as pd
 from pathos.threading import ThreadPool
 
-from SimCAD.utils import groupByKey
+from SimCAD.utils import groupByKey, dict_filter, contains_type
 
 class TensorFieldReport:
     def __init__(self, config_proc):
@@ -75,3 +76,54 @@ def exo_update_per_ts(ep):
         else:
             return (y, s[y])
     return {es: ep_decorator(f, es) for es, f in ep.items()}
+
+
+def mech_sweep_filter(mech_field, mechanisms):
+    mech_dict = dict([(k, v[mech_field]) for k, v in mechanisms.items()])
+    return dict([
+        (k, dict_filter(v, lambda v: isinstance(v, list))) for k, v in mech_dict.items()
+            if contains_type(list(v.values()), list)
+    ])
+
+
+def state_sweep_filter(raw_exogenous_states):
+    return dict([(k, v) for k, v in raw_exogenous_states.items() if isinstance(v, list)])
+
+@curried
+def sweep_mechs(_type, in_config):
+    configs = []
+    filtered_mech_states = mech_sweep_filter(_type, in_config.mechanisms)
+    if len(filtered_mech_states) > 0:
+        for mech, state_dict in filtered_mech_states.items():
+            for state, state_funcs in state_dict.items():
+                for f in state_funcs:
+                    config = deepcopy(in_config)
+                    config.mechanisms[mech][_type][state] = f
+                    configs.append(config)
+                    del config
+    else:
+        configs = [in_config]
+
+    return configs
+
+
+@curried
+def sweep_states(state_type, states, in_config):
+    configs = []
+    filtered_states = state_sweep_filter(states)
+    if len(filtered_states) > 0:
+        for state, state_funcs in filtered_states.items():
+            for f in state_funcs:
+                config = deepcopy(in_config)
+                exploded_states = deepcopy(states)
+                exploded_states[state] = f
+                if state_type == 'exogenous':
+                    config.exogenous_states = exploded_states
+                elif state_type == 'environmental':
+                    config.env_processes = exploded_states
+                configs.append(config)
+                del config, exploded_states
+    else:
+        configs = [in_config]
+
+    return configs

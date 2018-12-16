@@ -3,15 +3,16 @@ import numpy as np
 from datetime import timedelta
 from fn.func import curried
 import pprint
-from copy import deepcopy
 from SimCAD import configs
-from SimCAD.utils import flatMap, mech_sweep_filter, state_sweep_filter
+from SimCAD.utils import flatMap
 from SimCAD.configuration import Configuration
-from SimCAD.configuration.utils import state_update, exo_update_per_ts, proc_trigger, bound_norm_random, \
-    ep_time_step
+from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
+    ep_time_step, sweep_states, sweep_mechs
 from SimCAD.engine.utils import sweep
 
 pp = pprint.PrettyPrinter(indent=4)
+
+beta =[Decimal(1), Decimal(2)]
 
 seed = {
     'z': np.random.RandomState(1),
@@ -27,8 +28,11 @@ def b1m1(step, sL, s):
 def b2m1(step, sL, s):
     return {'param2': 4}
 
-def b1m2(step, sL, s):
-    return {'param1': 'a', 'param2': 2}
+
+@curried
+def b1m2(param, step, sL, s):
+    return {'param1': 'a', 'param2': param}
+
 def b2m2(step, sL, s):
     return {'param1': 'b', 'param2': 4}
 
@@ -52,7 +56,6 @@ def s1m1(step, sL, s, _input):
 #     x = _input['param2'] + param
 #     return (y, x)
 
-s2m1_params =[Decimal(11.0), Decimal(22.0)]
 @curried
 def s2m1(param, step, sL, s, _input):
     y = 's2'
@@ -95,7 +98,7 @@ proc_one_coef_B = 1.3
 #     )
 # )
 
-es3p1_params =[Decimal(11.0), Decimal(22.0)]
+
 @curried
 def es3p1(param, step, sL, s, _input):
     y = 's3'
@@ -116,7 +119,6 @@ def es5p2(step, sL, s, _input):
 
 
 # Environment States
-env_a_params = [Decimal(1), Decimal(2)]
 @curried
 def env_a(param, x):
     return x + param
@@ -136,7 +138,7 @@ genesis_states = {
 
 # remove `exo_update_per_ts` to update every ts
 raw_exogenous_states = {
-    "s3": sweep(es3p1_params, es3p1),
+    "s3": sweep(beta, es3p1),
     "s4": es4p2,
     "timestamp": es5p2
 }
@@ -145,7 +147,7 @@ exogenous_states = exo_update_per_ts(raw_exogenous_states)
 # ToDo: make env proc trigger field agnostic
 # ToDo: input json into function renaming __name__
 env_processes = {
-    "s3": sweep(env_a_params, env_a, 'env_a'),
+    "s3": sweep(beta, env_a, 'env_a'),
     "s4": proc_trigger('2018-10-01 15:16:25', env_b)
 }
 
@@ -169,12 +171,12 @@ mechanisms = {
         },
         "states": { # exclude only. TypeError: reduce() of empty sequence with no initial value
             "s1": s1m1,
-            "s2": sweep(s2m1_params, s2m1)
+            "s2": sweep(beta, s2m1)
         }
     },
     "m2": {
         "behaviors": {
-            "b1": b1m2,
+            "b1": sweep(beta, b1m2),
             "b2": b2m2
         },
         "states": {
@@ -211,53 +213,6 @@ sim_config = {
 # )
 
 
-# filtered_exo_states = raw_exo_sweep_filter(raw_exogenous_states)
-# pp.pprint(filtered_exo_states)
-# print()
-
-
-@curried
-def sweep_mechs(in_config):
-    configs = []
-    filtered_mech_states = mech_sweep_filter(in_config.mechanisms)
-    if len(filtered_mech_states) > 0:
-        for mech, state_dict in filtered_mech_states.items():
-            for state, state_funcs in state_dict.items():
-                for f in state_funcs:
-                    config: Configuration = deepcopy(in_config)
-                    exploded_mechs = deepcopy(mechanisms)
-                    exploded_mechs[mech]['states'][state] = f
-                    config.mechanisms = exploded_mechs
-                    configs.append(config)
-                    del config, exploded_mechs
-    else:
-        configs = [in_config]
-
-    return configs
-
-
-@curried
-def sweep_states(state_type, states, in_config):
-    configs = []
-    filtered_states = state_sweep_filter(states)
-    if len(filtered_states) > 0:
-        for state, state_funcs in filtered_states.items():
-            for f in state_funcs:
-                config: Configuration = deepcopy(in_config)
-                exploded_states = deepcopy(states)
-                exploded_states[state] = f
-                if state_type == 'exogenous':
-                    config.exogenous_states = exploded_states
-                elif state_type == 'environmental':
-                    config.env_processes = exploded_states
-                configs.append(config)
-                del config, exploded_states
-    else:
-        configs = [in_config]
-
-    return configs
-
-
 c = Configuration(
     sim_config=sim_config,
     state_dict=genesis_states,
@@ -270,12 +225,19 @@ c = Configuration(
 
 l = flatMap(
     sweep_states('environmental', env_processes),
+    flatMap(
+        sweep_states('exogenous', raw_exogenous_states),
         flatMap(
-            sweep_states('exogenous', raw_exogenous_states),
-            sweep_mechs(c)
+            sweep_mechs('states'),
+            sweep_mechs('behaviors', c)
         )
+    )
 )
 
+
+print()
+print(len(l))
+print()
 for g in l:
     print()
     print('Configuration')
