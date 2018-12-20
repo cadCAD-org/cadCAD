@@ -22,7 +22,7 @@ Configurations:
 
 **Build Tool & Package Import:**
 
-Step 1. Build & Install Package locally: 
+Step 1. Build & Install Package locally:
 ```bash
 pip install .
 pip install -e .
@@ -76,7 +76,7 @@ for raw_result, tensor_field in run2.main():
     print()
 ```
 
-Same can be run in Jupyter . 
+Same can be run in Jupyter .
 ```bash
 jupyter notebook
 ```
@@ -84,6 +84,10 @@ jupyter notebook
 Notebooks Directory:  
 `/DiffyQ-SimCAD/notebooks/`
 
+**Test Suite**
+```bash
+python3 -m unittest discover -s tests
+```
 
 **Warning**:
-**Do Not** publish this package / software to **Any** software repository **except** [DiffyQ-SimCAD's staging branch](https://github.com/BlockScience/DiffyQ-SimCAD/tree/staging) or its **Fork** 
+**Do Not** publish this package / software to **Any** software repository **except** [DiffyQ-SimCAD's staging branch](https://github.com/BlockScience/DiffyQ-SimCAD/tree/staging) or its **Fork**
