@@ -1,48 +1,33 @@
 # SimCad
+**Warning**:
+**Do not** publish this package / software to **any** software repository **except** one permited by BlockScience.  
 
-**Dependencies:**
+**1. Install Dependencies:**
 ```bash
 pip install -r requirements.txt
+pip install .
 ```
 
-**Project:**
+**2. Configure Simulation:**
 
-Example Runs:
+Example:
+`/simulations/validation/*`
+
+**3. Import SimCAD & Run Simulation:**
+
+Example:
 `/simulations/sim_test.py`
 
-Example Configurations:
-`/simulations/validation/`
-
-**User Interface: Simulation Configuration**
-
-Configurations:
-```bash
-/DiffyQ-SimCAD/ui/config.py
-```
-
-**Build Tool & Package Import:**
-
-Step 1. Build & Install Package locally: 
-```bash
-pip install .
-pip install -e .
-```
-* [Package Creation Tutorial](https://python-packaging.readthedocs.io/en/latest/minimal.html)
-
-Step 2. Import Package & Run:  
 ```python
 import pandas as pd
 from tabulate import tabulate
 
 # The following imports NEED to be in the exact same order
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import config1, config2
+from simulations.validation import config_1, config_2
 from SimCAD import configs
 
 # ToDo: pass ExecutionContext with execution method as ExecutionContext input
-
-exec_mode = ExecutionMode()
-
 
 exec_mode = ExecutionMode()
 
@@ -76,14 +61,7 @@ for raw_result, tensor_field in run2.main():
     print()
 ```
 
-Same can be run in Jupyter . 
+The above can be run in Jupyter. 
 ```bash
 jupyter notebook
 ```
-
-Notebooks Directory:  
-`/DiffyQ-SimCAD/notebooks/`
-
-
-**Warning**:
-**Do Not** publish this package / software to **Any** software repository **except** [DiffyQ-SimCAD's staging branch](https://github.com/BlockScience/DiffyQ-SimCAD/tree/staging) or its **Fork** 
