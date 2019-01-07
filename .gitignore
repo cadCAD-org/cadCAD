@@ -9,4 +9,3 @@ Pipfile
 Pipfile.lock
 results
 .mypy_cache
-simulations/scrapbox

@@ -3,11 +3,7 @@ from tabulate import tabulate
 
 # The following imports NEED to be in the exact same order
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import config1, config2
-# from simulations.validation import base_config1, base_config2
-# from simulations.barlin import config4
-# from simulations.zx import config_zx
-# from simulations.barlin import config6atemp #config6aworks,
+from simulations.validation import config_1, config_2
 from SimCAD import configs
 
 # ToDo: pass ExecutionContext with execution method as ExecutionContext input
