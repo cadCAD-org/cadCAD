@@ -9,3 +9,11 @@ Pipfile
 Pipfile.lock
 results
 .mypy_cache
+notebooks
+simulations/validation/base_config1.py
+simulations/validation/base_config2.py
+simulations/validation/config_1.py
+simulations/validation/config_2.py
+simulations/barlin
+simulations/scrapbox
+simulations/zx
