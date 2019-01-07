@@ -1,12 +1,7 @@
-from pathos.threading import ThreadPool
 from copy import deepcopy
 from fn.op import foldr, call
-import numpy as np
-import pprint
 
-pp = pprint.PrettyPrinter(indent=4)
-
-from SimCAD.utils import groupByKey, flatten, drop_right
+from SimCAD.utils import rename
 from SimCAD.engine.utils import engine_exception
 
 
@@ -28,30 +23,15 @@ class Executor:
 
         return foldr(call, get_col_results(step, sL, s, funcs))(ops)
 
-    def xthreaded_env_proc(self, f, s_valx):
-        if isinstance(s_valx, list):
-            pool = ThreadPool(nodes=len(s_valx))  # ToDo: Optimize
-            return pool.map(lambda f: f(s_valx), s_valx)
-        else:
-            return f(s_valx)
-
     def apply_env_proc(self, env_processes, state_dict, step):
         for state in state_dict.keys():
             if state in list(env_processes.keys()):
                 env_state = env_processes[state]
                 if (env_state.__name__ == '_curried') or (env_state.__name__ == 'proc_trigger'): # might want to change
-                    state_dict[state] = self.xthreaded_env_proc(env_state(step), state_dict[state])
+                    state_dict[state] = env_state(step)(state_dict[state])
                 else:
-                    state_dict[state] = self.xthreaded_env_proc(env_state, state_dict[state])
+                    state_dict[state] = env_state(state_dict[state])
 
-
-    def xthreaded_state_update(self, fs, m_step, sL, last_in_obj, _input):
-        if isinstance(fs, list):
-            pool = ThreadPool(nodes=len(fs)) # ToDo: Optimize
-            fx = pool.map(lambda f: f(m_step, sL, last_in_obj, _input), fs)
-            return groupByKey(fx)
-        else:
-            return fs(m_step, sL, last_in_obj, _input)
 
     def mech_step(self, m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, run):
         last_in_obj = sL[-1]
@@ -59,11 +39,11 @@ class Executor:
         _input = self.state_update_exception(self.get_behavior_input(m_step, sL, last_in_obj, behavior_funcs))
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
-        last_in_copy = dict([
-            self.behavior_update_exception(
-                self.xthreaded_state_update(f, m_step, sL, last_in_obj, _input)
-            ) for f in state_funcs
-        ])
+        # last_in_copy = dict([self.behavior_update_exception(f(m_step, sL, last_in_obj, _input)) for f in state_funcs])
+
+        for f in state_funcs:
+            print(f(1,2,3,4))
+        exit()
 
         for k in last_in_obj:
             if k not in last_in_copy:
@@ -74,31 +54,11 @@ class Executor:
         # make env proc trigger field agnostic
         self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp']) # mutating last_in_copy
 
-        print()
-        print(last_in_copy)
-        print()
-
-
-        def set_sys_metrics(state_dict, m_step, t_step, run):
-            state_dict["mech_step"], state_dict["time_step"], state_dict['run'] = m_step, t_step, run
-
-        if any(isinstance(x, list) for x in last_in_copy.values()):
-            last_in_copies = flatten(last_in_copy)
-            for last_in_copy in last_in_copies:
-                set_sys_metrics(last_in_copy, m_step, t_step, run)
-            sL.append(last_in_copies)
-        else:
-            set_sys_metrics(last_in_copy, m_step, t_step, run)
-            sL.append(last_in_copy)
-
-        print()
-        pp.pprint(last_in_copies)
-        print()
-
+        last_in_copy["mech_step"], last_in_copy["time_step"], last_in_copy['run'] = m_step, t_step, run
+        sL.append(last_in_copy)
         del last_in_copy
 
         return sL
-
 
     def mech_pipeline(self, states_list, configs, env_processes, t_step, run):
         m_step = 0
@@ -108,57 +68,30 @@ class Executor:
         genesis_states = states_list_copy[-1]
         genesis_states['mech_step'], genesis_states['time_step'] = m_step, t_step
         states_list = [genesis_states]
-        # print(genesis_states)
 
         m_step += 1
         for config in configs:
             s_conf, b_conf = config[0], config[1]
-            last_states = states_list[-1]
-            if isinstance(last_states, list):
-                pool = ThreadPool(nodes=len(last_states)) # ToDo: Optimize
-                dropped_right_sL = drop_right(states_list, 1)
-
-                def multithreaded_mech_step(mod_states_list):
-                    return self.mech_step(m_step, mod_states_list, s_conf, b_conf, env_processes, t_step, run)
-
-                states_lists = pool.map(
-                    lambda last_state_dict: dropped_right_sL + [last_state_dict],
-                    last_states
-                )
-                print()
-                # pp.pprint(configs)
-            else:
-                states_lists = self.mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
-
-
+            states_list = self.mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
             m_step += 1
 
         t_step += 1
 
-        exit()
-
         return states_list
 
-    # rename pipe
+    # ToDo: Rename Run Pipeline
     def block_pipeline(self, states_list, configs, env_processes, time_seq, run):
         time_seq = [x + 1 for x in time_seq]
         simulation_list = [states_list]
         # print(len(configs))
         for time_step in time_seq:
-            # print(simulation_list)
-            if len(simulation_list) == 1:
-                pipe_run = self.mech_pipeline(simulation_list[-1], configs, env_processes, time_step, run)
-            exit()
-            # elif np.array(pipe_run[-1]) == 2:
-            #     pipe_run = self.mech_pipeline(simulation_list[-1], configs, env_processes, time_step, run)
-            # print(pipe_run)
+            pipe_run = self.mech_pipeline(simulation_list[-1], configs, env_processes, time_step, run)
             _, *pipe_run = pipe_run
-            # print(pipe_run)
             simulation_list.append(pipe_run)
 
         return simulation_list
 
-    # Del _ / head
+    # ToDo: Muiltithreaded Runs
     def simulation(self, states_list, configs, env_processes, time_seq, runs):
         pipe_run = []
         for run in range(runs):
