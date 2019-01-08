@@ -1,0 +1,150 @@
+SOFTWARE LICENSE AGREEMENT
+
+This Software License Agreement (the “Agreement”) is entered into as of December __ 2018, (the “Effective Date”) between
+Dapper Labs, Inc., a Canadian corporation having its principal place of business at 980-350 Howe Street,
+Vancouver, BC V6Z 1N9 (“DLI”) and BlockScience, Inc., a California corporation with an address at 471 McAuley Street,
+Oakland, CA 94609 (“BlockScience”). This Agreement includes the attached Exhibit A.
+
+WHEREAS, DLI and BlockScience are parties to that certain Professional Services Agreement dated March 23, 2018 (the
+“PSA”), pursuant to which BlockScience performed and is currently performing professional services and other development
+work for DLI;
+
+WHEREAS, as part of BlockScience’s performance under the PSA, BlockScience developed certain “behaviour archetypes” and
+“configuration of the Null Model”, which the parties agree are “Work Product” under the PSA;
+
+WHEREAS, the parties agree that BlockScience’s proprietary SimCAD software tool is considered “Contractor Technology”
+under the PSA; and
+
+WHEREAS, the parties wish to enter into this Agreement to clarify DLI’s rights to use the SimCAD software tool on a
+going-forward basis.
+
+NOW, THEREFORE, for good and valuable consideration, the receipt and sufficiency of which is hereby acknowledged, DLI
+and BlockScience agree as follows:
+
+1. DEFINITIONS
+
+(a) “Affiliate” means any entity that, directly or indirectly through one or more intermediaries, controls, is
+controlled by, or is under common control with, DLI.
+
+(b) “Documentation” means any manuals, documentation and other supporting materials related to the Software.
+Documentation is considered part of the related Software.
+
+(c) “Intellectual Property Rights” means patent rights (including patent applications and disclosures), copyrights,
+trade marks, trade secrets, know-how and any other intellectual property rights recognized in any country or
+jurisdiction in the world.
+
+(d) “Software” means the object and source code versions of BlockScience’s proprietary SimCAD software product more
+fully described in Exhibit A. Software includes the applicable Documentation, as well as any Updates.
+
+(e) “Update” means any bug fix, error correction, patch, modification, enhancement, update, upgrade, replacement,
+successor product, new version, new release, or derivative work of or to the Software.
+
+(f) “Zeus” means the decentralized synchronous computational network developed by DLI, as such name or reference may be
+changed from time to time at DLI’s sole discretion.
+
+2. SOFTWARE LICENSE
+
+(a) License Grant. BlockScience hereby grants to DLI and its Affiliates a worldwide, non-exclusive, royalty-free,
+irrevocable, perpetual license to (i) download, install, use, execute, access, copy, perform, and modify, the Software
+in connection with the Zeus project; (ii) distribute and display the Software internally amongst DLI and its Affiliates,
+its and their employees, contractors, and agents, subject to the use of reasonable efforts to maintain the confidential
+status of the non-public aspects of the Software display; and (iii) create derivative works of the Software in
+connection with the Zeus project, provided that any such derivative works may only be used in connection with the Zeus
+project. For the sake of clarity, nothing in this Agreement (including, without limitation, this Section 2) will create
+any liability to DLI for or restrict DLI’s ability to externally distribute python scripts containing the “input”
+configuration files specific to the Zeus project, as well as the notebooks with the resulting “output” data from the
+Software, all of which may be distributed, displayed, and shared publicly at DLI’s discretion.
+
+(b) Ownership; Limited Rights. As between the parties, BlockScience owns and retains all right, title and interest in
+and to the Software, and all Intellectual Property Rights therein. DLI’s rights in the Software are limited to those
+expressly granted in Section 2(a) and in the PSA. BlockScience reserves all rights and licenses in the Software not
+expressly granted to DLI herein and in the PSA.
+
+(c) Delivery. BlockScience will deliver a copy of the Software and Documentation to DLI on the Effective Date. The
+delivery may be made in electronic form, or via hardcopy medium (e.g., a CD).
+
+(d) Updates. BlockScience will deliver Updates to DLI as and when such Updates become available. The obligation to
+deliver Updates will continue for as long as the PSA remains in force; upon termination or expiration of the PSA,
+BlockScience’s obligation to provide Updates will automatically terminate.
+
+(e) Support. BlockScience will provide reasonable technical support for the Software, to help DLI manage any support
+issues that arise. The obligation to provide support will continue for as long as the PSA remains in force; upon
+termination or expiration of the PSA, BlockScience’s obligation to provide support will automatically terminate.
+
+3. NO FEES.
+
+There are no fees owed by DLI for the license granted or the Updates or support provided by BlockScience
+pursuant to this Agreement. Each party will bear its own costs and expenses arising out of or relating to its
+obligations, efforts and performance under this Agreement.
+
+4. LIMITED WARRANTY; DISCLAIMER
+
+(a) Limited Warranty. BlockScience represents and warrants as follows: (i) that it has the right to enter into this
+Agreement, and to perform its obligations hereunder, without violating the terms of any other agreement; (ii) that the
+Software, and any Updates, do not and will not infringe, violate, or misappropriate the Intellectual Property Rights of
+any third party; (iii) that the Software and any Updates do not and will not contain any virus, malware, spyware, trojan
+horse, or other malicious code; and (iv) that the Software and each Update will substantially conform to its
+Documentation.
+
+(b) Disclaimer. EXCEPT AS OTHERWISE SET FORTH IN THIS AGREEMENT, BLOCKSCIENCE DISCLAIMS ALL OTHER WARRANTIES, EXPRESS OR
+IMPLIED, RELATED TO THE SOFTWARE, INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+PURPOSE.
+
+5. TERM & TERMINATION
+
+(a) Term. This Agreement begins on the Effective Date, and will continue in effect until one of us terminates it in
+accordance with Section 5(b).
+
+(b) Termination for Breach. Either party may terminate this Agreement if the other party breaches any material term or
+condition of this Agreement, and the breaching party fails to cure the breach within thirty (30) days of receiving
+written notice of it.
+
+(c) Survival. Sections 2 through 7 will survive termination or expiration of this Agreement.
+
+6. INDEMNIFICATION.
+
+BlockScience will defend, indemnify, and hold DLI harmless from and against any claim, damage, loss,
+liability, expense and cost (including, without limitation, reasonable attorneys’ fees) incurred by or brought against
+DLI arising out of or related to: (i) any claim that the Software infringes or misappropriates the Intellectual Property
+Rights of that third party; or (ii) BlockScience’s breach of its limited warranties in Section 4(a).
+
+7. GENERAL TERMS
+
+(a) Entire Agreement; Waiver. This Agreement is the entire understanding of the parties, and supersedes any and all
+prior agreements or understandings between the parties as to its subject matter. It may be amended or modified, or
+provisions waived, only in a writing signed by both parties. The waiver of a breach of any provision of this Agreement
+will not operate or be interpreted as a waiver of any other or subsequent breach.
+
+(b) Acknowledgement. BlockScience acknowledges and agrees that the “behaviour archetypes” and “configuration of the Null
+Model” referenced in the PSA are considered “Work Product” under the PSA.
+
+(c) Governing Law. This Agreement will be construed, interpreted and applies in accordance with the internal laws of
+British Columbia, Canada (excluding its body of law controlling conflicts of law). Any legal action or proceeding
+arising under or related to this Agreement will be brought exclusively in the federal or provincial courts located in
+Vancouver, British Columbia, and the parties irrevocably consent to personal jurisdiction and venue there.
+
+(d) Severability. If any provision of this Agreement is held to be invalid or unenforceable for any reason, that
+provision will be enforced to the maximum extent permitted by law, and the remaining provisions will continue in full
+force and effect.
+
+(e) Miscellaneous. This Agreement may be executed in one or more counterparts, with the same effect as if the parties
+had signed the same document. Each counterpart so executed will be deemed to be an original, and all such counterparts
+will be construed together and will constitute one Agreement. The prevailing party in any action or legal proceeding
+arising out of this Agreement will be entitled to recover from the other party all reasonable costs and expenses
+incurred in connection with such action or proceeding, including reasonable attorneys’ fees and court costs. In the
+event of a direct conflict between the terms of this Agreement and the PSA with respect to the DLI’s rights in and to
+the Software, the terms of this Agreement will control.
+
+EXHIBIT A
+
+SOFTWARE
+
+Software Name: SimCAD tool
+
+Software Description: SimCAD is a Monte-Carlo based simulation software package for research, validation, and
+Computer Aided Design of economic systems. An economic system is treated as a state based model and defined
+through a set of endogenous and exogenous state variables which are updated through mechanisms and
+environmental processes, respectively. Behavioral models, which may be deterministic or stochastic, provide the
+evolution of the system within the action space of the mechanisms. Simulations can be run with a range of initial
+conditions and parameters for states, behaviors, mechanisms, and environmental processes to understand and
+visualize network behavior under various conditions.
