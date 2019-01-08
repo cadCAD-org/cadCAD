@@ -28,7 +28,6 @@ def sum_dict_values():
     return foldr_dict_vals(add)
 
 # AttributeError: 'int' object has no attribute 'keys'
-# config7c
 @curried
 def dict_op(f, d1, d2):
     def set_base_value(target_dict, source_dict, key):
