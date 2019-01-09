@@ -42,7 +42,6 @@ class Executor:
         self.configs = configs
         self.main = self.execute
 
-
     def execute(self):
 
         config_proc = Processor()
