@@ -1,0 +1,14 @@
+demos
+SimCAD
+simularions
+setup.py
+build
+
+.ipynb_checkpoints
+.DS_Store
+.idea
+SimCAD.egg-info
+__pycache__
+Pipfile
+Pipfile.lock
+.mypy_cache
