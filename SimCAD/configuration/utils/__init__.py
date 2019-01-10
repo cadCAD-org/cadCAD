@@ -8,7 +8,6 @@ class TensorFieldReport:
     def __init__(self, config_proc):
         self.config_proc = config_proc
 
-    # ??? dont for-loop to apply exo_procs, use exo_proc struct
     def create_tensor_field(self, mechanisms, exo_proc, keys=['behaviors', 'states']):
         dfs = [self.config_proc.create_matrix_field(mechanisms, k) for k in keys]
         df = pd.concat(dfs, axis=1)
@@ -34,7 +33,6 @@ def proc_trigger(trigger_step, update_f, step):
         return lambda x: x
 
 
-# accept timedelta instead of timedelta params
 t_delta = timedelta(days=0, minutes=0, seconds=30)
 def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = t_delta):
     dt = datetime.strptime(dt_str, dt_format)
@@ -42,7 +40,6 @@ def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = t_delta):
     return t.strftime(dt_format)
 
 
-# accept timedelta instead of timedelta params
 t_delta = timedelta(days=0, minutes=0, seconds=1)
 def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = t_delta):
     if s['mech_step'] == 0:
@@ -54,7 +51,7 @@ def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = t_delta
 def exo_update_per_ts(ep):
     @curried
     def ep_decorator(f, y, step, sL, s, _input):
-        if s['mech_step'] + 1 == 1:  # inside f body to reduce performance costs
+        if s['mech_step'] + 1 == 1:
             return f(step, sL, s, _input)
         else:
             return (y, s[y])

@@ -19,5 +19,5 @@ setup(name='SimCAD',
       author='Joshua E. Jodesty',
       author_email='joshua@block.science',
       license='licenses',
-      packages=['SimCAD'],
-      zip_safe=False)
+      packages=['SimCAD']
+)
