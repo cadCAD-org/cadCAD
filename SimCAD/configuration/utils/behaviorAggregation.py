@@ -27,7 +27,7 @@ def foldr_dict_vals(f, d):
 def sum_dict_values():
     return foldr_dict_vals(add)
 
-# AttributeError: 'int' object has no attribute 'keys'
+
 @curried
 def dict_op(f, d1, d2):
     def set_base_value(target_dict, source_dict, key):
@@ -43,6 +43,3 @@ def dict_op(f, d1, d2):
 
 def dict_elemwise_sum():
     return dict_op(add)
-
-
-# class BehaviorAggregation:

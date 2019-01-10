@@ -1,8 +1,12 @@
+demos
+SimCAD
+simularions
+setup.py
+build
+
 .ipynb_checkpoints
 .DS_Store
 .idea
-notebooks/.ipynb_checkpoints
-notebooks/multithreading.ipynb
 SimCAD.egg-info
 __pycache__
 Pipfile
