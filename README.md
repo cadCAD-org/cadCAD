@@ -19,6 +19,7 @@ A/B testing policies, monte carlo analysis and other common numerical methods is
 ```bash
 pip install -r requirements.txt
 python3 setup.py sdist bdist_wheel
+pip install dist/SimCAD-0.1-py3-none-any.whl
 ```
 
 **2. Configure Simulation:**
