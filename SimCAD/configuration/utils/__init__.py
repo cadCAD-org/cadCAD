@@ -18,7 +18,6 @@ class TensorFieldReport:
 
 
 def bound_norm_random(rng, low, high):
-    # Add RNG Seed
     res = rng.normal((high+low)/2,(high-low)/6)
     if (res<low or res>high):
         res = bound_norm_random(rng, low, high)

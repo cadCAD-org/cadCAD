@@ -69,7 +69,6 @@ class Executor:
     def block_pipeline(self, states_list, configs, env_processes, time_seq, run):
         time_seq = [x + 1 for x in time_seq]
         simulation_list = [states_list]
-        # print(len(configs))
         for time_step in time_seq:
             pipe_run = self.mech_pipeline(simulation_list[-1], configs, env_processes, time_step, run)
             _, *pipe_run = pipe_run
