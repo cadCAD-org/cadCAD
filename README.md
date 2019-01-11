@@ -31,9 +31,9 @@ Examples:
 
 **3. Import SimCAD & Run Simulation:**
 
-Examples: `/simulations/sim_test.py` or `/simulations/test.ipynb`
+Examples: `/simulations/example_run.py` or `/simulations/example_run.ipynb`
 
-`/simulations/sim_test.py`:
+`/simulations/example_run.py`:
 ```python
 import pandas as pd
 from tabulate import tabulate
