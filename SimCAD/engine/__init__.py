@@ -11,7 +11,6 @@ class ExecutionMode:
     multi_proc = 'multi_proc'
 
 
-# ToDo: switch / rename self.name & context ??
 class ExecutionContext:
     def __init__(self, context=ExecutionMode.multi_proc):
         self.name = context
@@ -43,7 +42,6 @@ class Executor:
         self.configs = configs
         self.main = self.execute
 
-
     def execute(self):
         config_proc = Processor()
         create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
@@ -63,9 +61,6 @@ class Executor:
             simulation_execs.append(SimExecutor(x.behavior_ops).simulation)
 
             config_idx += 1
-
-
-        # Dimensions: N x r x mechs
 
         if self.exec_context == ExecutionMode.single_proc:
             tensor_field = create_tensor_field(mechanisms.pop(), eps.pop())
