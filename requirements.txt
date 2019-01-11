@@ -1,4 +1,3 @@
 pathos
-pipenv
 fn
 tabulate

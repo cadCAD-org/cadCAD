@@ -43,7 +43,6 @@ class Executor:
         self.main = self.execute
 
     def execute(self):
-
         config_proc = Processor()
         create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
 
@@ -73,4 +72,5 @@ class Executor:
                 results = []
                 for result, mechanism, ep in list(zip(simulations, mechanisms, eps)):
                     results.append((flatten(result), create_tensor_field(mechanism, ep)))
+
                 return results
