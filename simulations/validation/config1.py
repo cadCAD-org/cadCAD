@@ -7,6 +7,7 @@ from SimCAD.configuration import Configuration
 from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
 
+
 seed = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
@@ -14,8 +15,8 @@ seed = {
     'c': np.random.RandomState(3)
 }
 
+
 # Behaviors per Mechanism
-# Different return types per mechanism ?? *** No ***
 def b1m1(step, sL, s):
     return {'param1': 1}
 def b2m1(step, sL, s):
@@ -31,15 +32,15 @@ def b1m3(step, sL, s):
 def b2m3(step, sL, s):
     return {'param1': ['d'], 'param2': np.array([20, 200])}
 
-# deff not more than 2
+
 # Internal States per Mechanism
 def s1m1(step, sL, s, _input):
     y = 's1'
-    x = _input['param1'] #+ [Coef1 x 5]
+    x = _input['param1']
     return (y, x)
 def s2m1(step, sL, s, _input):
     y = 's2'
-    x = _input['param2'] #+ [Coef2 x 5]
+    x = _input['param2']
     return (y, x)
 
 def s1m2(step, sL, s, _input):
@@ -59,6 +60,7 @@ def s2m3(step, sL, s, _input):
     y = 's2'
     x = _input['param2']
     return (y, x)
+
 
 # Exogenous States
 proc_one_coef_A = 0.7
@@ -90,6 +92,7 @@ def env_b(x):
 # def what_ever(x):
 #     return x + 1
 
+
 # Genesis States
 genesis_states = {
     's1': Decimal(0.0),
@@ -98,6 +101,7 @@ genesis_states = {
     's4': Decimal(1.0),
     'timestamp': '2018-10-01 15:16:24'
 }
+
 
 # remove `exo_update_per_ts` to update every ts
 exogenous_states = exo_update_per_ts(
@@ -108,33 +112,20 @@ exogenous_states = exo_update_per_ts(
     }
 )
 
-# ToDo: make env proc trigger field agnostic
-# ToDo: input json into function renaming __name__
+
 env_processes = {
     "s3": env_a,
     "s4": proc_trigger('2018-10-01 15:16:25', env_b)
 }
 
-# lambdas
-# genesis Sites should always be there
-# [1, 2]
-# behavior_ops = [ foldr(_ + _), lambda x: x + 0 ]
-
-# [1, 2] = {'b1': ['a'], 'b2', [1]} =
-# behavior_ops = [ behavior_to_dict, print_fwd, sum_dict_values ]
-# behavior_ops = [foldr(dict_elemwise_sum())]
-# behavior_ops = [foldr(lambda a, b: a + b)]
-
-# need at least 1 behaviour and 1 state function for the 1st mech with behaviors
-# mechanisms = {}
 
 mechanisms = {
     "m1": {
         "behaviors": {
-            "b1": b1m1, # lambda step, sL, s: s['s1'] + 1,
+            "b1": b1m1,
             "b2": b2m1
         },
-        "states": { # exclude only. TypeError: reduce() of empty sequence with no initial value
+        "states": {
             "s1": s1m1,
             "s2": s2m1
         }
@@ -161,10 +152,12 @@ mechanisms = {
     }
 }
 
+
 sim_config = {
     "N": 2,
     "T": range(5)
 }
+
 
 configs.append(
     Configuration(
