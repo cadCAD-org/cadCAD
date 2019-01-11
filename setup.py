@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 long_description = "SimCAD is a differential games based simulation software package for research, validation, and \
     Computer Aided Design of economic systems. An economic system is treated as a state based model and defined through \
@@ -19,5 +19,5 @@ setup(name='SimCAD',
       author='Joshua E. Jodesty',
       author_email='joshua@block.science',
       license='licenses',
-      packages=['SimCAD']
+      packages=find_packages() #['SimCAD']
 )
