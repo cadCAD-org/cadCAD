@@ -9,7 +9,6 @@ results
 *.csv
 *.txt
 simulations/.ipynb_checkpoints
-dist/SimCAD-0.1.tar.gz
 
 build
 SimCAD.egg-info
