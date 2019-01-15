@@ -15,7 +15,7 @@ Simulations may be run with a range of initial conditions and parameters for sta
 and environmental processes to understand and visualize network behavior under various conditions. Support for \
 A/B testing policies, monte carlo analysis and other common numerical methods is provided.
 
-SimCAD requires Python 3.
+SimCAD is written in Python3.
 
 **1. Install Dependencies:**
 ```bash
