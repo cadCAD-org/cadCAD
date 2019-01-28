@@ -1,51 +1,52 @@
 # SimCad
+**Warning**:
+**Do not** publish this package / software to **any** software repository **except** one permitted by BlockScience.  
 
-**Dependencies:**
+**Description:**
+
+SimCAD is a differential games based simulation software package for research, validation, and Computer \
+Aided Design of economic systems. An economic system is treated as a state based model and defined through a \
+set of endogenous and exogenous state variables which are updated through mechanisms and environmental \
+processes, respectively. Behavioral models, which may be deterministic or stochastic, provide the evolution of \
+the system within the action space of the mechanisms. Mathematical formulations of these economic games \
+treat agent utility as derived from state rather than direct from action, creating a rich dynamic modeling framework. 
+
+Simulations may be run with a range of initial conditions and parameters for states, behaviors, mechanisms, \
+and environmental processes to understand and visualize network behavior under various conditions. Support for \
+A/B testing policies, monte carlo analysis and other common numerical methods is provided.
+
+SimCAD is written in Python 3.
+
+**1. Install Dependencies:**
 ```bash
 pip install -r requirements.txt
+python3 setup.py sdist bdist_wheel
+pip install dist/SimCAD-0.1-py3-none-any.whl
 ```
 
-**Project:**
+**2. Configure Simulation:**
 
-Example Runs:
-`/simulations/sim_test.py`
+Intructions:
+`/Simulation.md`
 
-Example Configurations:
-`/simulations/validation/`
+Examples:
+`/simulations/validation/*`
 
-**User Interface: Simulation Configuration**
+**3. Import SimCAD & Run Simulation:**
 
-Configurations:
-```bash
-/DiffyQ-SimCAD/ui/config.py
-```
+Examples: `/simulations/example_run.py` or `/simulations/example_run.ipynb`
 
-**Build Tool & Package Import:**
-
-Step 1. Build & Install Package locally: 
-```bash
-pip install .
-pip install -e .
-```
-* [Package Creation Tutorial](https://python-packaging.readthedocs.io/en/latest/minimal.html)
-
-Step 2. Import Package & Run:  
+`/simulations/example_run.py`:
 ```python
 import pandas as pd
 from tabulate import tabulate
 
-# The following imports NEED to be in the exact same order
+# The following imports NEED to be in the exact order
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import config1, config2
+from validation import config1, config2
 from SimCAD import configs
 
-# ToDo: pass ExecutionContext with execution method as ExecutionContext input
-
 exec_mode = ExecutionMode()
-
-
-exec_mode = ExecutionMode()
-
 
 print("Simulation Execution 1")
 print()
@@ -54,7 +55,6 @@ single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
 run1 = Executor(exec_context=single_proc_ctx, configs=first_config)
 run1_raw_result, tensor_field = run1.main()
 result = pd.DataFrame(run1_raw_result)
-# result.to_csv('~/Projects/DiffyQ-SimCAD/results/config4.csv', sep=',')
 print()
 print("Tensor Field:")
 print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
@@ -76,14 +76,7 @@ for raw_result, tensor_field in run2.main():
     print()
 ```
 
-Same can be run in Jupyter . 
+The above can be run in Jupyter. 
 ```bash
 jupyter notebook
 ```
-
-Notebooks Directory:  
-`/DiffyQ-SimCAD/notebooks/`
-
-
-**Warning**:
-**Do Not** publish this package / software to **Any** software repository **except** [DiffyQ-SimCAD's staging branch](https://github.com/BlockScience/DiffyQ-SimCAD/tree/staging) or its **Fork** 

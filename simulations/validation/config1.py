@@ -16,6 +16,7 @@ pp = pprint.PrettyPrinter(indent=4)
 # ToDo: handle single param sweep
 beta =[Decimal(1), Decimal(2)]
 
+
 seed = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
@@ -23,8 +24,8 @@ seed = {
     'c': np.random.RandomState(3)
 }
 
+
 # Behaviors per Mechanism
-# Different return types per mechanism ?? *** No ***
 def b1m1(step, sL, s):
     return {'param1': 1}
 def b2m1(step, sL, s):
@@ -46,11 +47,11 @@ def b1m3(step, sL, s):
 def b2m3(step, sL, s):
     return {'param1': ['d'], 'param2': np.array([20, 200])}
 
-# deff not more than 2
+
 # Internal States per Mechanism
 def s1m1(step, sL, s, _input):
     y = 's1'
-    x = _input['param1'] #+ [Coef1 x 5]
+    x = _input['param1']
     return (y, x)
 
 
@@ -83,6 +84,7 @@ def s2m3(step, sL, s, _input):
     y = 's2'
     x = _input['param2']
     return (y, x)
+
 
 # Exogenous States
 proc_one_coef_A = 0.7
@@ -123,6 +125,7 @@ def env_b(x):
 # def what_ever(x):
 #     return x + 1
 
+
 # Genesis States
 genesis_states = {
     's1': Decimal(0.0),
@@ -131,6 +134,7 @@ genesis_states = {
     's4': Decimal(1.0),
     'timestamp': '2018-10-01 15:16:24'
 }
+
 
 # remove `exo_update_per_ts` to update every ts
 raw_exogenous_states = {
@@ -144,6 +148,7 @@ exogenous_states['s3'] = rename('parameterized', es3p1)
 # ToDo: make env proc trigger field agnostic
 # ToDo: input json into function renaming __name__
 triggered_env_b = proc_trigger('2018-10-01 15:16:25', env_b)
+
 env_processes = {
     "s3": env_a, #sweep(beta, env_a, 'env_a'),
     "s4": rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)
@@ -161,17 +166,17 @@ env_processes = {
 mechanisms = {
     "m1": {
         "behaviors": {
-            "b1": b1m1, # lambda step, sL, s: s['s1'] + 1,
+            "b1": b1m1,
             "b2": b2m1
         },
-        "states": { # exclude only. TypeError: reduce() of empty sequence with no initial value
+        "states": {
             "s1": s1m1,
-            "s2": rename('parameterized', s2m1) #s2m1(1) #sweep(beta, s2m1)
+            "s2": sweep(beta, s2m1) #rename('parameterized', s2m1) #s2m1(1) #sweep(beta, s2m1)
         }
     },
     "m2": {
         "behaviors": {
-            "b1": rename('parameterized', b1m2), #b1m2(1) #sweep(beta, b1m2),
+            "b1": sweep(beta, b1m2), #rename('parameterized', b1m2), #b1m2(1) #sweep(beta, b1m2),
             "b2": b2m2
         },
         "states": {
@@ -191,6 +196,28 @@ mechanisms = {
     }
 }
 
+def mech_sweep(mechanisms):
+    sweep_lists = []
+    new_mechanisms = deepcopy(mechanisms)
+    for mech, update_types in new_mechanisms.items():
+        for update_type, fkv in update_types.items():
+            for sk, vfs in fkv.items():
+                if isinstance(vfs, list):
+                    for vf in vfs:
+                        sweep_lists.append((sk,vf))
+
+    zipped_sweep_lists = []
+    it = iter(sweep_lists)
+    the_len = len(next(it))
+    if all(len(l) == the_len for l in it):
+        zipped_sweep_lists = list(zip(*sweep_lists))
+    else:
+        raise ValueError('not all lists have same length!')
+
+    return sweep_lists
+
+pp.pprint(mech_sweep(mechanisms))
+
 sim_config = {
     "N": 2,
     "T": range(5)
@@ -204,7 +231,7 @@ def parameterize_mechanism(mechanisms, param):
         for update_type, fkv in update_types.items():
             for sk, vf in fkv.items():
                 if vf.__name__ == 'parameterized':
-                    print(vf.__name__)
+                    # print(vf.__name__)
                     new_mechanisms[mech][update_type][sk] = vf(param)
 
     del mechanisms
@@ -228,21 +255,24 @@ def s2m1(param, a, b, c, d):
     return (y, x)
 
 # print(s2m1(1)(1))
-pp.pprint(parameterize_mechanism(mechanisms, 1))
+# pp.pprint(mechanisms)
+# pp.pprint(parameterize_mechanism(mechanisms, 1))
+# print(sweep(beta, s2m1))
+
 # pp.pprint(parameterize_states(raw_exogenous_states, 1))
 # pp.pprint(parameterize_states(env_processes, 1))
 
 
-configs.append(
-    Configuration(
-        sim_config=sim_config,
-        state_dict=genesis_states,
-        seed=seed,
-        exogenous_states=exogenous_states,
-        env_processes=env_processes,
-        mechanisms=parameterize_mechanism(mechanisms, 1)
-    )
-)
+# configs.append(
+#     Configuration(
+#         sim_config=sim_config,
+#         state_dict=genesis_states,
+#         seed=seed,
+#         exogenous_states=exogenous_states,
+#         env_processes=env_processes,
+#         mechanisms=parameterize_mechanism(mechanisms, 1)
+#     )
+# )
 
 # def sweep_config(config, params):
 #     new_config = deepcopy(config)
