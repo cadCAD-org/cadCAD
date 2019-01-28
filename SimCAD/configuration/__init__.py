@@ -51,7 +51,6 @@ class Processor:
         self.state_identity = id.state_identity
         self.apply_identity_funcs = id.apply_identity_funcs
 
-    # Make returntype chosen by user.
     def create_matrix_field(self, mechanisms, key):
         if key == 'states':
             identity = self.state_identity
@@ -64,11 +63,8 @@ class Processor:
         else:
             return pd.DataFrame({'empty': []})
 
-    # Maybe Refactor to only use dictionary BUT I used dfs to fill NAs. Perhaps fill
     def generate_config(self, state_dict, mechanisms, exo_proc):
 
-        # ToDo: include False / False case
-        # ToDo: Use Range multiplier instead for loop iterator
         def no_update_handler(bdf, sdf):
             if (bdf.empty == False) and (sdf.empty == True):
                 bdf_values = bdf.values.tolist()

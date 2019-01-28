@@ -1,4 +1,4 @@
+wheel
 pathos
-pipenv
 fn
 tabulate
