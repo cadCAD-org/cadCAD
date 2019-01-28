@@ -202,21 +202,30 @@ def mech_sweep(mechanisms):
     for mech, update_types in new_mechanisms.items():
         for update_type, fkv in update_types.items():
             for sk, vfs in fkv.items():
+                id_sweep_lists = []
                 if isinstance(vfs, list):
                     for vf in vfs:
-                        sweep_lists.append((sk,vf))
+                        id_sweep_lists.append({mech: {update_type: {sk: vf}}})
+                if len(id_sweep_lists) != 0:
+                    sweep_lists.append(id_sweep_lists)
 
     zipped_sweep_lists = []
     it = iter(sweep_lists)
     the_len = len(next(it))
     if all(len(l) == the_len for l in it):
-        zipped_sweep_lists = list(zip(*sweep_lists))
+        zipped_sweep_lists = list(map(lambda x: list(x), list(zip(*sweep_lists))))
     else:
         raise ValueError('not all lists have same length!')
 
-    return sweep_lists
+    pp.pprint(zipped_sweep_lists)
+    print()
 
-pp.pprint(mech_sweep(mechanisms))
+    return list(map(lambda x: list(map(lambda y: list(y.keys()).pop(), x)), zipped_sweep_lists))
+
+
+print(mech_sweep(mechanisms))
+print()
+pp.pprint(mechanisms)
 
 sim_config = {
     "N": 2,
