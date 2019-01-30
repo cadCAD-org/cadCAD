@@ -3,10 +3,16 @@ from decimal import Decimal
 from copy import deepcopy
 from fn.func import curried
 import pandas as pd
-from pathos.threading import ThreadPool
+from SimCAD.utils import rename
 
 from SimCAD.utils import groupByKey, dict_filter, contains_type
 from SimCAD.utils import flatMap
+
+from funcy import curry
+
+import pprint
+
+pp = pprint.PrettyPrinter(indent=4)
 
 class TensorFieldReport:
     def __init__(self, config_proc):
@@ -130,7 +136,59 @@ def exo_update_per_ts(ep):
             return f(step, sL, s, _input)
         else:
             return (y, s[y])
+
     return {es: ep_decorator(f, es) for es, f in ep.items()}
+
+
+def sweep(params, sweep_f):
+    return [rename("sweep_"+sweep_f.__name__+"_"+str(i), curry(sweep_f)(param)) for param, i in zip(params, range(len(params)))]
+
+
+def parameterize_mechanism(mechanisms):
+    sweep_lists = []
+    new_mechanisms = deepcopy(mechanisms)
+    for mech, update_types in new_mechanisms.items():
+        for update_type, fkv in update_types.items():
+            for sk, vfs in fkv.items():
+                id_sweep_lists = []
+                if isinstance(vfs, list):
+                    for vf in vfs:
+                        id_sweep_lists.append({mech: {update_type: {sk: vf}}})
+                if len(id_sweep_lists) != 0:
+                    sweep_lists.append(id_sweep_lists)
+
+    zipped_sweep_lists = []
+    it = iter(sweep_lists)
+    the_len = len(next(it))
+    if all(len(l) == the_len for l in it):
+        zipped_sweep_lists = list(map(lambda x: list(x), list(zip(*sweep_lists))))
+    else:
+        raise ValueError('lists have different lengths!')
+
+    if len(sweep_lists) == 0:
+        return [mechanisms]
+
+    mechanisms_configs = []
+    for f_list in zipped_sweep_lists:
+        mechanisms_copy = deepcopy(mechanisms)
+        for f_dict in f_list:
+            updates = list(f_dict.values()).pop()
+            functs = list(updates.values()).pop()
+
+            mech = list(f_dict.keys()).pop()
+            update_type = list(updates.keys()).pop()
+            sk = list(functs.keys()).pop()
+            vf = list(functs.values()).pop()
+            mechanisms_copy[mech][update_type][sk] = vf
+        mechanisms_configs.append(mechanisms_copy)
+        del mechanisms_copy
+
+    # pp.pprint(sweep_lists)
+    # print()
+    # pp.pprint(zipped_sweep_lists)
+    # print()
+
+    return mechanisms_configs
 
 
 # def ep_decorator(f, y, step, sL, s, _input):

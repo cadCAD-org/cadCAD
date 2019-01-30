@@ -3,18 +3,42 @@ import numpy as np
 from datetime import timedelta
 from fn.func import curried
 import pprint
-from copy import deepcopy
 from SimCAD import configs
 from SimCAD.utils import flatMap, rename
 from SimCAD.configuration import Configuration
 from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
-    ep_time_step, param_sweep
-from SimCAD.engine.utils import sweep
+    ep_time_step, parameterize_mechanism, sweep #parameterize_states
+
+from copy import deepcopy
 
 pp = pprint.PrettyPrinter(indent=4)
 
 # ToDo: handle single param sweep
-beta =[Decimal(1), Decimal(2)]
+beta = [Decimal(1), Decimal(2)]
+
+# -------------
+var_a = [1,2,3]
+var_b = [1,2,3]
+
+
+# Internal States per Mechanism
+def s1m1(assumed, step, sL, s, _input):
+    y = 's1'
+    x = _input['param1'] + 1 + assumed
+    # example = [_input['param1'], 1, assumed].reduceLeft(_ + _)
+    return (y, x)
+
+def s2m1(assumed, step, sL, s, _input):
+    y = 's2'
+    x = _input['param2'] + assumed
+    return (y, x)
+
+def s1m3(assumed, step, sL, s, _input):
+    y = 's1'
+    x = _input['param1']
+    return (y, x)
+
+# -------------
 
 
 seed = {
@@ -31,7 +55,7 @@ def b1m1(step, sL, s):
 def b2m1(step, sL, s):
     return {'param2': 4}
 
-@curried
+# @curried
 def b1m2(param, step, sL, s):
     return {'param1': 'a', 'param2': param}
 #
@@ -61,7 +85,7 @@ def s1m1(step, sL, s, _input):
 #     x = _input['param2'] + param
 #     return (y, x)
 
-@curried
+# @curried
 def s2m1(param, step, sL, s, _input):
     y = 's2'
     x = _input['param2'] + param
@@ -95,15 +119,15 @@ proc_one_coef_B = 1.3
 #     x = s['s3'] * bound_norm_random(seed['a'], proc_one_coef_A, proc_one_coef_B)
 #     return (y, x)
 
-@curried
+# @curried
 def es3p1(param, step, sL, s, _input):
     y = 's3'
     x = s['s3'] + param
     return (y, x)
 
-def es4p2(step, sL, s, _input):
+def es4p2(param, step, sL, s, _input):
     y = 's4'
-    x = s['s4'] * bound_norm_random(seed['b'], proc_one_coef_A, proc_one_coef_B)
+    x = s['s4'] * bound_norm_random(seed['b'], proc_one_coef_A, proc_one_coef_B) + param
     return (y, x)
 
 ts_format = '%Y-%m-%d %H:%M:%S'
@@ -135,15 +159,56 @@ genesis_states = {
     'timestamp': '2018-10-01 15:16:24'
 }
 
+# print(sweep(beta, es3p1))
+# print()
+
 
 # remove `exo_update_per_ts` to update every ts
 raw_exogenous_states = {
-    "s3": es3p1, #sweep(beta, es3p1),
-    "s4": es4p2,
+    "s3": sweep(beta, es3p1), #es3p1, #sweep(beta, es3p1),
+    "s4": sweep(beta, es4p2),
     "timestamp": es5p2
 }
 exogenous_states = exo_update_per_ts(raw_exogenous_states)
-exogenous_states['s3'] = rename('parameterized', es3p1)
+# pp.pprint(raw_exogenous_states)
+# print()
+
+def parameterize_states(states_dict):
+    sweep_lists = []
+    new_states_dict = deepcopy(states_dict)
+    for sk, vfs in new_states_dict.items():
+        print({sk: vfs})
+        print()
+        id_sweep_lists = []
+        if isinstance(vfs, list):
+            for vf in vfs:
+                id_sweep_lists.append({sk: vf})
+        if len(id_sweep_lists) != 0:
+            sweep_lists.append(id_sweep_lists)
+
+    zipped_sweep_lists = []
+    it = iter(sweep_lists)
+    the_len = len(next(it))
+    same_len_ind = all(len(l) == the_len for l in it)
+    count_ind = len(sweep_lists) >= 2
+    if same_len_ind == True and count_ind == True:
+        zipped_sweep_lists = list(map(lambda x: list(x), list(zip(*sweep_lists))))
+    elif same_len_ind == False or count_ind == False:
+        zipped_sweep_lists = sweep_lists
+    else:
+        raise ValueError('lists have different lengths!')
+
+    pp.pprint(sweep_lists)
+    print()
+    pp.pprint(zipped_sweep_lists)
+    print()
+
+    # return zipped_sweep_lists
+
+# pp.pprint(parameterize_states(raw_exogenous_states))
+# print()
+# exogenous_states['s3'] = rename('parameterized', es3p1)
+
 
 # ToDo: make env proc trigger field agnostic
 # ToDo: input json into function renaming __name__
@@ -151,7 +216,7 @@ triggered_env_b = proc_trigger('2018-10-01 15:16:25', env_b)
 
 env_processes = {
     "s3": env_a, #sweep(beta, env_a, 'env_a'),
-    "s4": rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)
+    "s4": triggered_env_b #rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)
 }
 
 # ToDo: The number of values enteren in sweep should be the # of config objs created,
@@ -196,72 +261,60 @@ mechanisms = {
     }
 }
 
-def mech_sweep(mechanisms):
-    sweep_lists = []
-    new_mechanisms = deepcopy(mechanisms)
-    for mech, update_types in new_mechanisms.items():
-        for update_type, fkv in update_types.items():
-            for sk, vfs in fkv.items():
-                id_sweep_lists = []
-                if isinstance(vfs, list):
-                    for vf in vfs:
-                        id_sweep_lists.append({mech: {update_type: {sk: vf}}})
-                if len(id_sweep_lists) != 0:
-                    sweep_lists.append(id_sweep_lists)
-
-    zipped_sweep_lists = []
-    it = iter(sweep_lists)
-    the_len = len(next(it))
-    if all(len(l) == the_len for l in it):
-        zipped_sweep_lists = list(map(lambda x: list(x), list(zip(*sweep_lists))))
-    else:
-        raise ValueError('not all lists have same length!')
-
-    pp.pprint(zipped_sweep_lists)
-    print()
-
-    return list(map(lambda x: list(map(lambda y: list(y.keys()).pop(), x)), zipped_sweep_lists))
 
 
-print(mech_sweep(mechanisms))
+# list(map(lambda x: list(map(lambda y: list(y.keys()).pop(), x)), zipped_sweep_lists))
+pp.pprint(parameterize_mechanism(mechanisms))
 print()
-pp.pprint(mechanisms)
+# pp.pprint(mechanisms)
 
 sim_config = {
     "N": 2,
     "T": range(5)
 }
 
+# for mech_configs in parameterize_mechanism(mechanisms):
+#     configs.append(
+#         Configuration(
+#             sim_config=sim_config,
+#             state_dict=genesis_states,
+#             seed=seed,
+#             exogenous_states=exogenous_states,
+#             env_processes=env_processes,
+#             mechanisms=mech_configs
+#         )
+#     )
+
 # # print(rename('new', b2m2).__name__)
 #
-def parameterize_mechanism(mechanisms, param):
-    new_mechanisms = deepcopy(mechanisms)
-    for mech, update_types in new_mechanisms.items():
-        for update_type, fkv in update_types.items():
-            for sk, vf in fkv.items():
-                if vf.__name__ == 'parameterized':
-                    # print(vf.__name__)
-                    new_mechanisms[mech][update_type][sk] = vf(param)
-
-    del mechanisms
-    return new_mechanisms
-
-def parameterize_states(states_dict, param):
-    new_states_dict = deepcopy(states_dict)
-    for sk, vf in new_states_dict.items():
-        if vf.__name__ == 'parameterized':
-            print(vf.__name__)
-            new_states_dict[sk] = vf(param)
-
-    del states_dict
-    return new_states_dict
-
-# parameterize_mechanism(mechanisms, beta)
-@curried
-def s2m1(param, a, b, c, d):
-    y = a
-    x = b, + c + d + param
-    return (y, x)
+# def parameterize_mechanism(mechanisms, param):
+#     new_mechanisms = deepcopy(mechanisms)
+#     for mech, update_types in new_mechanisms.items():
+#         for update_type, fkv in update_types.items():
+#             for sk, vf in fkv.items():
+#                 if vf.__name__ == 'parameterized':
+#                     # print(vf.__name__)
+#                     new_mechanisms[mech][update_type][sk] = vf(param)
+#
+#     del mechanisms
+#     return new_mechanisms
+#
+# def parameterize_states(states_dict, param):
+#     new_states_dict = deepcopy(states_dict)
+#     for sk, vf in new_states_dict.items():
+#         if vf.__name__ == 'parameterized':
+#             print(vf.__name__)
+#             new_states_dict[sk] = vf(param)
+#
+#     del states_dict
+#     return new_states_dict
+#
+# # parameterize_mechanism(mechanisms, beta)
+# @curried
+# def s2m1(param, a, b, c, d):
+#     y = a
+#     x = b, + c + d + param
+#     return (y, x)
 
 # print(s2m1(1)(1))
 # pp.pprint(mechanisms)
