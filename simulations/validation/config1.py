@@ -22,10 +22,13 @@ var_b = [1,2,3]
 
 
 # Internal States per Mechanism
-def s1m1(assumed, step, sL, s, _input):
+def s1m1(step, sL, s, _input):
+    # __assumed__ = var_a
+    # __handler__ = f
     y = 's1'
-    x = _input['param1'] + 1 + assumed
+    x = _input['param1'] + 1 + var_a
     # example = [_input['param1'], 1, assumed].reduceLeft(_ + _)
+
     return (y, x)
 
 def s2m1(assumed, step, sL, s, _input):
@@ -33,10 +36,13 @@ def s2m1(assumed, step, sL, s, _input):
     x = _input['param2'] + assumed
     return (y, x)
 
-def s1m3(assumed, step, sL, s, _input):
+def s1m3(unused_wildcard, step, sL, s, _input):
     y = 's1'
     x = _input['param1']
     return (y, x)
+
+
+middleware(beta, [s1m1, s2m2, b1m3, . . . ])
 
 # -------------
 
