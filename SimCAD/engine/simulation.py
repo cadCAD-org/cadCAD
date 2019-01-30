@@ -35,8 +35,17 @@ class Executor:
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
         # last_in_copy = dict([self.behavior_update_exception(f(m_step, sL, last_in_obj, _input)) for f in state_funcs])
-        last_in_copy = [self.behavior_update_exception(f(m_step, sL, last_in_obj, _input)) for f in state_funcs]
-        print(last_in_copy)
+        # last_in_copy = [self.behavior_update_exception(f(m_step, sL, last_in_obj, _input)) for f in state_funcs]
+
+        for f in state_funcs:
+            print(f.__name__ + " " + str(f))
+            if f.__name__[0:5] == 'sweep':
+                self.behavior_update_exception(f(m_step)(sL)(last_in_obj)(_input))
+            else:
+                self.behavior_update_exception(f(m_step, sL, last_in_obj, _input))
+            # print(f(m_step, sL, last_in_obj, _input))
+
+        print(last_in_obj)
         exit()
         #
         # for f in state_funcs:
