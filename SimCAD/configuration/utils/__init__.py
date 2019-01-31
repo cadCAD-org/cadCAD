@@ -143,11 +143,71 @@ def exo_update_per_ts(ep):
 def sweep(params, sweep_f):
     return [rename("sweep_"+sweep_f.__name__+"_"+str(i), curry(sweep_f)(param)) for param, i in zip(params, range(len(params)))]
 
+def zip_sweep_functions(sweep_lists):
+    zipped_sweep_lists = []
+    it = iter(sweep_lists)
+    the_len = len(next(it))
+    same_len_ind = all(len(l) == the_len for l in it)
+    count_ind = len(sweep_lists) >= 2
+    if same_len_ind == True and count_ind == True:
+        return list(map(lambda x: list(x), list(zip(*sweep_lists))))
+    elif same_len_ind == False or count_ind == False:
+        return sweep_lists
+    else:
+        raise ValueError('lists have different lengths!')
+
+
+def create_sweep_config_list(zipped_sweep_lists, states_dict, state_type_ind = 'mechs'):
+    configs = []
+    for f_lists in zipped_sweep_lists:
+        new_states_dict = deepcopy(states_dict)
+        for f_dict in f_lists:
+            if state_type_ind == 'mechs':
+                updates = list(f_dict.values()).pop()
+                functs = list(updates.values()).pop()
+
+                mech = list(f_dict.keys()).pop()
+                update_type = list(updates.keys()).pop()
+                sk = list(functs.keys()).pop()
+                vf = list(functs.values()).pop()
+
+                new_states_dict[mech][update_type][sk] = vf
+            elif state_type_ind == 'exo_proc':
+                sk = list(f_dict.keys()).pop()
+                vf = list(f_dict.values()).pop()
+
+                new_states_dict[sk] = vf
+            else:
+                raise ValueError("Incorrect \'state_type_ind\'")
+
+        configs.append(new_states_dict)
+        del new_states_dict
+
+    return configs
+
+
+def parameterize_states(exo_states):
+    sweep_lists = []
+    for sk, vfs in exo_states.items():
+        id_sweep_lists = []
+        if isinstance(vfs, list):
+            for vf in vfs:
+                id_sweep_lists.append({sk: vf})
+        if len(id_sweep_lists) != 0:
+            sweep_lists.append(id_sweep_lists)
+
+    if len(sweep_lists) == 0:
+        return [exo_states]
+
+    zipped_sweep_lists = zip_sweep_functions(sweep_lists)
+    states_configs = create_sweep_config_list(zipped_sweep_lists, exo_states, "exo_proc")
+
+    return states_configs
+
 
 def parameterize_mechanism(mechanisms):
     sweep_lists = []
-    new_mechanisms = deepcopy(mechanisms)
-    for mech, update_types in new_mechanisms.items():
+    for mech, update_types in mechanisms.items():
         for update_type, fkv in update_types.items():
             for sk, vfs in fkv.items():
                 id_sweep_lists = []
@@ -157,36 +217,11 @@ def parameterize_mechanism(mechanisms):
                 if len(id_sweep_lists) != 0:
                     sweep_lists.append(id_sweep_lists)
 
-    zipped_sweep_lists = []
-    it = iter(sweep_lists)
-    the_len = len(next(it))
-    if all(len(l) == the_len for l in it):
-        zipped_sweep_lists = list(map(lambda x: list(x), list(zip(*sweep_lists))))
-    else:
-        raise ValueError('lists have different lengths!')
-
     if len(sweep_lists) == 0:
         return [mechanisms]
 
-    mechanisms_configs = []
-    for f_list in zipped_sweep_lists:
-        mechanisms_copy = deepcopy(mechanisms)
-        for f_dict in f_list:
-            updates = list(f_dict.values()).pop()
-            functs = list(updates.values()).pop()
-
-            mech = list(f_dict.keys()).pop()
-            update_type = list(updates.keys()).pop()
-            sk = list(functs.keys()).pop()
-            vf = list(functs.values()).pop()
-            mechanisms_copy[mech][update_type][sk] = vf
-        mechanisms_configs.append(mechanisms_copy)
-        del mechanisms_copy
-
-    # pp.pprint(sweep_lists)
-    # print()
-    # pp.pprint(zipped_sweep_lists)
-    # print()
+    zipped_sweep_lists = zip_sweep_functions(sweep_lists)
+    mechanisms_configs = create_sweep_config_list(zipped_sweep_lists, mechanisms, "mechs")
 
     return mechanisms_configs
 

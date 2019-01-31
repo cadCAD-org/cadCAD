@@ -7,7 +7,7 @@ from SimCAD import configs
 from SimCAD.utils import flatMap, rename
 from SimCAD.configuration import Configuration
 from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
-    ep_time_step, parameterize_mechanism, sweep #parameterize_states
+    ep_time_step, parameterize_mechanism, parameterize_states, sweep #parameterize_states
 
 from copy import deepcopy
 
@@ -16,35 +16,35 @@ pp = pprint.PrettyPrinter(indent=4)
 # ToDo: handle single param sweep
 beta = [Decimal(1), Decimal(2)]
 
-# -------------
-var_a = [1,2,3]
-var_b = [1,2,3]
-
-
-# Internal States per Mechanism
-def s1m1(step, sL, s, _input):
-    # __assumed__ = var_a
-    # __handler__ = f
-    y = 's1'
-    x = _input['param1'] + 1 + var_a
-    # example = [_input['param1'], 1, assumed].reduceLeft(_ + _)
-
-    return (y, x)
-
-def s2m1(assumed, step, sL, s, _input):
-    y = 's2'
-    x = _input['param2'] + assumed
-    return (y, x)
-
-def s1m3(unused_wildcard, step, sL, s, _input):
-    y = 's1'
-    x = _input['param1']
-    return (y, x)
-
-
-middleware(beta, [s1m1, s2m2, b1m3, . . . ])
-
-# -------------
+# # -------------
+# var_a = [1,2,3]
+# var_b = [1,2,3]
+#
+#
+# # Internal States per Mechanism
+# def s1m1(step, sL, s, _input):
+#     # __assumed__ = var_a
+#     # __handler__ = f
+#     y = 's1'
+#     x = _input['param1'] + 1 + var_a
+#     # example = [_input['param1'], 1, assumed].reduceLeft(_ + _)
+#
+#     return (y, x)
+#
+# def s2m1(assumed, step, sL, s, _input):
+#     y = 's2'
+#     x = _input['param2'] + assumed
+#     return (y, x)
+#
+# def s1m3(unused_wildcard, step, sL, s, _input):
+#     y = 's1'
+#     x = _input['param1']
+#     return (y, x)
+#
+#
+# middleware(beta, [s1m1, s2m2, b1m3, . . . ])
+#
+# # -------------
 
 
 seed = {
@@ -179,37 +179,7 @@ exogenous_states = exo_update_per_ts(raw_exogenous_states)
 # pp.pprint(raw_exogenous_states)
 # print()
 
-def parameterize_states(states_dict):
-    sweep_lists = []
-    new_states_dict = deepcopy(states_dict)
-    for sk, vfs in new_states_dict.items():
-        print({sk: vfs})
-        print()
-        id_sweep_lists = []
-        if isinstance(vfs, list):
-            for vf in vfs:
-                id_sweep_lists.append({sk: vf})
-        if len(id_sweep_lists) != 0:
-            sweep_lists.append(id_sweep_lists)
 
-    zipped_sweep_lists = []
-    it = iter(sweep_lists)
-    the_len = len(next(it))
-    same_len_ind = all(len(l) == the_len for l in it)
-    count_ind = len(sweep_lists) >= 2
-    if same_len_ind == True and count_ind == True:
-        zipped_sweep_lists = list(map(lambda x: list(x), list(zip(*sweep_lists))))
-    elif same_len_ind == False or count_ind == False:
-        zipped_sweep_lists = sweep_lists
-    else:
-        raise ValueError('lists have different lengths!')
-
-    pp.pprint(sweep_lists)
-    print()
-    pp.pprint(zipped_sweep_lists)
-    print()
-
-    # return zipped_sweep_lists
 
 # pp.pprint(parameterize_states(raw_exogenous_states))
 # print()
@@ -270,8 +240,8 @@ mechanisms = {
 
 
 # list(map(lambda x: list(map(lambda y: list(y.keys()).pop(), x)), zipped_sweep_lists))
-pp.pprint(parameterize_mechanism(mechanisms))
-print()
+# pp.pprint(parameterize_mechanism(mechanisms))
+# print()
 # pp.pprint(mechanisms)
 
 sim_config = {
@@ -280,16 +250,16 @@ sim_config = {
 }
 
 # for mech_configs in parameterize_mechanism(mechanisms):
-#     configs.append(
-#         Configuration(
-#             sim_config=sim_config,
-#             state_dict=genesis_states,
-#             seed=seed,
-#             exogenous_states=exogenous_states,
-#             env_processes=env_processes,
-#             mechanisms=mech_configs
-#         )
-#     )
+configs.append(
+    Configuration(
+        sim_config=sim_config,
+        state_dict=genesis_states,
+        seed=seed,
+        exogenous_states=parameterize_states(raw_exogenous_states)[1],
+        env_processes=env_processes,
+        mechanisms=parameterize_mechanism(mechanisms)[1]
+    )
+)
 
 # # print(rename('new', b2m2).__name__)
 #

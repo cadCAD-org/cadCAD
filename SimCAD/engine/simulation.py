@@ -11,13 +11,30 @@ class Executor:
         self.state_update_exception = state_update_exception
         self.behavior_update_exception = behavior_update_exception
 
+
+    def curry_pot(self, f, *argv):
+        sweep_ind = f.__name__[0:5] == 'sweep'
+        arg_len = len(argv)
+        if sweep_ind == True and arg_len == 4:
+            return f(argv[0])(argv[1])(argv[2])(argv[3])
+        elif sweep_ind == False and arg_len == 4:
+            return f(argv[0], argv[1], argv[2], argv[3])
+        elif sweep_ind == True and arg_len == 3:
+            return f(argv[0])(argv[1])(argv[2])
+        elif sweep_ind == False and arg_len == 3:
+            return f(argv[0], argv[1], argv[2])
+        else:
+            raise TypeError('curry_pot() needs 3 or 4 positional arguments')
+
+
     def get_behavior_input(self, step, sL, s, funcs):
         ops = self.behavior_ops[::-1]
 
         def get_col_results(step, sL, s, funcs):
-            return list(map(lambda f: f(step, sL, s), funcs))
+            return list(map(lambda f: self.curry_pot(f, step, sL, s), funcs))
 
         return foldr(call, get_col_results(step, sL, s, funcs))(ops)
+
 
     def apply_env_proc(self, env_processes, state_dict, step):
         for state in state_dict.keys():
@@ -28,29 +45,22 @@ class Executor:
                 else:
                     state_dict[state] = env_state(state_dict[state])
 
+
     def mech_step(self, m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, run):
         last_in_obj = sL[-1]
 
         _input = self.state_update_exception(self.get_behavior_input(m_step, sL, last_in_obj, behavior_funcs))
+        # print(_input)
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
-        # last_in_copy = dict([self.behavior_update_exception(f(m_step, sL, last_in_obj, _input)) for f in state_funcs])
         # last_in_copy = [self.behavior_update_exception(f(m_step, sL, last_in_obj, _input)) for f in state_funcs]
+        last_in_copy = dict(
+            [
+                self.behavior_update_exception(self.curry_pot(f, m_step, sL, last_in_obj, _input)) for f in state_funcs
+            ]
+        )
+        # print(last_in_copy)
 
-        for f in state_funcs:
-            print(f.__name__ + " " + str(f))
-            if f.__name__[0:5] == 'sweep':
-                self.behavior_update_exception(f(m_step)(sL)(last_in_obj)(_input))
-            else:
-                self.behavior_update_exception(f(m_step, sL, last_in_obj, _input))
-            # print(f(m_step, sL, last_in_obj, _input))
-
-        print(last_in_obj)
-        exit()
-        #
-        # for f in state_funcs:
-        #     print(f(1,2,3,4))
-        # exit()
 
         for k in last_in_obj:
             if k not in last_in_copy:
