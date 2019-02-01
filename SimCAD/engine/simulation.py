@@ -1,5 +1,6 @@
 from copy import deepcopy
 from fn.op import foldr, call
+from SimCAD.utils import curry_pot
 from SimCAD.engine.utils import engine_exception
 
 id_exception = engine_exception(KeyError, KeyError, None)
@@ -11,30 +12,13 @@ class Executor:
         self.state_update_exception = state_update_exception
         self.behavior_update_exception = behavior_update_exception
 
-
-    def curry_pot(self, f, *argv):
-        sweep_ind = f.__name__[0:5] == 'sweep'
-        arg_len = len(argv)
-        if sweep_ind == True and arg_len == 4:
-            return f(argv[0])(argv[1])(argv[2])(argv[3])
-        elif sweep_ind == False and arg_len == 4:
-            return f(argv[0], argv[1], argv[2], argv[3])
-        elif sweep_ind == True and arg_len == 3:
-            return f(argv[0])(argv[1])(argv[2])
-        elif sweep_ind == False and arg_len == 3:
-            return f(argv[0], argv[1], argv[2])
-        else:
-            raise TypeError('curry_pot() needs 3 or 4 positional arguments')
-
-
     def get_behavior_input(self, step, sL, s, funcs):
         ops = self.behavior_ops[::-1]
 
         def get_col_results(step, sL, s, funcs):
-            return list(map(lambda f: self.curry_pot(f, step, sL, s), funcs))
+            return list(map(lambda f: curry_pot(f, step, sL, s), funcs))
 
         return foldr(call, get_col_results(step, sL, s, funcs))(ops)
-
 
     def apply_env_proc(self, env_processes, state_dict, step):
         for state in state_dict.keys():
@@ -45,7 +29,6 @@ class Executor:
                 else:
                     state_dict[state] = env_state(state_dict[state])
 
-
     def mech_step(self, m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, run):
         last_in_obj = sL[-1]
 
@@ -53,14 +36,11 @@ class Executor:
         # print(_input)
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
-        # last_in_copy = [self.behavior_update_exception(f(m_step, sL, last_in_obj, _input)) for f in state_funcs]
         last_in_copy = dict(
             [
-                self.behavior_update_exception(self.curry_pot(f, m_step, sL, last_in_obj, _input)) for f in state_funcs
+                self.behavior_update_exception(curry_pot(f, m_step, sL, last_in_obj, _input)) for f in state_funcs
             ]
         )
-        # print(last_in_copy)
-
 
         for k in last_in_obj:
             if k not in last_in_copy:
@@ -97,7 +77,6 @@ class Executor:
     def block_pipeline(self, states_list, configs, env_processes, time_seq, run):
         time_seq = [x + 1 for x in time_seq]
         simulation_list = [states_list]
-        # print(len(configs))
         for time_step in time_seq:
             pipe_run = self.mech_pipeline(simulation_list[-1], configs, env_processes, time_step, run)
             _, *pipe_run = pipe_run
