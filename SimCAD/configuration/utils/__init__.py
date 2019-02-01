@@ -5,8 +5,8 @@ from fn.func import curried
 import pandas as pd
 from SimCAD.utils import rename
 
-from SimCAD.utils import groupByKey, dict_filter, contains_type
-from SimCAD.utils import flatMap
+from SimCAD.utils import dict_filter, contains_type, curry_pot
+
 
 from funcy import curry
 
@@ -116,24 +116,11 @@ def sweep_states(state_type, states, in_config):
     return configs
 
 
-def param_sweep(config, raw_exogenous_states):
-    return flatMap(
-        sweep_states('environmental', config.env_processes),
-        flatMap(
-            sweep_states('exogenous', raw_exogenous_states),
-            flatMap(
-                sweep_mechs('states'),
-                sweep_mechs('behaviors', config)
-            )
-        )
-    )
-
-
 def exo_update_per_ts(ep):
     @curried
     def ep_decorator(f, y, step, sL, s, _input):
         if s['mech_step'] + 1 == 1:
-            return f(step, sL, s, _input)
+            return curry_pot(f, step, sL, s, _input)
         else:
             return (y, s[y])
 
@@ -142,6 +129,7 @@ def exo_update_per_ts(ep):
 
 def sweep(params, sweep_f):
     return [rename("sweep_"+sweep_f.__name__+"_"+str(i), curry(sweep_f)(param)) for param, i in zip(params, range(len(params)))]
+
 
 def zip_sweep_functions(sweep_lists):
     zipped_sweep_lists = []
@@ -157,7 +145,8 @@ def zip_sweep_functions(sweep_lists):
         raise ValueError('lists have different lengths!')
 
 
-def create_sweep_config_list(zipped_sweep_lists, states_dict, state_type_ind = 'mechs'):
+# ToDo: Not producing multiple dicts
+def create_sweep_config_list(zipped_sweep_lists, states_dict, state_type_ind='mechs'):
     configs = []
     for f_lists in zipped_sweep_lists:
         new_states_dict = deepcopy(states_dict)
@@ -187,6 +176,8 @@ def create_sweep_config_list(zipped_sweep_lists, states_dict, state_type_ind = '
 
 
 def parameterize_states(exo_states):
+    pp.pprint(exo_states)
+    print()
     sweep_lists = []
     for sk, vfs in exo_states.items():
         id_sweep_lists = []
@@ -198,6 +189,9 @@ def parameterize_states(exo_states):
 
     if len(sweep_lists) == 0:
         return [exo_states]
+
+    pp.pprint(sweep_lists)
+    print()
 
     zipped_sweep_lists = zip_sweep_functions(sweep_lists)
     states_configs = create_sweep_config_list(zipped_sweep_lists, exo_states, "exo_proc")

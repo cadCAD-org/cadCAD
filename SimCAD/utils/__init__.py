@@ -1,6 +1,5 @@
 from collections import defaultdict
 from itertools import product
-# from fn.func import curried
 
 
 def pipe(x):
@@ -47,12 +46,11 @@ def contains_type(_collection, type):
 
 
 def drop_right(l, n):
-    return l[:len(l)-n]
+    return l[:len(l) - n]
 
 
 def key_filter(l, keyname):
     return [v[keyname] for k, v in l.items()]
-
 
 
 def groupByKey(l):
@@ -66,6 +64,21 @@ def groupByKey(l):
 def rename(new_name, f):
     f.__name__ = new_name
     return f
+
+
+def curry_pot(f, *argv):
+    sweep_ind = f.__name__[0:5] == 'sweep'
+    arg_len = len(argv)
+    if sweep_ind is True and arg_len == 4:
+        return f(argv[0])(argv[1])(argv[2])(argv[3])
+    elif sweep_ind is False and arg_len == 4:
+        return f(argv[0], argv[1], argv[2], argv[3])
+    elif sweep_ind is True and arg_len == 3:
+        return f(argv[0])(argv[1])(argv[2])
+    elif sweep_ind is False and arg_len == 3:
+        return f(argv[0], argv[1], argv[2])
+    else:
+        raise TypeError('curry_pot() needs 3 or 4 positional arguments')
 
 # def rename(newname):
 #     def decorator(f):
