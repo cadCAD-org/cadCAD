@@ -145,7 +145,7 @@ def zip_sweep_functions(sweep_lists):
         raise ValueError('lists have different lengths!')
 
 
-# ToDo: Not producing multiple dicts
+# ToDo: Not producing multiple dicts.
 def create_sweep_config_list(zipped_sweep_lists, states_dict, state_type_ind='mechs'):
     configs = []
     for f_lists in zipped_sweep_lists:
