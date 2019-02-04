@@ -176,8 +176,8 @@ def create_sweep_config_list(zipped_sweep_lists, states_dict, state_type_ind='me
 
 
 def parameterize_states(exo_states):
-    pp.pprint(exo_states)
-    print()
+    # pp.pprint(exo_states)
+    # print()
     sweep_lists = []
     for sk, vfs in exo_states.items():
         id_sweep_lists = []
@@ -190,8 +190,8 @@ def parameterize_states(exo_states):
     if len(sweep_lists) == 0:
         return [exo_states]
 
-    pp.pprint(sweep_lists)
-    print()
+    # pp.pprint(sweep_lists)
+    # print()
 
     zipped_sweep_lists = zip_sweep_functions(sweep_lists)
     states_configs = create_sweep_config_list(zipped_sweep_lists, exo_states, "exo_proc")
