@@ -24,8 +24,10 @@ seed = {
 # Behaviors per Mechanism
 def b1m1(step, sL, s):
     return {'param1': 1}
+
 def b2m1(step, sL, s):
     return {'param2': 4}
+
 # @curried
 def b1m2(param, step, sL, s):
     return {'param1': 'a', 'param2': param}
@@ -65,6 +67,7 @@ def s1m3(step, sL, s, _input):
     y = 's1'
     x = 0
     return (y, x)
+
 def s2m3(step, sL, s, _input):
     y = 's2'
     x = 0
@@ -96,8 +99,10 @@ def es5p2(step, sL, s, _input):
 
 # Environment States
 # @curried
-def env_a(param, x):
-    return x + param
+# def env_a(param, x):
+#     return x + param
+def env_a(x):
+    return x
 def env_b(x):
     return 10
 
@@ -118,7 +123,7 @@ raw_exogenous_states = {
     "s4": sweep(beta, es4p2),
     "timestamp": es5p2
 }
-# exogenous_states_list = list(map(exo_update_per_ts, parameterize_states(raw_exogenous_states)))
+exogenous_states_list = list(map(exo_update_per_ts, parameterize_states(raw_exogenous_states)))
 
 
 # ToDo: make env proc trigger field agnostic
@@ -127,13 +132,13 @@ triggered_env_b = proc_trigger('2018-10-01 15:16:25', env_b)
 
 
 env_processes = {
-    "s3": sweep(beta, env_a),
+    "s3": env_a, #sweep(beta, env_a),
     "s4": triggered_env_b #rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)
 }
-parameterized_env_processes = parameterize_states(env_processes)
-
-pp.pprint(parameterized_env_processes)
-exit()
+# parameterized_env_processes = parameterize_states(env_processes)
+#
+# pp.pprint(parameterized_env_processes)
+# exit()
 
 # ToDo: The number of values enteren in sweep should be the # of config objs created,
 # not dependent on the # of times the sweep is applied
@@ -143,8 +148,9 @@ exit()
 # need at least 1 behaviour and 1 state function for the 1st mech with behaviors
 # mechanisms = {}
 
+#middleware(beta, [(m1, states, s2, s2m1), (m2, behaviors, b1, b1m2)], mechanisms)
 
-mechanisms = {
+mechanisms_test = {
     "m1": {
         "behaviors": {
             "b1": b1m1,
@@ -152,12 +158,12 @@ mechanisms = {
         },
         "states": {
             "s1": s1m1,
-            "s2": sweep(beta, s2m1) #s2m1(1) #sweep(beta, s2m1)
+            "s2": "sweep"
         }
     },
     "m2": {
         "behaviors": {
-            "b1": sweep(beta, b1m2), #b1m2(1) #sweep(beta, b1m2),
+            "b1": "sweep",
             "b2": b2m2
         },
         "states": {
@@ -176,14 +182,77 @@ mechanisms = {
         }
     }
 }
+
+from copy import deepcopy
+from funcy import curry
+
+
+def sweep_identifier(sweep_list, sweep_id_list, mechanisms):
+    new_mechanisms = deepcopy(mechanisms)
+    for x in sweep_id_list:
+        mech, update_type, update, f = x[0], x[1], x[2], x[3]
+        current_f = new_mechanisms[x[0]][x[1]][x[2]]
+        if current_f is 'sweep':
+            new_mechanisms[x[0]][x[1]][x[2]] = sweep(sweep_list, x[3])
+
+    # for mech, update_types in new_mechanisms.items():
+    #     for update_type, fkv in update_types.items():
+    #         for sk, current_f in fkv.items():
+    #             if current_f != 'sweep' and isinstance(current_f, list) == False:
+    #                 new_mechanisms[mech][update_type][sk] = curry(f)(0)
+
+    del mechanisms
+    return new_mechanisms
+
+
+sweep_id_list = [('m1', 'states', 's2', s2m1), ('m2', 'behaviors', 'b1', b1m2)]
+# pp.pprint(sweep_identifier(beta, sweep_id_list, mechanisms_test))
+
+
+mechanisms = sweep_identifier(beta, sweep_id_list, mechanisms_test)
+
+# mechanisms = {
+#     "m1": {
+#         "behaviors": {
+#             "b1": b1m1,
+#             "b2": b2m1
+#         },
+#         "states": {
+#             "s1": s1m1,
+#             "s2": sweep(beta, s2m1) #s2m1(1) #sweep(beta, s2m1)
+#         }
+#     },
+#     "m2": {
+#         "behaviors": {
+#             "b1": sweep(beta, b1m2), #b1m2(1) #sweep(beta, b1m2),
+#             "b2": b2m2
+#         },
+#         "states": {
+#             "s1": s1m2,
+#             "s2": s2m2
+#         }
+#     },
+#     "m3": {
+#         "behaviors": {
+#             "b1": b1m3,
+#             "b2": b2m3
+#         },
+#         "states": {
+#             "s1": s1m3,
+#             "s2": s2m3
+#         }
+#     }
+# }
 parameterized_mechanism = parameterize_mechanism(mechanisms)
+pp.pprint(parameterized_mechanism)
+# exit()
 
 sim_config = {
     "N": 2,
     "T": range(5)
 }
 
-for mechanisms, env_processes, exogenous_states in zip(parameterized_mechanism, parameterized_env_processes, exogenous_states_list):
+for mechanisms, exogenous_states in zip(parameterized_mechanism, exogenous_states_list):
     configs.append(
         Configuration(
             sim_config=sim_config,

@@ -42,5 +42,3 @@ def fit_param(param, x):
     return x + param
 
 # fit_param = lambda param: lambda x: x + param
-
-
