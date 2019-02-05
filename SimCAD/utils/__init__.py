@@ -65,6 +65,7 @@ def rename(new_name, f):
     f.__name__ = new_name
     return f
 
+
 def curry_pot(f, *argv):
     sweep_ind = f.__name__[0:5] == 'sweep'
     arg_len = len(argv)

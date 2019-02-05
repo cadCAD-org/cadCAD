@@ -18,7 +18,7 @@ class Executor:
         def get_col_results(step, sL, s, funcs):
             return list(map(lambda f: curry_pot(f, step, sL, s), funcs))
 
-        print(get_col_results(step, sL, s, funcs))
+        # print(get_col_results(step, sL, s, funcs))
         return foldr(call, get_col_results(step, sL, s, funcs))(ops)
 
     def apply_env_proc(self, env_processes, state_dict, step):
