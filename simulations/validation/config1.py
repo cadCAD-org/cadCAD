@@ -26,29 +26,29 @@ seed = {
 
 # Behaviors per Mechanism
 # @curried
-def b1m1(param, step, sL, s):
+def b1m1(step, sL, s):
     return {'param1': 1}
 # @curried
-def b2m1(param, step, sL, s):
+def b2m1(step, sL, s):
     return {'param2': 4}
 
 # @curried
 def b1m2(param, step, sL, s):
     return {'param1': 'a', 'param2': param}
 # @curried
-def b2m2(param, step, sL, s):
+def b2m2(step, sL, s):
     return {'param1': 'b', 'param2': 0}
 # @curried
-def b1m3(param, step, sL, s):
+def b1m3(step, sL, s):
     return {'param1': np.array([10, 100])}
 # @curried
-def b2m3(param, step, sL, s):
+def b2m3(step, sL, s):
     return {'param1': np.array([20, 200])}
 
 
 # Internal States per Mechanism
 # @curried
-def s1m1(param, step, sL, s, _input):
+def s1m1(step, sL, s, _input):
     y = 's1'
     x = 0
     return (y, x)
@@ -59,22 +59,22 @@ def s2m1(param, step, sL, s, _input):
     x = param
     return (y, x)
 # @curried
-def s1m2(param, step, sL, s, _input):
+def s1m2(step, sL, s, _input):
     y = 's1'
     x = _input['param2']
     return (y, x)
 # @curried
-def s2m2(param, step, sL, s, _input):
+def s2m2(step, sL, s, _input):
     y = 's2'
     x = _input['param2']
     return (y, x)
 # @curried
-def s1m3(param, step, sL, s, _input):
+def s1m3(step, sL, s, _input):
     y = 's1'
     x = 0
     return (y, x)
 # @curried
-def s2m3(param, step, sL, s, _input):
+def s2m3(step, sL, s, _input):
     y = 's2'
     x = 0
     return (y, x)
@@ -98,7 +98,7 @@ def es4p2(param, step, sL, s, _input):
 ts_format = '%Y-%m-%d %H:%M:%S'
 t_delta = timedelta(days=0, minutes=0, seconds=1)
 # @curried
-def es5p2(param, step, sL, s, _input):
+def es5p2(step, sL, s, _input):
     y = 'timestamp'
     x = ep_time_step(s, dt_str=s['timestamp'], fromat_str=ts_format, _timedelta=t_delta)
     return (y, x)
