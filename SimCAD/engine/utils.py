@@ -1,7 +1,5 @@
 from datetime import datetime
 from fn.func import curried
-from SimCAD.utils import rename
-# from SimCAD.configuration.utils import s_update
 
 
 def datetime_range(start, end, delta, dt_format='%Y-%m-%d %H:%M:%S'):

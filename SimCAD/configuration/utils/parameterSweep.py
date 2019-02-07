@@ -7,10 +7,11 @@ from SimCAD.configuration.utils import exo_update_per_ts
 
 
 class ParamSweep:
-    def __init__(self, sweep_list, mechs=None, raw_exogenous_states=None):
+    def __init__(self, sweep_list, mechs=None, raw_exogenous_states=None, _exo_update_per_ts=True):
         self.sweep_list = sweep_list
         self.mechs = mechs
         self.raw_exogenous_states = raw_exogenous_states
+        self._exo_update_per_ts = _exo_update_per_ts
 
     def mechanisms(self):
         swept_mechanisms = mech_sweep_identifier(self.sweep_list, self.mechs)
@@ -18,7 +19,7 @@ class ParamSweep:
 
     def exogenous_states(self):
         swept_raw_exogenous_states = exo_sweep_identifier(self.sweep_list, self.raw_exogenous_states)
-        return parameterize_states(swept_raw_exogenous_states)
+        return parameterize_states(swept_raw_exogenous_states, self._exo_update_per_ts)
 
 
 def sweep(params, sweep_f):
@@ -98,9 +99,7 @@ def create_sweep_config_list(zipped_sweep_lists, states_dict, state_type_ind='me
     return configs
 
 
-def parameterize_states(exo_states, exo_update=exo_update_per_ts):
-    # pp.pprint(exo_states)
-    # print()
+def parameterize_states(exo_states, _exo_update_per_ts):
     sweep_lists = []
     for sk, vfs in exo_states.items():
         id_sweep_lists = []
@@ -110,21 +109,16 @@ def parameterize_states(exo_states, exo_update=exo_update_per_ts):
         if len(id_sweep_lists) != 0:
             sweep_lists.append(id_sweep_lists)
 
+    def comp_exo_update(states_configs):
+        return [exo_update_per_ts(x) if _exo_update_per_ts is True else x for x in states_configs]
+
     sweep_lists_len = len(sweep_lists)
     if sweep_lists_len != 0:
         zipped_sweep_lists = zip_sweep_functions(sweep_lists)
         states_configs = create_sweep_config_list(zipped_sweep_lists, exo_states, "exo_proc")
-        # pp.pprint(sweep_lists)
-        # print()
-        if exo_update == exo_update_per_ts:
-            return list(map(exo_update_per_ts, states_configs))
-        elif exo_update != exo_update_per_ts:
-            return states_configs
-
-    elif sweep_lists_len == 0 and exo_update == exo_update_per_ts:
-        return list(map(exo_update_per_ts, [exo_states]))
-    elif sweep_lists_len == 0 and exo_update != exo_update_per_ts:
-        return [exo_states]
+        return comp_exo_update(states_configs)
+    elif sweep_lists_len == 0:
+        return comp_exo_update([exo_states])
 
 
 def parameterize_mechanism(mechanisms):

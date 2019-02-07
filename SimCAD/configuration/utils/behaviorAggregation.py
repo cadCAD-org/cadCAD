@@ -37,9 +37,6 @@ def dict_op(f, d1, d2):
         else:
             return target_dict[key]
 
-    # print(d1)
-    # print(d2)
-    # print()
     key_set = set(list(d1.keys()) + list(d2.keys()))
 
     return {k: f(set_base_value(d1, d2, k), set_base_value(d2, d1, k)) for k in key_set}
