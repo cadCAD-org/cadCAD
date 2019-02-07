@@ -3,17 +3,11 @@ from decimal import Decimal
 from copy import deepcopy
 from fn.func import curried
 import pandas as pd
-import inspect
-
-from SimCAD.utils import rename
 
 from SimCAD.utils import dict_filter, contains_type, curry_pot
 
-from funcy import curry
-
-import pprint
-
-pp = pprint.PrettyPrinter(indent=4)
+# import pprint
+# pp = pprint.PrettyPrinter(indent=4)
 
 class TensorFieldReport:
     def __init__(self, config_proc):
@@ -37,8 +31,8 @@ def state_update(y, x):
 
 
 def bound_norm_random(rng, low, high):
-    res = rng.normal((high+low)/2,(high-low)/6)
-    if (res<low or res>high):
+    res = rng.normal((high+low)/2, (high-low)/6)
+    if res < low or res > high:
         res = bound_norm_random(rng, low, high)
     return Decimal(res)
 
@@ -123,6 +117,6 @@ def exo_update_per_ts(ep):
         if s['mech_step'] + 1 == 1:
             return curry_pot(f, step, sL, s, _input)
         else:
-            return (y, s[y])
+            return y, s[y]
 
     return {es: ep_decorator(f, es) for es, f in ep.items()}

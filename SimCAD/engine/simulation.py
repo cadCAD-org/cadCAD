@@ -1,5 +1,6 @@
 from copy import deepcopy
 from fn.op import foldr, call
+
 from SimCAD.utils import curry_pot
 from SimCAD.engine.utils import engine_exception
 

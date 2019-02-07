@@ -1,12 +1,13 @@
 from functools import reduce
 from fn.op import foldr
 import pandas as pd
-from fn.func import curried
+
+from SimCAD import configs
+from SimCAD.configuration.utils.parameterSweep import ParamSweep
 
 from SimCAD.utils import key_filter
 from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 
-# class ParameterSeep:
 
 class Configuration(object):
     def __init__(self, sim_config=None, state_dict=None, seed=None, env_processes=None,
@@ -18,6 +19,28 @@ class Configuration(object):
         self.exogenous_states = exogenous_states
         self.mechanisms = mechanisms
         self.behavior_ops = behavior_ops
+
+
+def append_configs(sim_config, genesis_states, seed, raw_exogenous_states, env_processes, mechanisms, _exo_update_per_ts=True):
+    param_sweep = ParamSweep(
+        sweep_list=sim_config['M'],
+        mechs=mechanisms,
+        raw_exogenous_states=raw_exogenous_states,
+        _exo_update_per_ts=_exo_update_per_ts
+    )
+
+    for mechanisms, exogenous_states in zip(param_sweep.mechanisms(), param_sweep.exogenous_states()):
+        configs.append(
+            Configuration(
+                sim_config=sim_config,
+                state_dict=genesis_states,
+                seed=seed,
+                exogenous_states=exogenous_states,
+                env_processes=env_processes,
+                mechanisms=mechanisms
+            )
+        )
+
 
 class Identity:
     def __init__(self, behavior_id={'identity': 0}):
