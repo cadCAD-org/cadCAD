@@ -3,7 +3,7 @@ import numpy as np
 from datetime import timedelta
 import pprint
 
-from SimCAD.configuration import append_configs, Configuration
+from SimCAD.configuration import append_configs
 from SimCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step, exo_update_per_ts
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -15,6 +15,9 @@ seed = {
     'c': np.random.RandomState(3)
 }
 
+# beta = 1
+
+#middleware(f1,f2,f3,f4)
 
 # Behaviors per Mechanism
 def b1m1(step, sL, s):
@@ -174,7 +177,7 @@ mechanisms = {
 sim_config = {
     "N": 2,
     "T": range(5),
-    "M": [Decimal(1), Decimal(2), Decimal(3)]
+    "M": [Decimal(1), Decimal(2), Decimal(3)] # dict read from dict
 }
 
 append_configs(
