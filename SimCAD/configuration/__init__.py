@@ -121,6 +121,8 @@ class Processor:
                 except KeyError:
                     pass
 
+            # Also for backwards compatibility, we accept partial state update blocks both as list or dict
+            # No need for a deprecation warning as it's already raised by SimCAD.utils.key_filter
             if (type(m)==list):
                 for v in m:
                     rename_keys(v)
