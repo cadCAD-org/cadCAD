@@ -73,9 +73,9 @@ class Processor:
         self.apply_identity_funcs = id.apply_identity_funcs
 
     def create_matrix_field(self, mechanisms, key):
-        if key == 'states':
+        if key == 'state_update_functions':
             identity = self.state_identity
-        elif key == 'behaviors':
+        elif key == 'policies':
             identity = self.behavior_identity
         df = pd.DataFrame(key_filter(mechanisms, key))
         col_list = self.apply_identity_funcs(identity, df, list(df.columns))
@@ -109,8 +109,19 @@ class Processor:
             return sdf_values, bdf_values
 
         if len(mechanisms) != 0:
-            bdf = self.create_matrix_field(mechanisms, 'behaviors')
-            sdf = self.create_matrix_field(mechanisms, 'states')
+            # for backwards compatibility we accept the old keys
+            # ('behaviors' and 'states') and rename them
+            for k, v in mechanisms.items():
+                try:
+                    v['policies'] = v.pop('behaviors')
+                except KeyError:
+                    pass
+                try:
+                    v['state_update_functions'] = v.pop('states')
+                except KeyError:
+                    pass
+            bdf = self.create_matrix_field(mechanisms, 'policies')
+            sdf = self.create_matrix_field(mechanisms, 'state_update_functions')
             sdf_values, bdf_values = no_update_handler(bdf, sdf)
             zipped_list = list(zip(sdf_values, bdf_values))
         else:
