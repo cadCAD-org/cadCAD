@@ -8,7 +8,7 @@ class TensorFieldReport:
     def __init__(self, config_proc):
         self.config_proc = config_proc
 
-    def create_tensor_field(self, mechanisms, exo_proc, keys=['behaviors', 'states']):
+    def create_tensor_field(self, mechanisms, exo_proc, keys=['policies', 'state_update_functions']):
         dfs = [self.config_proc.create_matrix_field(mechanisms, k) for k in keys]
         df = pd.concat(dfs, axis=1)
         for es, i in zip(exo_proc, range(len(exo_proc))):
