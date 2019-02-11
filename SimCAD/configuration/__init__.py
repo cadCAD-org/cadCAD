@@ -7,7 +7,7 @@ from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 
 
 class Configuration:
-    def __init__(self, sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms, behavior_ops=[foldr(dict_elemwise_sum())]):
+    def __init__(self, sim_config, state_dict, seed={}, exogenous_states={}, env_processes={}, mechanisms={}, behavior_ops=[foldr(dict_elemwise_sum())]):
         self.sim_config = sim_config
         self.state_dict = state_dict
         self.seed = seed
