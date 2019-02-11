@@ -7,14 +7,37 @@ from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 
 
 class Configuration:
-    def __init__(self, sim_config, state_dict, seed={}, exogenous_states={}, env_processes={}, mechanisms={}, behavior_ops=[foldr(dict_elemwise_sum())]):
+    def __init__(self, sim_config,
+                 # default initial_conditions to empty dict because
+                 # user may be using the state_dict argument
+                 initial_conditions={},
+                 seeds={},
+                 exogenous_states={}, env_processes={},
+                 partial_state_update_blocks={},
+                 behavior_ops=[foldr(dict_elemwise_sum())],
+                 **kwargs):
         self.sim_config = sim_config
-        self.state_dict = state_dict
-        self.seed = seed
+        self.state_dict = initial_conditions
+        self.seed = seeds
         self.exogenous_states = exogenous_states
         self.env_processes = env_processes
         self.behavior_ops = behavior_ops
-        self.mechanisms = mechanisms
+        self.mechanisms = partial_state_update_blocks
+
+        # for backwards compatibility, we accept old arguments via **kwargs
+        # TODO: raise deprecation warnings
+        for key, value in kwargs.items():
+            if (key=='state_dict'):
+                self.state_dict = value
+            elif (key=='seed'):
+                self.seed = value
+            elif (key=='mechanisms'):
+                self.mechanisms = value
+
+        if (self.state_dict == {}):
+            raise Exception('The initial conditions of the system have not been set')
+
+
 
 
 class Identity:
