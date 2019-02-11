@@ -43,7 +43,7 @@ class Executor:
 
         self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp'])
 
-        last_in_copy["mech_step"], last_in_copy["time_step"], last_in_copy['run'] = m_step, t_step, run
+        last_in_copy["sub_timestep"], last_in_copy["time_step"], last_in_copy['run'] = m_step, t_step, run
         sL.append(last_in_copy)
         del last_in_copy
 
@@ -53,7 +53,7 @@ class Executor:
         m_step = 0
         states_list_copy = deepcopy(states_list)
         genesis_states = states_list_copy[-1]
-        genesis_states['mech_step'], genesis_states['time_step'] = m_step, t_step
+        genesis_states['sub_timestep'], genesis_states['time_step'] = m_step, t_step
         states_list = [genesis_states]
 
         m_step += 1
@@ -83,7 +83,7 @@ class Executor:
             states_list_copy = deepcopy(states_list)
             head, *tail = self.block_pipeline(states_list_copy, configs, env_processes, time_seq, run)
             genesis = head.pop()
-            genesis['mech_step'], genesis['time_step'], genesis['run'] = 0, 0, run
+            genesis['sub_timestep'], genesis['time_step'], genesis['run'] = 0, 0, run
             first_timestep_per_run = [genesis] + tail.pop(0)
             pipe_run += [first_timestep_per_run] + tail
             del states_list_copy
