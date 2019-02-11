@@ -41,7 +41,7 @@ def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = t_delta):
 
 t_delta = timedelta(days=0, minutes=0, seconds=1)
 def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = t_delta):
-    if s['sub_timestep'] == 0:
+    if s['mech_step'] == 0:
         return time_step(dt_str, fromat_str, _timedelta)
     else:
         return dt_str
@@ -50,7 +50,7 @@ def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = t_delta
 def exo_update_per_ts(ep):
     @curried
     def ep_decorator(f, y, step, sL, s, _input):
-        if s['sub_timestep'] + 1 == 1:
+        if s['mech_step'] + 1 == 1:
             return f(step, sL, s, _input)
         else:
             return (y, s[y])
