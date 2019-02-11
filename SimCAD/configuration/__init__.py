@@ -108,18 +108,29 @@ class Processor:
             bdf_values = [[self.b_identity] * len(sdf_values)]
             return sdf_values, bdf_values
 
-        if len(mechanisms) != 0:
+        def sanitize_mechanisms(m):
             # for backwards compatibility we accept the old keys
             # ('behaviors' and 'states') and rename them
-            for k, v in mechanisms.items():
+            def rename_keys(d):
                 try:
-                    v['policies'] = v.pop('behaviors')
+                    d['policies'] = d.pop('behaviors')
                 except KeyError:
                     pass
                 try:
-                    v['state_update_functions'] = v.pop('states')
+                    d['state_update_functions'] = d.pop('states')
                 except KeyError:
                     pass
+
+            if (type(m)==list):
+                for v in m:
+                    rename_keys(v)
+            elif (type(m)==dict):
+                for k, v in mechanisms.items():
+                    rename_keys(v)
+            return
+
+        if len(mechanisms) != 0:
+            sanitize_mechanisms(mechanisms)
             bdf = self.create_matrix_field(mechanisms, 'policies')
             sdf = self.create_matrix_field(mechanisms, 'state_update_functions')
             sdf_values, bdf_values = no_update_handler(bdf, sdf)
