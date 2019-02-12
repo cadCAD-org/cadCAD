@@ -41,7 +41,7 @@ class Executor:
 
         del last_in_obj
 
-        self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp'])
+        self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
 
         last_in_copy["substep"], last_in_copy["timestep"], last_in_copy['run'] = m_step, t_step, run
         sL.append(last_in_copy)
