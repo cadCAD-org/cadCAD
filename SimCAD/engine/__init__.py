@@ -46,7 +46,7 @@ class Executor:
         config_proc = Processor()
         create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
 
-        print(self.exec_context+": "+str(self.configs))
+        #print(self.exec_context+": "+str(self.configs))
         states_lists, Ts, Ns, eps, configs_structs, env_processes_list, mechanisms, simulation_execs = \
             [], [], [], [], [], [], [], []
         config_idx = 0
