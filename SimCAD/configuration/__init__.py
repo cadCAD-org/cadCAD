@@ -3,8 +3,6 @@ from fn.op import foldr
 import pandas as pd
 
 from SimCAD import configs
-# from SimCAD.configuration.utils.parameterSweep import ParamSweep
-
 from SimCAD.utils import key_filter
 from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 from SimCAD.configuration.utils import exo_update_per_ts

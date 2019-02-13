@@ -4,10 +4,8 @@ from copy import deepcopy
 from fn.func import curried
 import pandas as pd
 
-from SimCAD.utils import dict_filter, contains_type, flatten_tabulated_dict, tabulate_dict, curry_pot
+from SimCAD.utils import dict_filter, contains_type
 
-# import pprint
-# pp = pprint.PrettyPrinter(indent=4)
 
 class TensorFieldReport:
     def __init__(self, config_proc):
@@ -45,14 +43,14 @@ def proc_trigger(trigger_step, update_f, step):
         return lambda x: x
 
 
-t_delta = timedelta(days=0, minutes=0, seconds=30)
+step_t_delta = timedelta(days=0, minutes=0, seconds=30)
 def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = t_delta):
     dt = datetime.strptime(dt_str, dt_format)
     t = dt + _timedelta
     return t.strftime(dt_format)
 
 
-t_delta = timedelta(days=0, minutes=0, seconds=1)
+ep_t_delta = timedelta(days=0, minutes=0, seconds=1)
 def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = t_delta):
     if s['mech_step'] == 0:
         return time_step(dt_str, fromat_str, _timedelta)
