@@ -4,7 +4,7 @@ from copy import deepcopy
 from fn.func import curried
 import pandas as pd
 
-from SimCAD.utils import dict_filter, contains_type, curry_pot
+from SimCAD.utils import dict_filter, contains_type, flatten_tabulated_dict, tabulate_dict, curry_pot
 
 # import pprint
 # pp = pprint.PrettyPrinter(indent=4)
@@ -120,3 +120,7 @@ def exo_update_per_ts(ep):
             return y, s[y]
 
     return {es: ep_decorator(f, es) for es, f in ep.items()}
+
+
+def process_variables(d):
+    return flatten_tabulated_dict(tabulate_dict(d))

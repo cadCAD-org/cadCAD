@@ -7,6 +7,8 @@ from SimCAD.configuration.utils.parameterSweep import ParamSweep
 
 from SimCAD.utils import key_filter
 from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
+from SimCAD.configuration.utils import exo_update_per_ts
+
 
 
 class Configuration(object):
@@ -22,14 +24,25 @@ class Configuration(object):
 
 
 def append_configs(sim_config, genesis_states, seed, raw_exogenous_states, env_processes, mechanisms, _exo_update_per_ts=True):
-    param_sweep = ParamSweep(
-        sweep_list=sim_config['M'],
-        mechs=mechanisms,
-        raw_exogenous_states=raw_exogenous_states,
-        _exo_update_per_ts=_exo_update_per_ts
-    )
+    if 'M' in sim_config.keys():
 
-    for mechanisms, exogenous_states in zip(param_sweep.mechanisms(), param_sweep.exogenous_states()):
+        for mechanisms, exogenous_states in sim_config['M']:
+            configs.append(
+                Configuration(
+                    sim_config=sim_config,
+                    state_dict=genesis_states,
+                    seed=seed,
+                    exogenous_states=exogenous_states,
+                    env_processes=env_processes,
+                    mechanisms=mechanisms
+                )
+            )
+    else:
+        if _exo_update_per_ts is True:
+            exogenous_states = exo_update_per_ts(raw_exogenous_states)
+        else:
+            exogenous_states = raw_exogenous_states
+
         configs.append(
             Configuration(
                 sim_config=sim_config,

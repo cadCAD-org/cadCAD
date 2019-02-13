@@ -3,8 +3,9 @@ import numpy as np
 from datetime import timedelta
 import pprint
 
-from SimCAD.configuration import append_configs
-from SimCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step, exo_update_per_ts
+from SimCAD import configs
+from SimCAD.configuration import Configuration
+from SimCAD.configuration.utils import proc_trigger, ep_time_step, process_variables, exo_update_per_ts
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -15,57 +16,66 @@ seed = {
     'c': np.random.RandomState(3)
 }
 
+
+g = {
+    'alpha': [1],
+    'beta': [2, 5],
+    'gamma': [3, 4],
+    'omega': [7]
+}
+
+
 # beta = 1
 
 # middleware(f1,f2,f3,f4)
 
 # Behaviors per Mechanism
-def b1m1(step, sL, s):
+def b1m1(_g, step, sL, s):
     return {'param1': 1}
 
-def b2m1(step, sL, s):
+def b2m1(_g, step, sL, s):
     return {'param2': 4}
 
-def b1m2(_beta, step, sL, s):
-    return {'param1': 'a', 'param2': _beta}
+def b1m2(_g, step, sL, s):
+    return {'param1': 'a', 'param2': _g['beta']}
 
-def b2m2(step, sL, s):
+def b2m2(_g, step, sL, s):
     return {'param1': 'b', 'param2': 0}
 # @curried
-def b1m3(step, sL, s):
+def b1m3(_g, step, sL, s):
     return {'param1': np.array([10, 100])}
 # @curried
-def b2m3(step, sL, s):
+def b2m3(_g, step, sL, s):
     return {'param1': np.array([20, 200])}
 
 # Internal States per Mechanism
 # @curried
-def s1m1(step, sL, s, _input):
+def s1m1(_g, step, sL, s, _input):
     y = 's1'
     x = 0
     return (y, x)
 
-def s2m1(sweep_param, step, sL, s, _input):
+def s2m1(_g, step, sL, s, _input):
     y = 's2'
-    x = sweep_param
+    x = _g['beta']
     return (y, x)
 
-def s1m2(step, sL, s, _input):
+def s1m2(_g, step, sL, s, _input):
     y = 's1'
     x = _input['param2']
     return (y, x)
 
-def s2m2(step, sL, s, _input):
+def s2m2(_g, step, sL, s, _input):
     y = 's2'
     x = _input['param2']
     return (y, x)
 
-def s1m3(step, sL, s, _input):
+def s1m3(_g, step, sL, s, _input):
     y = 's1'
     x = 0
     return (y, x)
 
-def s2m3(step, sL, s, _input):
+def s2m3(_g, step, sL, s, _input):
     y = 's2'
     x = 0
     return (y, x)
@@ -76,19 +86,19 @@ proc_one_coef_A = 0.7
 proc_one_coef_B = 1.3
 
 
-def es3p1(param, step, sL, s, _input):
+def es3p1(_g, step, sL, s, _input):
     y = 's3'
-    x = param
+    x = _g['gamma']
     return (y, x)
 # @curried
-def es4p2(param, step, sL, s, _input):
+def es4p2(_g, step, sL, s, _input):
     y = 's4'
-    x = param
+    x = _g['gamma']
     return (y, x)
 
 ts_format = '%Y-%m-%d %H:%M:%S'
 t_delta = timedelta(days=0, minutes=0, seconds=1)
-def es5p2(step, sL, s, _input):
+def es5p2(_g, step, sL, s, _input):
     y = 'timestamp'
     x = ep_time_step(s, dt_str=s['timestamp'], fromat_str=ts_format, _timedelta=t_delta)
     return (y, x)
@@ -174,18 +184,44 @@ mechanisms = {
     }
 }
 
-sim_config = {
-    "N": 2,
-    "T": range(5),
-    "M": [Decimal(1), Decimal(2), Decimal(3)] # dict read from dict
-}
 
-append_configs(
-    sim_config=sim_config,
-    genesis_states=genesis_states,
-    seed=seed,
-    raw_exogenous_states=raw_exogenous_states,
-    env_processes=env_processes,
-    mechanisms=mechanisms,
-    _exo_update_per_ts=True #Default
+# process_variables(g)
+def gen_sim_configs(N, T, Ms):
+    return [
+        {
+            "N": 2,
+            "T": range(5),
+            "M": M
+        }
+        for M in process_variables(Ms)
+    ]
+
+
+sim_configs = gen_sim_configs(
+    N=2,
+    T=range(5),
+    Ms=g
 )
+
+
+for sim_config in sim_configs:
+    configs.append(
+        Configuration(
+            sim_config=sim_config,
+            state_dict=genesis_states,
+            seed=seed,
+            exogenous_states=raw_exogenous_states, # exo_update_per_ts
+            env_processes=env_processes,
+            mechanisms=mechanisms
+        )
+    )
+
+# append_configs(
+#     sim_config=sim_config,
+#     genesis_states=genesis_states,
+#     seed=seed,
+#     raw_exogenous_states=raw_exogenous_states,
+#     env_processes=env_processes,
+#     mechanisms=mechanisms,
+#     _exo_update_per_ts=True #Default
+# )
