@@ -34,13 +34,13 @@ class Executor:
     def mech_step(self, m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, run):
         last_in_obj = sL[-1]
 
-        _input = self.state_update_exception(self.get_behavior_input(m_step, sL, last_in_obj, behavior_funcs))
+        _input = self.behavior_update_exception(self.get_behavior_input(m_step, sL, last_in_obj, behavior_funcs))
         # print(_input)
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
         last_in_copy = dict(
             [
-                self.behavior_update_exception(curry_pot(f, m_step, sL, last_in_obj, _input)) for f in state_funcs
+                self.state_update_exception(curry_pot(f, m_step, sL, last_in_obj, _input)) for f in state_funcs
             ]
         )
 

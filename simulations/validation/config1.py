@@ -17,7 +17,7 @@ seed = {
 
 # beta = 1
 
-#middleware(f1,f2,f3,f4)
+# middleware(f1,f2,f3,f4)
 
 # Behaviors per Mechanism
 def b1m1(step, sL, s):
@@ -165,7 +165,7 @@ mechanisms = {
     "m3": {
         "behaviors": {
             "b1": b1m3,
-            "b2": b2m3,
+            "b2": b2m3
         },
         "states": {
             "s1": s1m3,
