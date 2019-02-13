@@ -113,14 +113,12 @@ def sweep_states(state_type, states, in_config):
 
 def exo_update_per_ts(ep):
     @curried
-    def ep_decorator(f, y, step, sL, s, _input):
+    def ep_decorator(f, y, var_dict, step, sL, s, _input):
         if s['mech_step'] + 1 == 1:
-            return curry_pot(f, step, sL, s, _input)
+            return f(var_dict, step, sL, s, _input) # curry_pot
         else:
             return y, s[y]
 
     return {es: ep_decorator(f, es) for es, f in ep.items()}
 
 
-def process_variables(d):
-    return flatten_tabulated_dict(tabulate_dict(d))

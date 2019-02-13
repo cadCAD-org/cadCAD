@@ -3,9 +3,9 @@ import numpy as np
 from datetime import timedelta
 import pprint
 
-from SimCAD import configs
-from SimCAD.configuration import Configuration
-from SimCAD.configuration.utils import proc_trigger, ep_time_step, process_variables, exo_update_per_ts
+from SimCAD.configuration import append_configs
+from SimCAD.configuration.utils import proc_trigger, ep_time_step
+from SimCAD.configuration.utils.parameterSweep import config_sim
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -24,11 +24,6 @@ g = {
     'omega': [7]
 }
 
-
-# beta = 1
-
-# middleware(f1,f2,f3,f4)
-
 # Behaviors per Mechanism
 def b1m1(_g, step, sL, s):
     return {'param1': 1}
@@ -41,15 +36,14 @@ def b1m2(_g, step, sL, s):
 
 def b2m2(_g, step, sL, s):
     return {'param1': 'b', 'param2': 0}
-# @curried
+
 def b1m3(_g, step, sL, s):
     return {'param1': np.array([10, 100])}
-# @curried
+
 def b2m3(_g, step, sL, s):
     return {'param1': np.array([20, 200])}
 
 # Internal States per Mechanism
-# @curried
 def s1m1(_g, step, sL, s, _input):
     y = 's1'
     x = 0
@@ -126,7 +120,7 @@ genesis_states = {
 
 # remove `exo_update_per_ts` to update every ts
 raw_exogenous_states = {
-    "s3": es3p1, #es3p1, #sweep(beta, es3p1),
+    "s3": es3p1,
     "s4": es4p2,
     "timestamp": es5p2
 }
@@ -135,8 +129,6 @@ raw_exogenous_states = {
 # ToDo: make env proc trigger field agnostic
 # ToDo: input json into function renaming __name__
 triggered_env_b = proc_trigger('2018-10-01 15:16:25', env_b)
-
-
 env_processes = {
     "s3": env_a, #sweep(beta, env_a),
     "s4": triggered_env_b #rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)
@@ -185,43 +177,20 @@ mechanisms = {
 }
 
 
-# process_variables(g)
-def gen_sim_configs(N, T, Ms):
-    return [
-        {
-            "N": 2,
-            "T": range(5),
-            "M": M
-        }
-        for M in process_variables(Ms)
-    ]
-
-
-sim_configs = gen_sim_configs(
-    N=2,
-    T=range(5),
-    Ms=g
+sim_config = config_sim(
+    {
+        "N": 2,
+        "T": range(5),
+        "M": g
+    }
 )
 
 
-for sim_config in sim_configs:
-    configs.append(
-        Configuration(
-            sim_config=sim_config,
-            state_dict=genesis_states,
-            seed=seed,
-            exogenous_states=raw_exogenous_states, # exo_update_per_ts
-            env_processes=env_processes,
-            mechanisms=mechanisms
-        )
-    )
-
-# append_configs(
-#     sim_config=sim_config,
-#     genesis_states=genesis_states,
-#     seed=seed,
-#     raw_exogenous_states=raw_exogenous_states,
-#     env_processes=env_processes,
-#     mechanisms=mechanisms,
-#     _exo_update_per_ts=True #Default
-# )
+append_configs(
+    sim_configs=sim_config,
+    state_dict=genesis_states,
+    seed=seed,
+    raw_exogenous_states=raw_exogenous_states,
+    env_processes=env_processes,
+    mechanisms=mechanisms
+)
