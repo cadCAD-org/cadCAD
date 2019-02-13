@@ -10,7 +10,6 @@ from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 from SimCAD.configuration.utils import exo_update_per_ts
 
 
-
 class Configuration(object):
     def __init__(self, sim_config=None, state_dict=None, seed=None, env_processes=None,
                  exogenous_states=None, mechanisms=None, behavior_ops=[foldr(dict_elemwise_sum())]):
@@ -23,30 +22,29 @@ class Configuration(object):
         self.behavior_ops = behavior_ops
 
 
-def append_configs(sim_config, genesis_states, seed, raw_exogenous_states, env_processes, mechanisms, _exo_update_per_ts=True):
-    if 'M' in sim_config.keys():
+def append_configs(sim_configs, state_dict, seed, raw_exogenous_states, env_processes, mechanisms, _exo_update_per_ts=True):
+    if _exo_update_per_ts is True:
+        exogenous_states = exo_update_per_ts(raw_exogenous_states)
+    else:
+        exogenous_states = raw_exogenous_states
 
-        for mechanisms, exogenous_states in sim_config['M']:
+    if isinstance(sim_configs, list):
+        for sim_config in sim_configs:
             configs.append(
                 Configuration(
                     sim_config=sim_config,
-                    state_dict=genesis_states,
+                    state_dict=state_dict,
                     seed=seed,
                     exogenous_states=exogenous_states,
                     env_processes=env_processes,
                     mechanisms=mechanisms
                 )
             )
-    else:
-        if _exo_update_per_ts is True:
-            exogenous_states = exo_update_per_ts(raw_exogenous_states)
-        else:
-            exogenous_states = raw_exogenous_states
-
+    elif isinstance(sim_configs, dict):
         configs.append(
             Configuration(
-                sim_config=sim_config,
-                state_dict=genesis_states,
+                sim_config=sim_configs,
+                state_dict=state_dict,
                 seed=seed,
                 exogenous_states=exogenous_states,
                 env_processes=env_processes,
