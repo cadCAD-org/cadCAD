@@ -3,7 +3,7 @@ from fn.op import foldr
 import pandas as pd
 
 from SimCAD import configs
-from SimCAD.configuration.utils.parameterSweep import ParamSweep
+# from SimCAD.configuration.utils.parameterSweep import ParamSweep
 
 from SimCAD.utils import key_filter
 from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
@@ -57,17 +57,17 @@ class Identity:
     def __init__(self, behavior_id={'identity': 0}):
         self.beh_id_return_val = behavior_id
 
-    def b_identity(self, step, sL, s):
+    def b_identity(self, var_dict, step, sL, s):
         return self.beh_id_return_val
 
     def behavior_identity(self, k):
         return self.b_identity
 
-    def no_state_identity(self, step, sL, s, _input):
+    def no_state_identity(self, var_dict, step, sL, s, _input):
         return None
 
     def state_identity(self, k):
-        return lambda step, sL, s, _input: (k, s[k])
+        return lambda var_dict, step, sL, s, _input: (k, s[k])
 
     def apply_identity_funcs(self, identity, df, cols):
         def fillna_with_id_func(identity, df, col):
