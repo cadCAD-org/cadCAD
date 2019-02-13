@@ -41,6 +41,33 @@ def dict_filter(dictionary, condition):
     return dict([(k, v) for k, v in dictionary.items() if condition(v)])
 
 
+def get_max_dict_val_len(g):
+    return len(max(g.values(), key=len))
+
+
+def tabulate_dict(d):
+    max_len = get_max_dict_val_len(d)
+    _d = {}
+    for k, vl in d.items():
+        if len(vl) != max_len:
+            _d[k] = vl + list([vl[-1]] * (max_len-1))
+        else:
+            _d[k] = vl
+
+    return _d
+
+
+def flatten_tabulated_dict(d):
+    max_len = get_max_dict_val_len(d)
+    dl = [{} for i in range(max_len)]
+
+    for k, vl in d.items():
+        for v, i in zip(vl, list(range(len(vl)))):
+            dl[i][k] = v
+
+    return dl
+
+
 def contains_type(_collection, type):
     return any(isinstance(x, type) for x in _collection)
 
