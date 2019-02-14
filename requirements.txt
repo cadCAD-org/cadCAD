@@ -1,5 +1,3 @@
-wheel
-pandas
 pathos
 fn
 tabulate
