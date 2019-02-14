@@ -7,41 +7,39 @@ id_exception = engine_exception(KeyError, KeyError, None)
 
 
 class Executor:
-    def __init__(self, behavior_ops, behavior_update_exception=id_exception, state_update_exception=id_exception):
-        self.behavior_ops = behavior_ops
+    def __init__(self, policy_ops, policy_update_exception=id_exception, state_update_exception=id_exception):
+        self.policy_ops = policy_ops # behavior_ops
         self.state_update_exception = state_update_exception
-        self.behavior_update_exception = behavior_update_exception
+        self.policy_update_exception = policy_update_exception # behavior_update_exception
 
-    def get_behavior_input(self, var_dict, step, sL, s, funcs):
-        ops = self.behavior_ops[::-1]
+    # get_behavior_input
+    def get_policy_input(self, var_dict, sub_step, sL, s, funcs):
+        ops = self.policy_ops[::-1]
 
-        def get_col_results(var_dict, step, sL, s, funcs):
-            # return list(map(lambda f: curry_pot(f, step, sL, s), funcs))
-            return list(map(lambda f: f(var_dict, step, sL, s), funcs))
+        def get_col_results(var_dict, sub_step, sL, s, funcs):
+            return list(map(lambda f: f(var_dict, sub_step, sL, s), funcs))
 
-        # print(get_col_results(step, sL, s, funcs))
-        return foldr(call, get_col_results(var_dict, step, sL, s, funcs))(ops)
+        return foldr(call, get_col_results(var_dict, sub_step, sL, s, funcs))(ops)
 
-    def apply_env_proc(self, env_processes, state_dict, step):
+    def apply_env_proc(self, env_processes, state_dict, sub_step):
         for state in state_dict.keys():
             if state in list(env_processes.keys()):
                 env_state = env_processes[state]
                 if (env_state.__name__ == '_curried') or (env_state.__name__ == 'proc_trigger'):
-                    state_dict[state] = env_state(step)(state_dict[state])
+                    state_dict[state] = env_state(sub_step)(state_dict[state])
                 else:
                     state_dict[state] = env_state(state_dict[state])
 
-    def mech_step(self, var_dict, m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, run):
+    # mech_step
+    def partial_state_update(self, var_dict, sub_step, sL, state_funcs, policy_funcs, env_processes, time_step, run):
         last_in_obj = sL[-1]
 
-        _input = self.behavior_update_exception(self.get_behavior_input(var_dict, m_step, sL, last_in_obj, behavior_funcs))
-        # print(_input)
+        _input = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sL, last_in_obj, policy_funcs))
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
         last_in_copy = dict(
             [
-                # self.state_update_exception(curry_pot(f, m_step, sL, last_in_obj, _input)) for f in state_funcs
-                self.state_update_exception(f(var_dict, m_step, sL, last_in_obj, _input)) for f in state_funcs
+                self.state_update_exception(f(var_dict, sub_step, sL, last_in_obj, _input)) for f in state_funcs
             ]
         )
 
@@ -53,40 +51,39 @@ class Executor:
 
         self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp'])
 
-        last_in_copy["mech_step"], last_in_copy["time_step"], last_in_copy['run'] = m_step, t_step, run
+        last_in_copy["sub_step"], last_in_copy["time_step"], last_in_copy['run'] = sub_step, time_step, run
         sL.append(last_in_copy)
         del last_in_copy
 
         return sL
 
-    def mech_pipeline(self, var_dict, states_list, configs, env_processes, t_step, run):
-        m_step = 0
+    # mech_pipeline
+    def state_update_pipeline(self, var_dict, states_list, configs, env_processes, time_step, run):
+        sub_step = 0
         states_list_copy = deepcopy(states_list)
         genesis_states = states_list_copy[-1]
-        genesis_states['mech_step'], genesis_states['time_step'] = m_step, t_step
+        genesis_states['sub_step'], genesis_states['time_step'] = sub_step, time_step
         states_list = [genesis_states]
 
-        m_step += 1
+        sub_step += 1
         for config in configs:
-            s_conf, b_conf = config[0], config[1]
-            states_list = self.mech_step(var_dict, m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
-            m_step += 1
+            s_conf, p_conf = config[0], config[1]
+            states_list = self.partial_state_update(var_dict, sub_step, states_list, s_conf, p_conf, env_processes, time_step, run)
+            sub_step += 1
 
-        t_step += 1
+        time_step += 1
 
         return states_list
 
-    # ToDo: Rename Run Pipeline
-    def block_pipeline(self, var_dict, states_list, configs, env_processes, time_seq, run):
+    def run_pipeline(self, var_dict, states_list, configs, env_processes, time_seq, run):
         time_seq = [x + 1 for x in time_seq]
         simulation_list = [states_list]
         for time_step in time_seq:
-            pipe_run = self.mech_pipeline(var_dict, simulation_list[-1], configs, env_processes, time_step, run)
+            pipe_run = self.state_update_pipeline(var_dict, simulation_list[-1], configs, env_processes, time_step, run)
             _, *pipe_run = pipe_run
             simulation_list.append(pipe_run)
 
         return simulation_list
-
 
     # ToDo: Muiltithreaded Runs
     def simulation(self, var_dict, states_list, configs, env_processes, time_seq, runs):
@@ -94,9 +91,9 @@ class Executor:
         for run in range(runs):
             run += 1
             states_list_copy = deepcopy(states_list)
-            head, *tail = self.block_pipeline(var_dict, states_list_copy, configs, env_processes, time_seq, run)
+            head, *tail = self.run_pipeline(var_dict, states_list_copy, configs, env_processes, time_seq, run)
             genesis = head.pop()
-            genesis['mech_step'], genesis['time_step'], genesis['run'] = 0, 0, run
+            genesis['sub_step'], genesis['time_step'], genesis['run'] = 0, 0, run
             first_timestep_per_run = [genesis] + tail.pop(0)
             pipe_run += [first_timestep_per_run] + tail
             del states_list_copy

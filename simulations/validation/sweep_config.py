@@ -9,7 +9,7 @@ from SimCAD.configuration.utils.parameterSweep import config_sim
 
 pp = pprint.PrettyPrinter(indent=4)
 
-seed = {
+seeds = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
     'b': np.random.RandomState(3),
@@ -24,23 +24,23 @@ g = {
     'omega': [7]
 }
 
-# Behaviors per Mechanism
-def b1m1(_g, step, sL, s):
+# Policies per Mechanism
+def p1m1(_g, step, sL, s):
     return {'param1': 1}
 
-def b2m1(_g, step, sL, s):
+def p2m1(_g, step, sL, s):
     return {'param2': 4}
 
-def b1m2(_g, step, sL, s):
+def p1m2(_g, step, sL, s):
     return {'param1': 'a', 'param2': _g['beta']}
 
-def b2m2(_g, step, sL, s):
+def p2m2(_g, step, sL, s):
     return {'param1': 'b', 'param2': 0}
 
-def b1m3(_g, step, sL, s):
+def p1m3(_g, step, sL, s):
     return {'param1': np.array([10, 100])}
 
-def b2m3(_g, step, sL, s):
+def p2m3(_g, step, sL, s):
     return {'param1': np.array([20, 200])}
 
 # Internal States per Mechanism
@@ -143,11 +143,11 @@ env_processes = {
 # sweep exo_state func and point to exo-state in every other funtion
 # param sweep on genesis states
 
-mechanisms = {
+partial_state_update_block = {
     "m1": {
-        "behaviors": {
-            "b1": b1m1,
-            "b2": b2m1
+        "policies": {
+            "b1": p1m1,
+            "b2": p2m1
         },
         "states": {
             "s1": s1m1,
@@ -155,9 +155,9 @@ mechanisms = {
         }
     },
     "m2": {
-        "behaviors": {
-            "b1": b1m2,
-            "b2": b2m2,
+        "policies": {
+            "b1": p1m2,
+            "b2": p2m2,
         },
         "states": {
             "s1": s1m2,
@@ -165,9 +165,9 @@ mechanisms = {
         }
     },
     "m3": {
-        "behaviors": {
-            "b1": b1m3,
-            "b2": b2m3
+        "policies": {
+            "b1": p1m3,
+            "b2": p2m3
         },
         "states": {
             "s1": s1m3,
@@ -188,9 +188,9 @@ sim_config = config_sim(
 
 append_configs(
     sim_configs=sim_config,
-    state_dict=genesis_states,
-    seed=seed,
+    initial_state=genesis_states,
+    seeds=seeds,
     raw_exogenous_states=raw_exogenous_states,
     env_processes=env_processes,
-    mechanisms=mechanisms
+    partial_state_updates=partial_state_update_block
 )
