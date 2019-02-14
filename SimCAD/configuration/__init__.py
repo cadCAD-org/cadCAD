@@ -2,36 +2,70 @@ from functools import reduce
 from fn.op import foldr
 import pandas as pd
 
+from SimCAD import configs
 from SimCAD.utils import key_filter
 from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
+from SimCAD.configuration.utils import exo_update_per_ts
 
 
-class Configuration:
-    def __init__(self, sim_config, state_dict, seed, exogenous_states, env_processes, mechanisms, behavior_ops=[foldr(dict_elemwise_sum())]):
+class Configuration(object):
+    def __init__(self, sim_config=None, state_dict=None, seed=None, env_processes=None,
+                 exogenous_states=None, mechanisms=None, behavior_ops=[foldr(dict_elemwise_sum())]):
         self.sim_config = sim_config
         self.state_dict = state_dict
         self.seed = seed
-        self.exogenous_states = exogenous_states
         self.env_processes = env_processes
-        self.behavior_ops = behavior_ops
+        self.exogenous_states = exogenous_states
         self.mechanisms = mechanisms
+        self.behavior_ops = behavior_ops
+
+
+def append_configs(sim_configs, state_dict, seed, raw_exogenous_states, env_processes, mechanisms, _exo_update_per_ts=True):
+    if _exo_update_per_ts is True:
+        exogenous_states = exo_update_per_ts(raw_exogenous_states)
+    else:
+        exogenous_states = raw_exogenous_states
+
+    if isinstance(sim_configs, list):
+        for sim_config in sim_configs:
+            configs.append(
+                Configuration(
+                    sim_config=sim_config,
+                    state_dict=state_dict,
+                    seed=seed,
+                    exogenous_states=exogenous_states,
+                    env_processes=env_processes,
+                    mechanisms=mechanisms
+                )
+            )
+    elif isinstance(sim_configs, dict):
+        configs.append(
+            Configuration(
+                sim_config=sim_configs,
+                state_dict=state_dict,
+                seed=seed,
+                exogenous_states=exogenous_states,
+                env_processes=env_processes,
+                mechanisms=mechanisms
+            )
+        )
 
 
 class Identity:
     def __init__(self, behavior_id={'identity': 0}):
         self.beh_id_return_val = behavior_id
 
-    def b_identity(self, step, sL, s):
+    def b_identity(self, var_dict, step, sL, s):
         return self.beh_id_return_val
 
     def behavior_identity(self, k):
         return self.b_identity
 
-    def no_state_identity(self, step, sL, s, _input):
+    def no_state_identity(self, var_dict, step, sL, s, _input):
         return None
 
     def state_identity(self, k):
-        return lambda step, sL, s, _input: (k, s[k])
+        return lambda var_dict, step, sL, s, _input: (k, s[k])
 
     def apply_identity_funcs(self, identity, df, cols):
         def fillna_with_id_func(identity, df, col):
