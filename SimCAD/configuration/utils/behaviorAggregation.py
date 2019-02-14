@@ -2,14 +2,15 @@ from fn.op import foldr
 from fn.func import curried
 
 
-def get_base_value(datatype):
-    if datatype is str:
+def get_base_value(x):
+    if isinstance(x, str):
         return ''
-    elif datatype is int:
+    elif isinstance(x, int):
         return 0
-    elif datatype is list:
+    elif isinstance(x, list):
         return []
-    return 0
+    else:
+        return 0
 
 
 def behavior_to_dict(v):
@@ -32,7 +33,7 @@ def sum_dict_values():
 def dict_op(f, d1, d2):
     def set_base_value(target_dict, source_dict, key):
         if key not in target_dict:
-            return get_base_value(type(source_dict[key]))
+            return get_base_value(source_dict[key])
         else:
             return target_dict[key]
 

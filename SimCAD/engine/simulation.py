@@ -1,5 +1,6 @@
 from copy import deepcopy
 from fn.op import foldr, call
+
 from SimCAD.engine.utils import engine_exception
 
 id_exception = engine_exception(KeyError, KeyError, None)
@@ -11,13 +12,15 @@ class Executor:
         self.state_update_exception = state_update_exception
         self.behavior_update_exception = behavior_update_exception
 
-    def get_behavior_input(self, step, sL, s, funcs):
+    def get_behavior_input(self, var_dict, step, sL, s, funcs):
         ops = self.behavior_ops[::-1]
 
-        def get_col_results(step, sL, s, funcs):
-            return list(map(lambda f: f(step, sL, s), funcs))
+        def get_col_results(var_dict, step, sL, s, funcs):
+            # return list(map(lambda f: curry_pot(f, step, sL, s), funcs))
+            return list(map(lambda f: f(var_dict, step, sL, s), funcs))
 
-        return foldr(call, get_col_results(step, sL, s, funcs))(ops)
+        # print(get_col_results(step, sL, s, funcs))
+        return foldr(call, get_col_results(var_dict, step, sL, s, funcs))(ops)
 
     def apply_env_proc(self, env_processes, state_dict, step):
         for state in state_dict.keys():
@@ -28,12 +31,19 @@ class Executor:
                 else:
                     state_dict[state] = env_state(state_dict[state])
 
-    def mech_step(self, m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, run):
+    def mech_step(self, var_dict, m_step, sL, state_funcs, behavior_funcs, env_processes, t_step, run):
         last_in_obj = sL[-1]
 
-        _input = self.state_update_exception(self.get_behavior_input(m_step, sL, last_in_obj, behavior_funcs))
+        _input = self.behavior_update_exception(self.get_behavior_input(var_dict, m_step, sL, last_in_obj, behavior_funcs))
+        # print(_input)
 
-        last_in_copy = dict([self.behavior_update_exception(f(m_step, sL, last_in_obj, _input)) for f in state_funcs])
+        # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
+        last_in_copy = dict(
+            [
+                # self.state_update_exception(curry_pot(f, m_step, sL, last_in_obj, _input)) for f in state_funcs
+                self.state_update_exception(f(var_dict, m_step, sL, last_in_obj, _input)) for f in state_funcs
+            ]
+        )
 
         for k in last_in_obj:
             if k not in last_in_copy:
@@ -49,7 +59,7 @@ class Executor:
 
         return sL
 
-    def mech_pipeline(self, states_list, configs, env_processes, t_step, run):
+    def mech_pipeline(self, var_dict, states_list, configs, env_processes, t_step, run):
         m_step = 0
         states_list_copy = deepcopy(states_list)
         genesis_states = states_list_copy[-1]
@@ -59,29 +69,32 @@ class Executor:
         m_step += 1
         for config in configs:
             s_conf, b_conf = config[0], config[1]
-            states_list = self.mech_step(m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
+            states_list = self.mech_step(var_dict, m_step, states_list, s_conf, b_conf, env_processes, t_step, run)
             m_step += 1
 
         t_step += 1
 
         return states_list
 
-    def block_pipeline(self, states_list, configs, env_processes, time_seq, run):
+    # ToDo: Rename Run Pipeline
+    def block_pipeline(self, var_dict, states_list, configs, env_processes, time_seq, run):
         time_seq = [x + 1 for x in time_seq]
         simulation_list = [states_list]
         for time_step in time_seq:
-            pipe_run = self.mech_pipeline(simulation_list[-1], configs, env_processes, time_step, run)
+            pipe_run = self.mech_pipeline(var_dict, simulation_list[-1], configs, env_processes, time_step, run)
             _, *pipe_run = pipe_run
             simulation_list.append(pipe_run)
 
         return simulation_list
 
-    def simulation(self, states_list, configs, env_processes, time_seq, runs):
+
+    # ToDo: Muiltithreaded Runs
+    def simulation(self, var_dict, states_list, configs, env_processes, time_seq, runs):
         pipe_run = []
         for run in range(runs):
             run += 1
             states_list_copy = deepcopy(states_list)
-            head, *tail = self.block_pipeline(states_list_copy, configs, env_processes, time_seq, run)
+            head, *tail = self.block_pipeline(var_dict, states_list_copy, configs, env_processes, time_seq, run)
             genesis = head.pop()
             genesis['mech_step'], genesis['time_step'], genesis['run'] = 0, 0, run
             first_timestep_per_run = [genesis] + tail.pop(0)

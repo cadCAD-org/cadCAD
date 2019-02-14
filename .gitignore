@@ -1,6 +1,9 @@
 .idea
 .ipynb_checkpoints
 .DS_Store
+.idea
+notebooks
+SimCAD.egg-info
 __pycache__
 Pipfile
 Pipfile.lock
