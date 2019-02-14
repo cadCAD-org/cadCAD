@@ -6,7 +6,7 @@ from SimCAD.configuration import append_configs
 from SimCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step
 from SimCAD.configuration.utils.parameterSweep import config_sim
 
-seed = {
+seeds = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
     'b': np.random.RandomState(3),
@@ -14,20 +14,20 @@ seed = {
 }
 
 
-# Behaviors per Mechanism
-def b1m1(_g, step, sL, s):
+# Policies per Mechanism
+def p1m1(_g, step, sL, s):
     return {'param1': 1}
-def b2m1(_g, step, sL, s):
+def p2m1(_g, step, sL, s):
     return {'param2': 4}
 
-def b1m2(_g, step, sL, s):
+def p1m2(_g, step, sL, s):
     return {'param1': 'a', 'param2': 2}
-def b2m2(_g, step, sL, s):
+def p2m2(_g, step, sL, s):
     return {'param1': 'b', 'param2': 4}
 
-def b1m3(_g, step, sL, s):
+def p1m3(_g, step, sL, s):
     return {'param1': ['c'], 'param2': np.array([10, 100])}
-def b2m3(_g, step, sL, s):
+def p2m3(_g, step, sL, s):
     return {'param1': ['d'], 'param2': np.array([20, 200])}
 
 
@@ -66,12 +66,12 @@ proc_one_coef_B = 1.3
 
 def es3p1(_g, step, sL, s, _input):
     y = 's3'
-    x = s['s3'] * bound_norm_random(seed['a'], proc_one_coef_A, proc_one_coef_B)
+    x = s['s3'] * bound_norm_random(seeds['a'], proc_one_coef_A, proc_one_coef_B)
     return (y, x)
 
 def es4p2(_g, step, sL, s, _input):
     y = 's4'
-    x = s['s4'] * bound_norm_random(seed['b'], proc_one_coef_A, proc_one_coef_B)
+    x = s['s4'] * bound_norm_random(seeds['b'], proc_one_coef_A, proc_one_coef_B)
     return (y, x)
 
 ts_format = '%Y-%m-%d %H:%M:%S'
@@ -114,11 +114,11 @@ env_processes = {
 }
 
 
-mechanisms = {
+partial_state_update_block = {
     "m1": {
-        "behaviors": {
-            "b1": b1m1,
-            # "b2": b2m1
+        "policies": {
+            "b1": p1m1,
+            # "b2": p2m1
         },
         "states": {
             "s1": s1m1,
@@ -126,9 +126,9 @@ mechanisms = {
         }
     },
     "m2": {
-        "behaviors": {
-            "b1": b1m2,
-            # "b2": b2m2
+        "policies": {
+            "b1": p1m2,
+            # "b2": p2m2
         },
         "states": {
             "s1": s1m2,
@@ -136,9 +136,9 @@ mechanisms = {
         }
     },
     "m3": {
-        "behaviors": {
-            "b1": b1m3,
-            "b2": b2m3
+        "policies": {
+            "b1": p1m3,
+            "b2": p2m3
         },
         "states": {
             "s1": s1m3,
@@ -158,9 +158,9 @@ sim_config = config_sim(
 
 append_configs(
     sim_configs=sim_config,
-    state_dict=genesis_states,
-    seed=seed,
+    initial_state=genesis_states,
+    seeds=seeds,
     raw_exogenous_states=raw_exogenous_states,
     env_processes=env_processes,
-    mechanisms=mechanisms
+    partial_state_updates=partial_state_update_block
 )

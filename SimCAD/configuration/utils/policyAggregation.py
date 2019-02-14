@@ -13,7 +13,7 @@ def get_base_value(x):
         return 0
 
 
-def behavior_to_dict(v):
+def policy_to_dict(v):
     return dict(list(zip(map(lambda n: 'b' + str(n + 1), list(range(len(v)))), v)))
 
 
