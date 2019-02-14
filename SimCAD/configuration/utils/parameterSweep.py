@@ -16,4 +16,5 @@ def config_sim(d):
             for M in process_variables(d["M"])
         ]
     else:
+        d["M"] = [{}]
         return d
