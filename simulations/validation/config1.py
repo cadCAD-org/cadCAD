@@ -1,6 +1,6 @@
 from decimal import Decimal
 import numpy as np
-from datetime import timedelta #
+from datetime import timedelta
 
 from SimCAD import configs
 from SimCAD.configuration import Configuration
