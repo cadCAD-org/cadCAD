@@ -1,10 +1,10 @@
-# SimmCAD Documentation
+# SimCAD Documentation
 
 ## Introduction
 
 A blockchain is a distributed ledger with economic agents transacting in a network. The state of the network evolves with every new transaction, which can be a result of user behaviors, protocol-defined system mechanisms, or external processes.
 
-It is not uncommon today for blockchain projects to announce a set of rules for their network and make claims about their system level behvaior. However, the validity of those claims is hardly validated. Furthermore, it is difficult to know the potential system-level impact when the network is considering an upgrade to their system rules and prameters.
+It is not uncommon today for blockchain projects to announce a set of rules for their network and make claims about their system level behavior. However, the validity of those claims is hardly validated. Furthermore, it is difficult to know the potential system-level impact when the network is considering an upgrade to their system rules and parameters.
 
 To rigorously and reliably analyze, design, and improve cryptoeconomic networks, we are introducing this Computer Aided Design Engine where we define a cryptoeconomic network with its state and exogneous variables, model transactions as a result of agent behaviors, state mechanisms, and environmental processes. We can then run simulations with different initial states, mechanisms, environmental processes to understand and visualize network behavior under different conditions.
 

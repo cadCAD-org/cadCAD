@@ -1,6 +1,9 @@
 .idea
 .ipynb_checkpoints
 .DS_Store
+.idea
+notebooks
+SimCAD.egg-info
 __pycache__
 Pipfile
 Pipfile.lock
@@ -9,7 +12,6 @@ results
 *.csv
 *.txt
 simulations/.ipynb_checkpoints
-dist/SimCAD-0.1.tar.gz
 
 build
 SimCAD.egg-info
