@@ -55,7 +55,6 @@ class Executor:
             Ts.append(x.sim_config['T'])
             Ns.append(x.sim_config['N'])
             var_dict_list.append(x.sim_config['M'])
-
             states_lists.append([x.state_dict])
             eps.append(list(x.exogenous_states.values()))
             configs_structs.append(config_proc.generate_config(x.state_dict, x.mechanisms, eps[config_idx]))
