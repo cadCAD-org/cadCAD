@@ -52,7 +52,7 @@ def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = tstep_delta):
 
 ep_t_delta = timedelta(days=0, minutes=0, seconds=1)
 def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = ep_t_delta):
-    if s['mech_step'] == 0:
+    if s['sub_step'] == 0:
         return time_step(dt_str, fromat_str, _timedelta)
     else:
         return dt_str
@@ -114,7 +114,7 @@ def sweep_states(state_type, states, in_config):
 def exo_update_per_ts(ep):
     @curried
     def ep_decorator(f, y, var_dict, sub_step, sL, s, _input):
-        if s['mech_step'] + 1 == 1:
+        if s['sub_step'] + 1 == 1:
             return f(var_dict, sub_step, sL, s, _input)
         else:
             return y, s[y]
