@@ -24,8 +24,8 @@ def retrieve_state(l, offset):
     return l[last_index(l) + offset + 1]
 
 
-# exception_function = f(m_step, sL, sL[-2], _input)
-# try_function = f(m_step, sL, last_mut_obj, _input)
+# exception_function = f(sub_step, sL, sL[-2], _input)
+# try_function = f(sub_step, sL, last_mut_obj, _input)
 @curried
 def engine_exception(ErrorType, error_message, exception_function, try_function):
     try:
