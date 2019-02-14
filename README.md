@@ -15,13 +15,10 @@ Simulations may be run with a range of initial conditions and parameters for sta
 and environmental processes to understand and visualize network behavior under various conditions. Support for \
 A/B testing policies, monte carlo analysis and other common numerical methods is provided.
 
-SimCAD is written in Python 3.
-
 **1. Install Dependencies:**
 ```bash
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 python3 setup.py sdist bdist_wheel
-pip3 install dist/SimCAD-0.1-py3-none-any.whl
 ```
 
 **2. Configure Simulation:**
