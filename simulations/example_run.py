@@ -1,9 +1,8 @@
 import pandas as pd
 from tabulate import tabulate
-from importlib import reload
 # The following imports NEED to be in the exact order
 from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import config1 #, config2
+from simulations.validation import sweep_config
 
 from SimCAD import configs
 
