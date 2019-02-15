@@ -11,4 +11,5 @@ results
 simulations/.ipynb_checkpoints
 
 build
+cadCAD.egg-info
 SimCAD.egg-info
