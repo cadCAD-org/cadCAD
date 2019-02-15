@@ -1,4 +1,4 @@
-# SimmCAD Documentation
+# SimCAD Documentation
 
 ## Introduction
 
