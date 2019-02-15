@@ -7,19 +7,19 @@ from cadCAD import configs
 
 exec_mode = ExecutionMode()
 
-# print("Simulation Execution 1")
-# print()
-# first_config = [configs[0]] # from config1
-# single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
-# run1 = Executor(exec_context=single_proc_ctx, configs=first_config)
-# run1_raw_result, tensor_field = run1.main()
-# result = pd.DataFrame(run1_raw_result)
-# print()
-# print("Tensor Field:")
-# print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
-# print("Output:")
-# print(tabulate(result, headers='keys', tablefmt='psql'))
-# print()
+print("Simulation Execution 1")
+print()
+first_config = [configs[0]] # from config1
+single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
+run1 = Executor(exec_context=single_proc_ctx, configs=first_config)
+run1_raw_result, tensor_field = run1.main()
+result = pd.DataFrame(run1_raw_result)
+print()
+print("Tensor Field:")
+print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
+print("Output:")
+print(tabulate(result, headers='keys', tablefmt='psql'))
+print()
 
 print("Simulation Execution 2: Concurrent Execution")
 multi_proc_ctx = ExecutionContext(context=exec_mode.multi_proc)
