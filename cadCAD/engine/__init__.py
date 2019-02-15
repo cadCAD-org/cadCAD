@@ -1,9 +1,9 @@
 from pathos.multiprocessing import ProcessingPool as Pool
 
-from SimCAD.utils import flatten
-from SimCAD.configuration import Processor
-from SimCAD.configuration.utils import TensorFieldReport
-from SimCAD.engine.simulation import Executor as SimExecutor
+from cadCAD.utils import flatten
+from cadCAD.configuration import Processor
+from cadCAD.configuration.utils import TensorFieldReport
+from cadCAD.engine.simulation import Executor as SimExecutor
 
 
 class ExecutionMode:
