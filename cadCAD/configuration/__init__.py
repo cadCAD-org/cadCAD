@@ -30,7 +30,7 @@ class Configuration(object):
             elif (key=='mechanisms'):
                 self.partial_state_updates = value
 
-        if (self.state_dict == {}):
+        if (self.initial_state == {}):
             raise Exception('The initial conditions of the system have not been set')
 
 
@@ -118,7 +118,7 @@ class Processor:
                 return sdf_values, bdf_values
             elif (bdf.empty == True) and (sdf.empty == False):
                 sdf_values = sdf.values.tolist()
-                bdf_values = [[self.b_identity] * len(sdf_values) for m in range(len(partial_state_updates))]
+                bdf_values = [[self.p_identity] * len(sdf_values) for m in range(len(partial_state_updates))]
                 return sdf_values, bdf_values
             else:
                 sdf_values = sdf.values.tolist()
@@ -155,11 +155,11 @@ class Processor:
                 for k, v in mechanisms.items():
                     rename_keys(v)
             return
-        
+
         if len(partial_state_updates) != 0:
             sanitize_partial_state_updates(partial_state_updates)
             bdf = self.create_matrix_field(partial_state_updates, 'policies')
-            sdf = self.create_matrix_field(partial_state_updates, 'states')
+            sdf = self.create_matrix_field(partial_state_updates, 'state_update_functions')
             sdf_values, bdf_values = no_update_handler(bdf, sdf)
             zipped_list = list(zip(sdf_values, bdf_values))
         else:
