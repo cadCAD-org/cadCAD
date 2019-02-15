@@ -1,4 +1,4 @@
-from SimCAD.utils import flatten_tabulated_dict, tabulate_dict
+from cadCAD.utils import flatten_tabulated_dict, tabulate_dict
 
 
 def process_variables(d):
