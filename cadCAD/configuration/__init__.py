@@ -2,8 +2,8 @@ from functools import reduce
 from fn.op import foldr
 import pandas as pd
 
-from SimCAD.utils import key_filter
-from SimCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
+from cadCAD.utils import key_filter
+from cadCAD.configuration.utils.behaviorAggregation import dict_elemwise_sum
 
 
 class Configuration:
@@ -122,7 +122,7 @@ class Processor:
                     pass
 
             # Also for backwards compatibility, we accept partial state update blocks both as list or dict
-            # No need for a deprecation warning as it's already raised by SimCAD.utils.key_filter
+            # No need for a deprecation warning as it's already raised by cadCAD.utils.key_filter
             if (type(m)==list):
                 for v in m:
                     rename_keys(v)

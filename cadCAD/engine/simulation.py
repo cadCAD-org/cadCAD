@@ -1,6 +1,6 @@
 from copy import deepcopy
 from fn.op import foldr, call
-from SimCAD.engine.utils import engine_exception
+from cadCAD.engine.utils import engine_exception
 
 id_exception = engine_exception(KeyError, KeyError, None)
 
