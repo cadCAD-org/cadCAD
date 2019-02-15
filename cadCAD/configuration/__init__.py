@@ -104,7 +104,7 @@ class Processor:
                 return sdf_values, bdf_values
             elif (bdf.empty == True) and (sdf.empty == False):
                 sdf_values = sdf.values.tolist()
-                bdf_values = [[self.b_identity] * len(sdf_values) for m in range(len(partial_state_updates))]
+                bdf_values = [[self.p_identity] * len(sdf_values) for m in range(len(partial_state_updates))]
                 return sdf_values, bdf_values
             else:
                 sdf_values = sdf.values.tolist()
