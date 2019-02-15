@@ -2,15 +2,15 @@ from functools import reduce
 from fn.op import foldr
 import pandas as pd
 
-from SimCAD import configs
-from SimCAD.utils import key_filter
-from SimCAD.configuration.utils.policyAggregation import dict_elemwise_sum
-from SimCAD.configuration.utils import exo_update_per_ts
+from cadCAD import configs
+from cadCAD.utils import key_filter
+from cadCAD.configuration.utils.policyAggregation import dict_elemwise_sum
+from cadCAD.configuration.utils import exo_update_per_ts
 
 
 class Configuration(object):
-    def __init__(self, sim_config=None, initial_state=None, seeds=None, env_processes=None,
-                 exogenous_states=None, partial_state_updates=None, policy_ops=[foldr(dict_elemwise_sum())]):
+    def __init__(self, sim_config={}, initial_state={}, seeds={}, env_processes={},
+                 exogenous_states={}, partial_state_updates={}, policy_ops=[foldr(dict_elemwise_sum())], **kwargs):
         self.sim_config = sim_config
         self.initial_state = initial_state
         self.seeds = seeds

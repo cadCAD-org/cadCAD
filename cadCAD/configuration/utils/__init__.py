@@ -4,7 +4,7 @@ from copy import deepcopy
 from fn.func import curried
 import pandas as pd
 
-from SimCAD.utils import dict_filter, contains_type
+from cadCAD.utils import dict_filter, contains_type
 
 
 class TensorFieldReport:

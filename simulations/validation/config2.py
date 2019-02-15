@@ -2,9 +2,9 @@ from decimal import Decimal
 import numpy as np
 from datetime import timedelta
 
-from SimCAD.configuration import append_configs
-from SimCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step
-from SimCAD.configuration.utils.parameterSweep import config_sim
+from cadCAD.configuration import append_configs
+from cadCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step
+from cadCAD.configuration.utils.parameterSweep import config_sim
 
 seeds = {
     'z': np.random.RandomState(1),
@@ -77,8 +77,8 @@ def es4p2(_g, step, sL, s, _input):
 ts_format = '%Y-%m-%d %H:%M:%S'
 t_delta = timedelta(days=0, minutes=0, seconds=1)
 def es5p2(_g, step, sL, s, _input):
-    y = 'timestamp'
-    x = ep_time_step(s, dt_str=s['timestamp'], fromat_str=ts_format, _timedelta=t_delta)
+    y = 'timestep'
+    x = ep_time_step(s, dt_str=s['timestep'], fromat_str=ts_format, _timedelta=t_delta)
     return (y, x)
 
 
@@ -97,14 +97,14 @@ genesis_states = {
     's2': Decimal(0.0),
     's3': Decimal(1.0),
     's4': Decimal(1.0),
-    'timestamp': '2018-10-01 15:16:24'
+    'timestep': '2018-10-01 15:16:24'
 }
 
 
 raw_exogenous_states = {
     "s3": es3p1,
     "s4": es4p2,
-    "timestamp": es5p2
+    "timestep": es5p2
 }
 
 
