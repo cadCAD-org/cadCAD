@@ -1,7 +1,7 @@
 from copy import deepcopy
 from fn.op import foldr, call
 
-from SimCAD.engine.utils import engine_exception
+from cadCAD.engine.utils import engine_exception
 
 id_exception = engine_exception(KeyError, KeyError, None)
 
@@ -49,7 +49,7 @@ class Executor:
 
         del last_in_obj
 
-        self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestamp'])
+        self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep']) # not time_step
 
         last_in_copy["sub_step"], last_in_copy["time_step"], last_in_copy['run'] = sub_step, time_step, run
         sL.append(last_in_copy)

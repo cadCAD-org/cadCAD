@@ -12,6 +12,8 @@ results
 *.csv
 *.txt
 simulations/.ipynb_checkpoints
+dist/*.gz
+cadCAD.egg-info
 
 build
 SimCAD.egg-info
