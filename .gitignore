@@ -3,7 +3,7 @@
 .DS_Store
 .idea
 notebooks
-SimCAD.egg-info
+*.egg-info
 __pycache__
 Pipfile
 Pipfile.lock
@@ -12,6 +12,7 @@ results
 *.csv
 *.txt
 simulations/.ipynb_checkpoints
+dist/*.gz
 
 build
 SimCAD.egg-info
