@@ -1,7 +1,7 @@
 from functools import reduce
 from fn.op import foldr
 import pandas as pd
-
+from copy import deepcopy
 
 from cadCAD import configs
 from cadCAD.utils import key_filter
@@ -21,16 +21,16 @@ class Configuration(object):
         self.policy_ops = policy_ops
 
         # for backwards compatibility, we accept old arguments via **kwargs
-        # TODO: raise deprecation warnings
+        # TODO: raise specific deprecation warnings for key == 'state_dict', key == 'seed', key == 'mechanisms'
         for key, value in kwargs.items():
-            if (key=='state_dict'):
+            if key == 'state_dict':
                 self.initial_state = value
-            elif (key=='seed'):
+            elif key == 'seed':
                 self.seeds = value
-            elif (key=='mechanisms'):
+            elif key == 'mechanisms':
                 self.partial_state_updates = value
 
-        if (self.initial_state == {}):
+        if self.initial_state == {}:
             raise Exception('The initial conditions of the system have not been set')
 
 
@@ -49,7 +49,7 @@ def append_configs(sim_configs, initial_state, seeds, raw_exogenous_states, env_
                     seeds=seeds,
                     exogenous_states=exogenous_states,
                     env_processes=env_processes,
-                    partial_state_updates=partial_state_update_blocks
+                    partial_state_update_blocks=partial_state_update_blocks
                 )
             )
     elif isinstance(sim_configs, dict):
@@ -60,7 +60,7 @@ def append_configs(sim_configs, initial_state, seeds, raw_exogenous_states, env_
                 seeds=seeds,
                 exogenous_states=exogenous_states,
                 env_processes=env_processes,
-                partial_state_updates=partial_state_update_blocks
+                partial_state_update_blocks=partial_state_update_blocks
             )
         )
 
@@ -98,10 +98,11 @@ class Processor:
         self.apply_identity_funcs = id.apply_identity_funcs
 
     def create_matrix_field(self, partial_state_updates, key):
-        if key == 'state_update_functions':
+        if key == 'variables':
             identity = self.state_identity
         elif key == 'policies':
             identity = self.policy_identity
+
         df = pd.DataFrame(key_filter(partial_state_updates, key))
         col_list = self.apply_identity_funcs(identity, df, list(df.columns))
         if len(col_list) != 0:
@@ -127,13 +128,15 @@ class Processor:
 
         def only_ep_handler(state_dict):
             sdf_functions = [
-                lambda sub_step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
+                lambda var_dict, sub_step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
             ]
             sdf_values = [sdf_functions]
             bdf_values = [[self.p_identity] * len(sdf_values)]
             return sdf_values, bdf_values
 
-        def sanitize_partial_state_updates(m):
+        # backwards compatibility
+        def sanitize_partial_state_updates(partial_state_updates):
+            new_partial_state_updates = deepcopy(partial_state_updates)
             # for backwards compatibility we accept the old keys
             # ('behaviors' and 'states') and rename them
             def rename_keys(d):
@@ -142,24 +145,26 @@ class Processor:
                 except KeyError:
                     pass
                 try:
-                    d['state_update_functions'] = d.pop('states')
+                    d['variables'] = d.pop('states')
                 except KeyError:
                     pass
 
             # Also for backwards compatibility, we accept partial state update blocks both as list or dict
             # No need for a deprecation warning as it's already raised by cadCAD.utils.key_filter
-            if (type(m)==list):
-                for v in m:
+            if (type(new_partial_state_updates)==list):
+                for v in new_partial_state_updates:
                     rename_keys(v)
-            elif (type(m)==dict):
-                for k, v in mechanisms.items():
+            elif (type(new_partial_state_updates)==dict):
+                for k, v in new_partial_state_updates.items():
                     rename_keys(v)
-            return
+
+            del partial_state_updates
+            return new_partial_state_updates
 
         if len(partial_state_updates) != 0:
-            sanitize_partial_state_updates(partial_state_updates)
+            partial_state_updates = sanitize_partial_state_updates(partial_state_updates)
             bdf = self.create_matrix_field(partial_state_updates, 'policies')
-            sdf = self.create_matrix_field(partial_state_updates, 'state_update_functions')
+            sdf = self.create_matrix_field(partial_state_updates, 'variables')
             sdf_values, bdf_values = no_update_handler(bdf, sdf)
             zipped_list = list(zip(sdf_values, bdf_values))
         else:

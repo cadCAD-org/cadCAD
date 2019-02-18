@@ -21,7 +21,7 @@ SimCAD is written in Python 3.
 ```bash
 pip3 install -r requirements.txt
 python3 setup.py sdist bdist_wheel
-pip3 install dist/cadCAD-0.2-py3-none-any.whl
+pip3 install dist/*.whl
 ```
 
 **2. Configure Simulation:**
