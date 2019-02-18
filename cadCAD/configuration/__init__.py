@@ -22,6 +22,8 @@ class Configuration(object):
         self.policy_ops = policy_ops
         self.kwargs = kwargs
 
+        sanitize_config(self)
+
 
 def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={}, partial_state_update_blocks={}, _exo_update_per_ts=True):
     if _exo_update_per_ts is True:
@@ -39,8 +41,7 @@ def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_sta
                 env_processes=env_processes,
                 partial_state_update_blocks=partial_state_update_blocks
             )
-            back_compatable_config = sanitize_config(config)
-            configs.append(back_compatable_config)
+            configs.append(config)
     elif isinstance(sim_configs, dict):
         config = Configuration(
             sim_config=sim_configs,
@@ -50,8 +51,7 @@ def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_sta
             env_processes=env_processes,
             partial_state_update_blocks=partial_state_update_blocks
         )
-        back_compatable_config = sanitize_config(config)
-        configs.append(back_compatable_config)
+        configs.append(config)
 
 
 class Identity:
@@ -124,7 +124,7 @@ class Processor:
             return sdf_values, bdf_values
 
         if len(partial_state_updates) != 0:
-            # backwards compatibility
+            # backwards compatibility # ToDo: Move this
             partial_state_updates = sanitize_partial_state_updates(partial_state_updates)
 
             bdf = self.create_matrix_field(partial_state_updates, 'policies')

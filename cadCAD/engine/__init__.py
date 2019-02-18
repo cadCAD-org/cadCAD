@@ -65,6 +65,7 @@ class Executor:
             config_idx += 1
 
         if self.exec_context == ExecutionMode.single_proc:
+            # ToDO: Deprication Handler - "sanitize" in appropriate place
             tensor_field = create_tensor_field(partial_state_updates.pop(), eps.pop())
             result = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
             return result, tensor_field
