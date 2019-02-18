@@ -35,7 +35,7 @@ def append_configs(sim_configs, initial_state, seeds, raw_exogenous_states, env_
                     seeds=seeds,
                     exogenous_states=exogenous_states,
                     env_processes=env_processes,
-                    partial_state_updates=partial_state_update_blocks
+                    partial_state_update_blocks=partial_state_update_blocks
                 )
             )
     elif isinstance(sim_configs, dict):
@@ -46,7 +46,7 @@ def append_configs(sim_configs, initial_state, seeds, raw_exogenous_states, env_
                 seeds=seeds,
                 exogenous_states=exogenous_states,
                 env_processes=env_processes,
-                partial_state_updates=partial_state_update_blocks
+                partial_state_update_blocks=partial_state_update_blocks
             )
         )
 
