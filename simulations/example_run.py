@@ -2,7 +2,7 @@ import pandas as pd
 from tabulate import tabulate
 # The following imports NEED to be in the exact order
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import sweep_config, config1, config2
+from simulations.validation import config4 #sweep_config, config1, config2
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
@@ -21,14 +21,14 @@ print("Output:")
 print(tabulate(result, headers='keys', tablefmt='psql'))
 print()
 
-print("Simulation Execution 2: Concurrent Execution")
-multi_proc_ctx = ExecutionContext(context=exec_mode.multi_proc)
-run2 = Executor(exec_context=multi_proc_ctx, configs=configs)
-for raw_result, tensor_field in run2.main():
-    result = pd.DataFrame(raw_result)
-    print()
-    print("Tensor Field:")
-    print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
-    print("Output:")
-    print(tabulate(result, headers='keys', tablefmt='psql'))
-    print()
+# print("Simulation Execution 2: Concurrent Execution")
+# multi_proc_ctx = ExecutionContext(context=exec_mode.multi_proc)
+# run2 = Executor(exec_context=multi_proc_ctx, configs=configs)
+# for raw_result, tensor_field in run2.main():
+#     result = pd.DataFrame(raw_result)
+#     print()
+#     print("Tensor Field:")
+#     print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
+#     print("Output:")
+#     print(tabulate(result, headers='keys', tablefmt='psql'))
+#     print()
