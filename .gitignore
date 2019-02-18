@@ -17,4 +17,5 @@ dist/*.gz
 cadCAD.egg-info
 
 build
+cadCAD.egg-info
 SimCAD.egg-info

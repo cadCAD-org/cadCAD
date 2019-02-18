@@ -97,20 +97,20 @@ genesis_states = {
     's2': Decimal(0.0),
     's3': Decimal(1.0),
     's4': Decimal(1.0),
-    'timestep': '2018-10-01 15:16:24'
+#     'timestep': '2018-10-01 15:16:24'
 }
 
 
 raw_exogenous_states = {
     "s3": es3p1,
     "s4": es4p2,
-    "timestep": es5p2
+#     "timestep": es5p2
 }
 
 
 env_processes = {
-    "s3": proc_trigger('2018-10-01 15:16:25', env_a),
-    "s4": proc_trigger('2018-10-01 15:16:25', env_b)
+    "s3": proc_trigger(1, env_a),
+    "s4": proc_trigger(1, env_b)
 }
 
 
@@ -162,5 +162,5 @@ append_configs(
     seeds=seeds,
     raw_exogenous_states=raw_exogenous_states,
     env_processes=env_processes,
-    partial_state_updates=partial_state_update_block
+    partial_state_update_blocks=partial_state_update_block
 )

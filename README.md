@@ -9,7 +9,7 @@ Aided Design of economic systems. An economic system is treated as a state based
 set of endogenous and exogenous state variables which are updated through mechanisms and environmental \
 processes, respectively. Behavioral models, which may be deterministic or stochastic, provide the evolution of \
 the system within the action space of the mechanisms. Mathematical formulations of these economic games \
-treat agent utility as derived from state rather than direct from action, creating a rich dynamic modeling framework. 
+treat agent utility as derived from state rather than direct from action, creating a rich dynamic modeling framework.
 
 Simulations may be run with a range of initial conditions and parameters for states, behaviors, mechanisms, \
 and environmental processes to understand and visualize network behavior under various conditions. Support for \
@@ -21,7 +21,7 @@ SimCAD is written in Python 3.
 ```bash
 pip3 install -r requirements.txt
 python3 setup.py sdist bdist_wheel
-pip3 install dist/cadCAD-0.1-py3-none-any.whl
+pip3 install dist/*.whl
 ```
 
 **2. Configure Simulation:**
@@ -76,7 +76,7 @@ for raw_result, tensor_field in run2.main():
     print()
 ```
 
-The above can be run in Jupyter. 
+The above can be run in Jupyter.
 ```bash
 jupyter notebook
 ```

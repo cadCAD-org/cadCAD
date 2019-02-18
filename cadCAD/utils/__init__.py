@@ -75,7 +75,8 @@ def contains_type(_collection, type):
 def drop_right(l, n):
     return l[:len(l) - n]
 
-
+# backwards compatibility
+# ToDo: Encapsulate in function
 def key_filter(l, keyname):
     if (type(l) == list):
         return [v[keyname] for v in l]
