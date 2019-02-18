@@ -10,17 +10,17 @@ from cadCAD.configuration.utils import exo_update_per_ts
 
 class Configuration(object):
     def __init__(self, sim_config={}, initial_state={}, seeds={}, env_processes={},
-                 exogenous_states={}, partial_state_updates={}, policy_ops=[foldr(dict_elemwise_sum())], **kwargs):
+                 exogenous_states={}, partial_state_update_blocks={}, policy_ops=[foldr(dict_elemwise_sum())], **kwargs):
         self.sim_config = sim_config
         self.initial_state = initial_state
         self.seeds = seeds
         self.env_processes = env_processes
         self.exogenous_states = exogenous_states
-        self.partial_state_updates = partial_state_updates
+        self.partial_state_updates = partial_state_update_blocks
         self.policy_ops = policy_ops
 
 
-def append_configs(sim_configs, initial_state, seeds, raw_exogenous_states, env_processes, partial_state_updates, _exo_update_per_ts=True):
+def append_configs(sim_configs, initial_state, seeds, raw_exogenous_states, env_processes, partial_state_update_blocks, _exo_update_per_ts=True):
     if _exo_update_per_ts is True:
         exogenous_states = exo_update_per_ts(raw_exogenous_states)
     else:
@@ -35,7 +35,7 @@ def append_configs(sim_configs, initial_state, seeds, raw_exogenous_states, env_
                     seeds=seeds,
                     exogenous_states=exogenous_states,
                     env_processes=env_processes,
-                    partial_state_updates=partial_state_updates
+                    partial_state_update_blocks=partial_state_update_blocks
                 )
             )
     elif isinstance(sim_configs, dict):
@@ -46,7 +46,7 @@ def append_configs(sim_configs, initial_state, seeds, raw_exogenous_states, env_
                 seeds=seeds,
                 exogenous_states=exogenous_states,
                 env_processes=env_processes,
-                partial_state_updates=partial_state_updates
+                partial_state_update_blocks=partial_state_update_blocks
             )
         )
 
@@ -84,7 +84,7 @@ class Processor:
         self.apply_identity_funcs = id.apply_identity_funcs
 
     def create_matrix_field(self, partial_state_updates, key):
-        if key == 'states':
+        if key == 'variables':
             identity = self.state_identity
         elif key == 'policies':
             identity = self.policy_identity
@@ -113,7 +113,7 @@ class Processor:
 
         def only_ep_handler(state_dict):
             sdf_functions = [
-                lambda sub_step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
+                lambda var_dict, sub_step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
             ]
             sdf_values = [sdf_functions]
             bdf_values = [[self.p_identity] * len(sdf_values)]
@@ -121,7 +121,7 @@ class Processor:
 
         if len(partial_state_updates) != 0:
             bdf = self.create_matrix_field(partial_state_updates, 'policies')
-            sdf = self.create_matrix_field(partial_state_updates, 'states')
+            sdf = self.create_matrix_field(partial_state_updates, 'variables')
             sdf_values, bdf_values = no_update_handler(bdf, sdf)
             zipped_list = list(zip(sdf_values, bdf_values))
         else:
