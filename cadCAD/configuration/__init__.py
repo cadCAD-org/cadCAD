@@ -113,7 +113,7 @@ class Processor:
 
         def only_ep_handler(state_dict):
             sdf_functions = [
-                lambda sub_step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
+                lambda var_dict, sub_step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
             ]
             sdf_values = [sdf_functions]
             bdf_values = [[self.p_identity] * len(sdf_values)]
