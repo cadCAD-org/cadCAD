@@ -109,8 +109,8 @@ raw_exogenous_states = {
 
 
 env_processes = {
-    "s3": proc_trigger('2018-10-01 15:16:25', env_a),
-    "s4": proc_trigger('2018-10-01 15:16:25', env_b)
+    "s3": proc_trigger(1, env_a),
+    "s4": proc_trigger(1, env_b)
 }
 
 
