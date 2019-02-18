@@ -25,7 +25,7 @@ class TensorFieldReport:
 #
 #
 def state_update(y, x):
-    return lambda sub_step, sL, s, _input: (y, x)
+    return lambda var_dict, sub_step, sL, s, _input: (y, x)
 
 
 def bound_norm_random(rng, low, high):
