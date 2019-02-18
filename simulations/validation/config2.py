@@ -120,7 +120,7 @@ partial_state_update_block = {
             "b1": p1m1,
             # "b2": p2m1
         },
-        "variables": {
+        "states": {
             "s1": s1m1,
             # "s2": s2m1
         }
@@ -130,7 +130,7 @@ partial_state_update_block = {
             "b1": p1m2,
             # "b2": p2m2
         },
-        "variables": {
+        "states": {
             "s1": s1m2,
             # "s2": s2m2
         }
@@ -140,7 +140,7 @@ partial_state_update_block = {
             "b1": p1m3,
             "b2": p2m3
         },
-        "variables": {
+        "states": {
             "s1": s1m3,
             "s2": s2m3
         }
