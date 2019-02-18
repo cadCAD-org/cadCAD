@@ -128,7 +128,7 @@ raw_exogenous_states = {
 
 # ToDo: make env proc trigger field agnostic
 # ToDo: input json into function renaming __name__
-triggered_env_b = proc_trigger('2018-10-01 15:16:25', env_b)
+triggered_env_b = proc_trigger(1, env_b)
 env_processes = {
     "s3": env_a, #sweep(beta, env_a),
     "s4": triggered_env_b #rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)
