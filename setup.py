@@ -11,11 +11,11 @@ long_description = "cadCAD is a differential games based simulation software pac
     monte carlo analysis and other common numerical methods is provided."
 
 setup(name='cadCAD',
-      version='0.1',
+      version='0.2',
       description="cadCAD: a differential games based simulation software package for research, validation, and \
         Computer Aided Design of economic systems",
-      long_description = long_description,
-      url='https://github.com/BlockScience/DiffyQ-cadCAD',
+      long_description=long_description,
+      url='https://github.com/BlockScience/DiffyQ-SimCAD',
       author='Joshua E. Jodesty',
       author_email='joshua@block.science',
       # license='LICENSE',

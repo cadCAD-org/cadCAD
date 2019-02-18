@@ -7,6 +7,7 @@ id_exception = engine_exception(KeyError, KeyError, None)
 
 
 class Executor:
+
     def __init__(self, policy_ops, policy_update_exception=id_exception, state_update_exception=id_exception):
         self.policy_ops = policy_ops # behavior_ops
         self.state_update_exception = state_update_exception
@@ -49,20 +50,21 @@ class Executor:
 
         del last_in_obj
 
-        self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep']) # not time_step
+        self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
 
-        last_in_copy["sub_step"], last_in_copy["time_step"], last_in_copy['run'] = sub_step, time_step, run
+        last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
         sL.append(last_in_copy)
         del last_in_copy
 
         return sL
+
 
     # mech_pipeline
     def state_update_pipeline(self, var_dict, states_list, configs, env_processes, time_step, run):
         sub_step = 0
         states_list_copy = deepcopy(states_list)
         genesis_states = states_list_copy[-1]
-        genesis_states['sub_step'], genesis_states['time_step'] = sub_step, time_step
+        genesis_states['substep'], genesis_states['timestep'] = sub_step, time_step
         states_list = [genesis_states]
 
         sub_step += 1
@@ -93,7 +95,7 @@ class Executor:
             states_list_copy = deepcopy(states_list)
             head, *tail = self.run_pipeline(var_dict, states_list_copy, configs, env_processes, time_seq, run)
             genesis = head.pop()
-            genesis['sub_step'], genesis['time_step'], genesis['run'] = 0, 0, run
+            genesis['substep'], genesis['timestep'], genesis['run'] = 0, 0, run
             first_timestep_per_run = [genesis] + tail.pop(0)
             pipe_run += [first_timestep_per_run] + tail
             del states_list_copy
