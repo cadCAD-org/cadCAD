@@ -3,13 +3,13 @@ import numpy as np
 from datetime import timedelta
 import pprint
 
-from SimCAD.configuration import append_configs
-from SimCAD.configuration.utils import proc_trigger, ep_time_step
-from SimCAD.configuration.utils.parameterSweep import config_sim
+from cadCAD.configuration import append_configs
+from cadCAD.configuration.utils import proc_trigger, ep_time_step
+from cadCAD.configuration.utils.parameterSweep import config_sim
 
 pp = pprint.PrettyPrinter(indent=4)
 
-seed = {
+seeds = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
     'b': np.random.RandomState(3),
@@ -24,23 +24,23 @@ g = {
     'omega': [7]
 }
 
-# Behaviors per Mechanism
-def b1m1(_g, step, sL, s):
+# Policies per Mechanism
+def p1m1(_g, step, sL, s):
     return {'param1': 1}
 
-def b2m1(_g, step, sL, s):
+def p2m1(_g, step, sL, s):
     return {'param2': 4}
 
-def b1m2(_g, step, sL, s):
+def p1m2(_g, step, sL, s):
     return {'param1': 'a', 'param2': _g['beta']}
 
-def b2m2(_g, step, sL, s):
+def p2m2(_g, step, sL, s):
     return {'param1': 'b', 'param2': 0}
 
-def b1m3(_g, step, sL, s):
+def p1m3(_g, step, sL, s):
     return {'param1': np.array([10, 100])}
 
-def b2m3(_g, step, sL, s):
+def p2m3(_g, step, sL, s):
     return {'param1': np.array([20, 200])}
 
 # Internal States per Mechanism
@@ -93,8 +93,8 @@ def es4p2(_g, step, sL, s, _input):
 ts_format = '%Y-%m-%d %H:%M:%S'
 t_delta = timedelta(days=0, minutes=0, seconds=1)
 def es5p2(_g, step, sL, s, _input):
-    y = 'timestamp'
-    x = ep_time_step(s, dt_str=s['timestamp'], fromat_str=ts_format, _timedelta=t_delta)
+    y = 'timestep'
+    x = ep_time_step(s, dt_str=s['timestep'], fromat_str=ts_format, _timedelta=t_delta)
     return (y, x)
 
 
@@ -114,7 +114,7 @@ genesis_states = {
     's2': Decimal(0.0),
     's3': Decimal(1.0),
     's4': Decimal(1.0),
-    'timestamp': '2018-10-01 15:16:24'
+#     'timestep': '2018-10-01 15:16:24'
 }
 
 
@@ -122,13 +122,13 @@ genesis_states = {
 raw_exogenous_states = {
     "s3": es3p1,
     "s4": es4p2,
-    "timestamp": es5p2
+#     "timestep": es5p2
 }
 
 
 # ToDo: make env proc trigger field agnostic
 # ToDo: input json into function renaming __name__
-triggered_env_b = proc_trigger('2018-10-01 15:16:25', env_b)
+triggered_env_b = proc_trigger(1, env_b)
 env_processes = {
     "s3": env_a, #sweep(beta, env_a),
     "s4": triggered_env_b #rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)
@@ -143,33 +143,33 @@ env_processes = {
 # sweep exo_state func and point to exo-state in every other funtion
 # param sweep on genesis states
 
-mechanisms = {
+partial_state_update_block = {
     "m1": {
-        "behaviors": {
-            "b1": b1m1,
-            "b2": b2m1
+        "policies": {
+            "b1": p1m1,
+            "b2": p2m1
         },
-        "states": {
+        "variables": {
             "s1": s1m1,
             "s2": s2m1
         }
     },
     "m2": {
-        "behaviors": {
-            "b1": b1m2,
-            "b2": b2m2,
+        "policies": {
+            "b1": p1m2,
+            "b2": p2m2,
         },
-        "states": {
+        "variables": {
             "s1": s1m2,
             "s2": s2m2
         }
     },
     "m3": {
-        "behaviors": {
-            "b1": b1m3,
-            "b2": b2m3
+        "policies": {
+            "b1": p1m3,
+            "b2": p2m3
         },
-        "states": {
+        "variables": {
             "s1": s1m3,
             "s2": s2m3
         }
@@ -188,9 +188,9 @@ sim_config = config_sim(
 
 append_configs(
     sim_configs=sim_config,
-    state_dict=genesis_states,
-    seed=seed,
+    initial_state=genesis_states,
+    seeds=seeds,
     raw_exogenous_states=raw_exogenous_states,
     env_processes=env_processes,
-    mechanisms=mechanisms
+    partial_state_update_blocks=partial_state_update_block
 )

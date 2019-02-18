@@ -1,15 +1,15 @@
 import pandas as pd
 from tabulate import tabulate
 # The following imports NEED to be in the exact order
-from SimCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import config1, config2 # sweep_config
-from SimCAD import configs
+from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+from simulations.validation import sweep_config #, config1, config2
+from cadCAD import configs
 
 exec_mode = ExecutionMode()
 
 # print("Simulation Execution 1")
 # print()
-# first_config = [configs[0]] # from config1
+# first_config = [configs[0]] # FOR non-sweep configs ONLY
 # single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
 # run1 = Executor(exec_context=single_proc_ctx, configs=first_config)
 # run1_raw_result, tensor_field = run1.main()
