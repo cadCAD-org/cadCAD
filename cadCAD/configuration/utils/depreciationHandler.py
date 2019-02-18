@@ -21,7 +21,6 @@ def sanitize_partial_state_updates(partial_state_updates):
     # for backwards compatibility we accept the old keys
     # ('behaviors' and 'states') and rename them
     def rename_keys(d):
-
         if 'behaviors' in d:
             d['policies'] = d.pop('behaviors')
 

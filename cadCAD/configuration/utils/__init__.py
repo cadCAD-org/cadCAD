@@ -4,6 +4,8 @@ from copy import deepcopy
 from fn.func import curried
 import pandas as pd
 
+# Temporary
+from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates
 from cadCAD.utils import dict_filter, contains_type
 
 
@@ -13,7 +15,10 @@ class TensorFieldReport:
         self.config_proc = config_proc
 
     # ToDo: backwards compatibility
-    def create_tensor_field(self, partial_state_updates, exo_proc, keys=['policies', 'variables']):
+    def create_tensor_field(self, partial_state_updates, exo_proc, keys = ['policies', 'variables']):
+
+        partial_state_updates = sanitize_partial_state_updates(partial_state_updates) # Temporary
+
         dfs = [self.config_proc.create_matrix_field(partial_state_updates, k) for k in keys]
         df = pd.concat(dfs, axis=1)
         for es, i in zip(exo_proc, range(len(exo_proc))):
