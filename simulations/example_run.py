@@ -2,7 +2,7 @@ import pandas as pd
 from tabulate import tabulate
 # The following imports NEED to be in the exact order
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import sweep_config, config1, config2
+from simulations.validation import sweep_config, config1, config2, config4
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
