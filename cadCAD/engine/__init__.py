@@ -1,9 +1,9 @@
 from pathos.multiprocessing import ProcessingPool as Pool
 
-from SimCAD.utils import flatten
-from SimCAD.configuration import Processor
-from SimCAD.configuration.utils import TensorFieldReport
-from SimCAD.engine.simulation import Executor as SimExecutor
+from cadCAD.utils import flatten
+from cadCAD.configuration import Processor
+from cadCAD.configuration.utils import TensorFieldReport
+from cadCAD.engine.simulation import Executor as SimExecutor
 
 
 class ExecutionMode:
@@ -47,7 +47,7 @@ class Executor:
         create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
 
         print(self.exec_context+": "+str(self.configs))
-        var_dict_list, states_lists, Ts, Ns, eps, configs_structs, env_processes_list, mechanisms, simulation_execs = \
+        var_dict_list, states_lists, Ts, Ns, eps, configs_structs, env_processes_list, partial_state_updates, simulation_execs = \
             [], [], [], [], [], [], [], [], []
         config_idx = 0
         for x in self.configs:
@@ -55,24 +55,25 @@ class Executor:
             Ts.append(x.sim_config['T'])
             Ns.append(x.sim_config['N'])
             var_dict_list.append(x.sim_config['M'])
-            states_lists.append([x.state_dict])
+            states_lists.append([x.initial_state])
             eps.append(list(x.exogenous_states.values()))
-            configs_structs.append(config_proc.generate_config(x.state_dict, x.mechanisms, eps[config_idx]))
+            configs_structs.append(config_proc.generate_config(x.initial_state, x.partial_state_updates, eps[config_idx]))
             env_processes_list.append(x.env_processes)
-            mechanisms.append(x.mechanisms)
-            simulation_execs.append(SimExecutor(x.behavior_ops).simulation)
+            partial_state_updates.append(x.partial_state_updates)
+            simulation_execs.append(SimExecutor(x.policy_ops).simulation)
 
             config_idx += 1
 
         if self.exec_context == ExecutionMode.single_proc:
-            tensor_field = create_tensor_field(mechanisms.pop(), eps.pop())
+            # ToDO: Deprication Handler - "sanitize" in appropriate place
+            tensor_field = create_tensor_field(partial_state_updates.pop(), eps.pop())
             result = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
             return result, tensor_field
         elif self.exec_context == ExecutionMode.multi_proc:
             if len(self.configs) > 1:
                 simulations = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
                 results = []
-                for result, mechanism, ep in list(zip(simulations, mechanisms, eps)):
-                    results.append((flatten(result), create_tensor_field(mechanism, ep)))
+                for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
+                    results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
 
                 return results

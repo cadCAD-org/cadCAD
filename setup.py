@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-long_description = "SimCAD is a differential games based simulation software package for research, validation, and \
+long_description = "cadCAD is a differential games based simulation software package for research, validation, and \
     Computer Aided Design of economic systems. An economic system is treated as a state based model and defined through \
     a set of endogenous and exogenous state variables which are updated through mechanisms and environmental processes, \
     respectively. Behavioral models, which may be deterministic or stochastic, provide the evolution of the system \
@@ -10,14 +10,14 @@ long_description = "SimCAD is a differential games based simulation software pac
     processes to understand and visualize network behavior under various conditions. Support for A/B testing policies, \
     monte carlo analysis and other common numerical methods is provided."
 
-setup(name='SimCAD',
-      version='0.1',
-      description="SimCAD: a differential games based simulation software package for research, validation, and \
+setup(name='cadCAD',
+      version='0.2',
+      description="cadCAD: a differential games based simulation software package for research, validation, and \
         Computer Aided Design of economic systems",
-      long_description = long_description,
+      long_description=long_description,
       url='https://github.com/BlockScience/DiffyQ-SimCAD',
       author='Joshua E. Jodesty',
       author_email='joshua@block.science',
       # license='LICENSE',
-      packages=find_packages() #['SimCAD']
+      packages=find_packages()
 )

@@ -1,6 +1,6 @@
 from collections import defaultdict
 from itertools import product
-
+import warnings
 
 def pipe(x):
     return x
@@ -75,8 +75,16 @@ def contains_type(_collection, type):
 def drop_right(l, n):
     return l[:len(l) - n]
 
-
+# backwards compatibility
+# ToDo: Encapsulate in function
 def key_filter(l, keyname):
+    if (type(l) == list):
+        return [v[keyname] for v in l]
+        # Keeping support to dictionaries for backwards compatibility
+        # Should be removed in the future
+    warnings.warn(
+        "The use of a dictionary to describe Partial State Update Blocks will be deprecated. Use a list instead.",
+        FutureWarning)
     return [v[keyname] for k, v in l.items()]
 
 

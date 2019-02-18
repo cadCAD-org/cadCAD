@@ -12,7 +12,10 @@ results
 *.csv
 *.txt
 simulations/.ipynb_checkpoints
+simulations/validation/config3.py
 dist/*.gz
+cadCAD.egg-info
 
 build
+cadCAD.egg-info
 SimCAD.egg-info
