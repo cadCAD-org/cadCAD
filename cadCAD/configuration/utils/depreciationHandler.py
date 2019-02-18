@@ -2,22 +2,18 @@ from copy import deepcopy
 
 
 def sanitize_config(config):
-    new_config = deepcopy(config)
     # for backwards compatibility, we accept old arguments via **kwargs
     # TODO: raise specific deprecation warnings for key == 'state_dict', key == 'seed', key == 'mechanisms'
-    for key, value in new_config.kwargs.items():
+    for key, value in config.kwargs.items():
         if key == 'state_dict':
-            new_config.initial_state = value
+            config.initial_state = value
         elif key == 'seed':
-            new_config.seeds = value
+            config.seeds = value
         elif key == 'mechanisms':
-            new_config.partial_state_updates = value
+            config.partial_state_updates = value
 
-    if new_config.initial_state == {}:
+    if config.initial_state == {}:
         raise Exception('The initial conditions of the system have not been set')
-
-    del config
-    return new_config
 
 
 def sanitize_partial_state_updates(partial_state_updates):
