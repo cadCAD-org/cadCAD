@@ -1,12 +1,13 @@
 from functools import reduce
 from fn.op import foldr
 import pandas as pd
-from copy import deepcopy
 
 from cadCAD import configs
+
 from cadCAD.utils import key_filter
-from cadCAD.configuration.utils.policyAggregation import dict_elemwise_sum
 from cadCAD.configuration.utils import exo_update_per_ts
+from cadCAD.configuration.utils.policyAggregation import dict_elemwise_sum
+from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates, sanitize_config
 
 
 class Configuration(object):
@@ -19,22 +20,10 @@ class Configuration(object):
         self.exogenous_states = exogenous_states
         self.partial_state_updates = partial_state_update_blocks
         self.policy_ops = policy_ops
-
-        # for backwards compatibility, we accept old arguments via **kwargs
-        # TODO: raise specific deprecation warnings for key == 'state_dict', key == 'seed', key == 'mechanisms'
-        for key, value in kwargs.items():
-            if key == 'state_dict':
-                self.initial_state = value
-            elif key == 'seed':
-                self.seeds = value
-            elif key == 'mechanisms':
-                self.partial_state_updates = value
-
-        if self.initial_state == {}:
-            raise Exception('The initial conditions of the system have not been set')
+        self.kwargs = kwargs
 
 
-def append_configs(sim_configs, initial_state, seeds, raw_exogenous_states, env_processes, partial_state_update_blocks, _exo_update_per_ts=True):
+def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={}, partial_state_update_blocks={}, _exo_update_per_ts=True):
     if _exo_update_per_ts is True:
         exogenous_states = exo_update_per_ts(raw_exogenous_states)
     else:
@@ -42,27 +31,27 @@ def append_configs(sim_configs, initial_state, seeds, raw_exogenous_states, env_
 
     if isinstance(sim_configs, list):
         for sim_config in sim_configs:
-            configs.append(
-                Configuration(
-                    sim_config=sim_config,
-                    initial_state=initial_state,
-                    seeds=seeds,
-                    exogenous_states=exogenous_states,
-                    env_processes=env_processes,
-                    partial_state_update_blocks=partial_state_update_blocks
-                )
-            )
-    elif isinstance(sim_configs, dict):
-        configs.append(
-            Configuration(
-                sim_config=sim_configs,
+            config = Configuration(
+                sim_config=sim_config,
                 initial_state=initial_state,
                 seeds=seeds,
                 exogenous_states=exogenous_states,
                 env_processes=env_processes,
                 partial_state_update_blocks=partial_state_update_blocks
             )
+            back_compatable_config = sanitize_config(config)
+            configs.append(back_compatable_config)
+    elif isinstance(sim_configs, dict):
+        config = Configuration(
+            sim_config=sim_configs,
+            initial_state=initial_state,
+            seeds=seeds,
+            exogenous_states=exogenous_states,
+            env_processes=env_processes,
+            partial_state_update_blocks=partial_state_update_blocks
         )
+        back_compatable_config = sanitize_config(config)
+        configs.append(back_compatable_config)
 
 
 class Identity:
@@ -134,35 +123,10 @@ class Processor:
             bdf_values = [[self.p_identity] * len(sdf_values)]
             return sdf_values, bdf_values
 
-        # backwards compatibility
-        def sanitize_partial_state_updates(partial_state_updates):
-            new_partial_state_updates = deepcopy(partial_state_updates)
-            # for backwards compatibility we accept the old keys
-            # ('behaviors' and 'states') and rename them
-            def rename_keys(d):
-                try:
-                    d['policies'] = d.pop('behaviors')
-                except KeyError:
-                    pass
-                try:
-                    d['variables'] = d.pop('states')
-                except KeyError:
-                    pass
-
-            # Also for backwards compatibility, we accept partial state update blocks both as list or dict
-            # No need for a deprecation warning as it's already raised by cadCAD.utils.key_filter
-            if (type(new_partial_state_updates)==list):
-                for v in new_partial_state_updates:
-                    rename_keys(v)
-            elif (type(new_partial_state_updates)==dict):
-                for k, v in new_partial_state_updates.items():
-                    rename_keys(v)
-
-            del partial_state_updates
-            return new_partial_state_updates
-
         if len(partial_state_updates) != 0:
+            # backwards compatibility
             partial_state_updates = sanitize_partial_state_updates(partial_state_updates)
+
             bdf = self.create_matrix_field(partial_state_updates, 'policies')
             sdf = self.create_matrix_field(partial_state_updates, 'variables')
             sdf_values, bdf_values = no_update_handler(bdf, sdf)

@@ -12,6 +12,7 @@ class TensorFieldReport:
     def __init__(self, config_proc):
         self.config_proc = config_proc
 
+    # ToDo: backwards compatibility
     def create_tensor_field(self, partial_state_updates, exo_proc, keys=['policies', 'variables']):
         dfs = [self.config_proc.create_matrix_field(partial_state_updates, k) for k in keys]
         df = pd.concat(dfs, axis=1)
@@ -21,10 +22,6 @@ class TensorFieldReport:
         return df
 
 
-# def s_update(y, x):
-#     return lambda step, sL, s, _input: (y, x)
-#
-#
 def state_update(y, x):
     return lambda var_dict, sub_step, sL, s, _input: (y, x)
 
