@@ -1,4 +1,4 @@
-# SimmCAD Documentation
+# cadCAD Documentation
 
 ## Introduction
 
@@ -31,13 +31,13 @@ from decimal import Decimal
 import numpy as np
 from datetime import timedelta
 
-from SimCAD import configs
-from SimCAD.configuration import Configuration
-from SimCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
+from cadCAD import configs
+from cadCAD.configuration import Configuration
+from cadCAD.configuration.utils import exo_update_per_ts, proc_trigger, bound_norm_random, \
     ep_time_step
 ```
 
-State variables and their initial values can be defined as follows. Note that `timestamp` is a required field for this iteration of SimCAD for `env_proc` to work. Future iterations will strive to make this more generic and timestamp optional.
+State variables and their initial values can be defined as follows. Note that `timestamp` is a required field for this iteration of cadCAD for `env_proc` to work. Future iterations will strive to make this more generic and timestamp optional.
 ```python
 genesis_dict = {
     's1': Decimal(0.0),
@@ -63,7 +63,7 @@ transitions = {
     "m2": {...}
 }
 ```
-Every behavior per transition should return a dictionary as actions taken by the agents. They will then be aggregated through addition in this version of SimCAD. Some examples of behaviors per transition are as follows. More flexible and user-defined aggregation functions will be introduced in future iterations but no example is provided at this point. 
+Every behavior per transition should return a dictionary as actions taken by the agents. They will then be aggregated through addition in this version of cadCAD. Some examples of behaviors per transition are as follows. More flexible and user-defined aggregation functions will be introduced in future iterations but no example is provided at this point. 
 ```python
 def b1m1(step, sL, s):
     return {'param1': 1}
@@ -105,7 +105,7 @@ seed = {
     'c': np.random.RandomState(3)
 }
 ```
-SimCAD currently supports generating random number from a normal distribution through `bound_norm_random` with `min` and `max` values specified. Examples of environmental processes with randomness are as follows. We also define timestamp format with `ts_format` and timestamp changes with `t_delta`. Users can define other distributions to update exogenous variables.
+cadCAD currently supports generating random number from a normal distribution through `bound_norm_random` with `min` and `max` values specified. Examples of environmental processes with randomness are as follows. We also define timestamp format with `ts_format` and timestamp changes with `t_delta`. Users can define other distributions to update exogenous variables.
 ```python
 proc_one_coef_A = 0.7
 proc_one_coef_B = 1.3
@@ -127,7 +127,7 @@ def es5p2(step, sL, s, _input):
     x = ep_time_step(s, s['timestamp'], fromat_str=ts_format, _timedelta=t_delta)
     return (y, x)
 ```
-User can also define specific external events such as market shocks at specific timestamps through `env_processes` with `proc_trigger`. An environmental process with no `proc_trigger` will be called at every timestamp. In the example below, it will return the value of `s3` at every timestamp. Logical event triggers, such as a big draw down in exogenous variables, will be supported in a later version of SimCAD. 
+User can also define specific external events such as market shocks at specific timestamps through `env_processes` with `proc_trigger`. An environmental process with no `proc_trigger` will be called at every timestamp. In the example below, it will return the value of `s3` at every timestamp. Logical event triggers, such as a big draw down in exogenous variables, will be supported in a later version of cadCAD. 
 ```python
 def env_a(x):
     return x
