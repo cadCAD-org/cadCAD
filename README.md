@@ -15,9 +15,20 @@ Simulations may be run with a range of initial conditions and parameters for sta
 and environmental processes to understand and visualize network behavior under various conditions. Support for \
 A/B testing policies, monte carlo analysis and other common numerical methods is provided.
 
+
 **1. Install Dependencies:**
+
+**Option A:** Package Repository Access
+*Note:* Tokens are issued to trial users and BlockScience employees. Please replace <TOKEN> with and issued token in the script below.
+
 ```bash
-pip install -r requirements.txt
+pip3 install pandas pathos fn tabulate
+pip3 install cadCAD --extra-index-url https://<TOKEN>@repo.fury.io/blockscience/
+```
+
+**Option B:** Build From Source
+```bash
+pip3 install -r requirements.txt
 python3 setup.py sdist bdist_wheel
 pip3 install dist/*.whl
 ```
