@@ -20,7 +20,7 @@ A/B testing policies, monte carlo analysis and other common numerical methods is
 
 **Option A:** Package Repository Access
 
-***IMPORTANT NOTE:*** Tokens are issued to and meant to be used by trial users and BlockScience employees **ONLY**. Please replace <TOKEN> with and issued token in the script below.
+***IMPORTANT NOTE:*** Tokens are issued to and meant to be used by trial users and BlockScience employees **ONLY**. Replace <TOKEN> with an issued token in the script below.
 ```bash
 pip3 install pandas pathos fn tabulate
 pip3 install cadCAD --extra-index-url https://<TOKEN>@repo.fury.io/blockscience/
