@@ -45,7 +45,7 @@ Examples:
 
 Examples: `/simulations/*.py` or `/simulations/*.ipynb`
 
-Single Simulation Run: `/simulations/single_config_run.py`
+Single Simulation: `/simulations/single_config_run.py`
 ```python
 from tabulate import tabulate
 # The following imports NEED to be in the exact order
@@ -70,7 +70,7 @@ print(tabulate(result, headers='keys', tablefmt='psql'))
 print()
 ```
 
-Parameter Sweep Simulation Run (Concurrent): `/simulations/param_sweep_run.py`
+Parameter Sweep Simulation (Concurrent): `/simulations/param_sweep_run.py`
 ```python
 import pandas as pd
 from tabulate import tabulate
@@ -98,7 +98,7 @@ for raw_result, tensor_field in run2.main():
     i += 1
 ```
 
-Multiple Simulation Runs (Concurrent): `/simulations/multi_config run.py`
+Multiple Simulations (Concurrent): `/simulations/multi_config run.py`
 ```python
 import pandas as pd
 from tabulate import tabulate
