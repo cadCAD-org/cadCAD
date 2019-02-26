@@ -22,8 +22,8 @@ class ExecutionContext:
             result = simulation(var_dict, states_list, config, env_processes, T, N)
             return flatten(result)
 
-        def parallelize_simulations(fs, var_dict_list, states_list, configs, env_processes, Ts, Ns):
-            l = list(zip(fs, var_dict_list, states_list, configs, env_processes, Ts, Ns))
+        def parallelize_simulations(simulations, var_dict_list, states_list, configs, env_processes, Ts, Ns):
+            l = list(zip(simulations, var_dict_list, states_list, configs, env_processes, Ts, Ns))
             with Pool(len(configs)) as p:
                 results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6]), l)
             return results

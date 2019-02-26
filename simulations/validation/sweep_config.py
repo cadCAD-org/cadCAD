@@ -7,6 +7,8 @@ from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import proc_trigger, ep_time_step
 from cadCAD.configuration.utils.parameterSweep import config_sim
 
+from typing import Dict, List
+
 pp = pprint.PrettyPrinter(indent=4)
 
 seeds = {
@@ -17,7 +19,7 @@ seeds = {
 }
 
 
-g = {
+g: Dict[str, List[int]] = {
     'alpha': [1],
     'beta': [2, 5],
     'gamma': [3, 4],
