@@ -6,8 +6,6 @@ from typing import Any, Callable, Dict, List, Tuple
 
 id_exception: Callable = engine_exception(KeyError, KeyError, None)
 
-import pprint as pp
-
 
 class Executor:
 
@@ -51,9 +49,9 @@ class Executor:
             if state in list(env_processes.keys()):
                 env_state: Callable = env_processes[state]
                 if (env_state.__name__ == '_curried') or (env_state.__name__ == 'proc_trigger'):
-                    state_dict[state]: Any = env_state(sub_step)(state_dict[state])
+                    state_dict[state] = env_state(sub_step)(state_dict[state])
                 else:
-                    state_dict[state]: Any = env_state(state_dict[state])
+                    state_dict[state] = env_state(state_dict[state])
 
     # mech_step
     def partial_state_update(
@@ -81,7 +79,7 @@ class Executor:
 
         for k in last_in_obj:
             if k not in last_in_copy:
-                last_in_copy[k]: Any = last_in_obj[k]
+                last_in_copy[k] = last_in_obj[k]
 
         del last_in_obj
 
