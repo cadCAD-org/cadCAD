@@ -30,10 +30,10 @@ def sanitize_partial_state_updates(partial_state_updates):
 
     # Also for backwards compatibility, we accept partial state update blocks both as list or dict
     # No need for a deprecation warning as it's already raised by cadCAD.utils.key_filter
-    if (type(new_partial_state_updates)==list):
+    if isinstance(new_partial_state_updates, list):
         for v in new_partial_state_updates:
             rename_keys(v)
-    elif (type(new_partial_state_updates)==dict):
+    elif isinstance(new_partial_state_updates, dict):
         for k, v in new_partial_state_updates.items():
             rename_keys(v)
 
