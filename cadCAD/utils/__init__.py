@@ -1,7 +1,7 @@
+from typing import Dict, List
 from collections import defaultdict
 from itertools import product
 import warnings
-from typing import Dict, List
 
 
 def pipe(x):
