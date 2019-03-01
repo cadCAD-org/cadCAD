@@ -1,8 +1,10 @@
 from typing import Any, Callable, Dict, List, Tuple
+from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
 from fn.op import foldr, call
 
 from cadCAD.engine.utils import engine_exception
+from cadCAD.utils import flatten
 
 id_exception: Callable = engine_exception(KeyError, KeyError, None)
 
@@ -142,7 +144,6 @@ class Executor:
 
         return simulation_list
 
-    # ToDo: Muiltithreaded Runs
     def simulation(
             self,
             var_dict: Dict[str, List[Any]],
@@ -153,8 +154,7 @@ class Executor:
             runs: int
         ) -> List[List[Dict[str, Any]]]:
 
-        pipe_run: List[List[Dict[str, Any]]] = []
-        for run in range(runs):
+        def execute_run(var_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
             run += 1
             states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
             head, *tail = self.run_pipeline(var_dict, states_list_copy, configs, env_processes, time_seq, run)
@@ -163,6 +163,13 @@ class Executor:
             genesis: Dict[str, Any] = head.pop()
             genesis['substep'], genesis['timestep'], genesis['run'] = 0, 0, run
             first_timestep_per_run: List[Dict[str, Any]] = [genesis] + tail.pop(0)
-            pipe_run += [first_timestep_per_run] + tail
+            return [first_timestep_per_run] + tail
+
+        pipe_run: List[List[Dict[str, Any]]] = flatten(
+            TPool().map(
+                lambda run: execute_run(var_dict, states_list, configs, env_processes, time_seq, run),
+                list(range(runs))
+            )
+        )
 
         return pipe_run

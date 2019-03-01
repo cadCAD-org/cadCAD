@@ -1,5 +1,5 @@
 from typing import Callable, Dict, List, Any, Tuple
-from pathos.multiprocessing import ProcessingPool as Pool
+from pathos.multiprocessing import ProcessingPool as PPool
 from pandas.core.frame import DataFrame
 
 from cadCAD.utils import flatten
@@ -44,7 +44,7 @@ def parallelize_simulations(
         Ns: List[int]
     ):
     l = list(zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns))
-    with Pool(len(configs_structs)) as p:
+    with PPool(len(configs_structs)) as p:
         results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6]), l)
     return results
 
