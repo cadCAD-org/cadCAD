@@ -1,14 +1,13 @@
+from typing import Any, Callable, Dict, List, Tuple
 from copy import deepcopy
 from fn.op import foldr, call
 
 from cadCAD.engine.utils import engine_exception
-from typing import Any, Callable, Dict, List, Tuple
 
 id_exception: Callable = engine_exception(KeyError, KeyError, None)
 
 
 class Executor:
-
     def __init__(
                 self,
                 policy_ops: List[Callable],

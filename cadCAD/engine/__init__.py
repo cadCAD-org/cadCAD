@@ -12,19 +12,6 @@ StatesListsType = List[Dict[str, Any]]
 ConfigsType = List[Tuple[List[Callable], List[Callable]]]
 EnvProcessesType = Dict[str, Callable]
 
-SimulationType = Callable[
-    [
-        # SimExecutor,
-        VarDictType,
-        StatesListsType,
-        ConfigsType,
-        EnvProcessesType,
-        range,
-        int
-    ],
-    List[List[Dict[str, Any]]]
-]
-
 
 class ExecutionMode:
     single_proc = 'single_proc'
@@ -32,7 +19,7 @@ class ExecutionMode:
 
 
 def single_proc_exec(
-        simulation_execs: List[SimulationType],
+        simulation_execs: List[Callable],
         var_dict_list: List[VarDictType],
         states_lists: List[StatesListsType],
         configs_structs: List[ConfigsType],
@@ -48,7 +35,7 @@ def single_proc_exec(
 
 
 def parallelize_simulations(
-        simulation_execs: List[SimulationType],
+        simulation_execs: List[Callable],
         var_dict_list: List[VarDictType],
         states_lists: List[StatesListsType],
         configs_structs: List[ConfigsType],
