@@ -93,7 +93,7 @@ class Executor:
 
         return sL
 
-    # mech_pipeline
+    # mech_pipeline - state_update_block
     def state_update_pipeline(
                 self,
                 var_dict: Dict[str, List[Any]],
@@ -123,6 +123,7 @@ class Executor:
 
         return states_list
 
+    # state_update_pipeline
     def run_pipeline(
                 self,
                 var_dict: Dict[str, List[Any]],
