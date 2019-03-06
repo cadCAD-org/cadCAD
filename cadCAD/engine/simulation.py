@@ -5,6 +5,7 @@ from fn.op import foldr, call
 
 from cadCAD.engine.utils import engine_exception
 from cadCAD.utils import flatten
+import pprint as pp
 
 id_exception: Callable = engine_exception(KeyError, KeyError, None)
 
@@ -72,6 +73,7 @@ class Executor:
         _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sL, last_in_obj, policy_funcs))
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
+        # ToDo: Can be multithreaded ??
         last_in_copy: Dict[str, Any] = dict(
             [
                 self.state_update_exception(f(var_dict, sub_step, sL, last_in_obj, _input)) for f in state_funcs
@@ -86,6 +88,7 @@ class Executor:
 
         self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
 
+        # ToDo: make 'substep' & 'timestep' reserve fields
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
 
         sL.append(last_in_copy)
@@ -106,7 +109,16 @@ class Executor:
 
         sub_step = 0
         states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
+        # for d1 in states_list:
+        #     for d2 in states_list_copy:
+        #         d2['classX'] = d1['classX']
+        #
+        # print()
+        # pp.pprint(states_list_copy)
+        # print()
+
         genesis_states: Dict[str, Any] = states_list_copy[-1]
+        del states_list_copy
         genesis_states['substep'], genesis_states['timestep'] = sub_step, time_step
         states_list: List[Dict[str, Any]] = [genesis_states]
 
@@ -158,6 +170,11 @@ class Executor:
         def execute_run(var_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
             run += 1
             states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
+
+            # for d1 in states_list:
+            #     for d2 in states_list_copy:
+            #         d2['classX'] = d1['classX']
+
             head, *tail = self.run_pipeline(var_dict, states_list_copy, configs, env_processes, time_seq, run)
             del states_list_copy
 

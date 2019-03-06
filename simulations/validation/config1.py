@@ -6,7 +6,6 @@ from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step
 from cadCAD.configuration.utils.parameterSweep import config_sim
 
-
 seeds = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
@@ -37,7 +36,7 @@ def p2m3(_g, step, sL, s):
 # Internal States per Mechanism
 def s1m1(_g, step, sL, s, _input):
     y = 's1'
-    x = _input['param1']
+    x = s['s1'] + 1
     return (y, x)
 def s2m1(_g, step, sL, s, _input):
     y = 's2'
@@ -46,7 +45,7 @@ def s2m1(_g, step, sL, s, _input):
 
 def s1m2(_g, step, sL, s, _input):
     y = 's1'
-    x = _input['param1']
+    x = s['s1'] + 1
     return (y, x)
 def s2m2(_g, step, sL, s, _input):
     y = 's2'
@@ -55,7 +54,7 @@ def s2m2(_g, step, sL, s, _input):
 
 def s1m3(_g, step, sL, s, _input):
     y = 's1'
-    x = _input['param1']
+    x = s['s1'] + 1
     return (y, x)
 def s2m3(_g, step, sL, s, _input):
     y = 's2'
