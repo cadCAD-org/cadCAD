@@ -86,6 +86,7 @@ class Executor:
 
         self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
 
+        # ToDo: make 'substep' & 'timestep' reserve fields
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
 
         sL.append(last_in_copy)
