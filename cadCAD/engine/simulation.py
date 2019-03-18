@@ -68,17 +68,46 @@ class Executor:
                 run: int
             ) -> List[Dict[str, Any]]:
 
-        last_in_obj: Dict[str, Any] = sL[-1]
+        last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
+        # last_in_obj: Dict[str, Any] = sL[-1]
 
         _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sL, last_in_obj, policy_funcs))
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
         # ToDo: Can be multithreaded ??
+
+        # ToDo: Create Separate past state paradigm for which users specify the use of identity / past function
+        # ToDo: UDC / any class must be deepcopy before every update
+        # vs an assumed update
+
+        # last_class = deepcopy(last_in_obj['classX'])
+
+        # incoming
+
+        # past_attr_dict = {k: v for k, v in last_in_obj.items() if
+        #                  hasattr(v, 'past_attr') and k == v.past_attr}
+        # incoming_attr_dict = {k: deepcopy(v) for k, v in last_in_obj.items() if
+        #             hasattr(v, 'past_attr') and k != v.past_attr}
+
+        # udcs = {k: deepcopy(v) for k, v in last_in_obj.items() if hasattr(v, 'class_id')}
+        # non_udcs = {k: deepcopy(v) for k, v in last_in_obj.items() if not hasattr(v, 'class_id')}
+
+
+        # past_attr_dict = {k: v for k, v in last_in_obj.items() if 'past' in v.keys()}
+        # incoming_attr_dict = {k: v for k, v in last_in_obj.items() if 'current' in v.keys()}
+
+        # ToDo: Previous Record Cache
+        # last_in_copy_staging = deepcopy(last_in_obj)
+
+        # past_udc = deepcopy(last_in_obj['classX']['current'])
+
         last_in_copy: Dict[str, Any] = dict(
             [
                 self.state_update_exception(f(var_dict, sub_step, sL, last_in_obj, _input)) for f in state_funcs
             ]
         )
+
+        # a b c d e f g
 
         for k in last_in_obj:
             if k not in last_in_copy:
@@ -90,6 +119,16 @@ class Executor:
 
         # ToDo: make 'substep' & 'timestep' reserve fields
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
+
+        # # ToDo: Handle conditions
+        # for k_past, _ in past_attr_dict.items():
+        #     for _, v_current in incoming_attr_dict.items():
+        #         last_in_copy[k_past] = v_current
+
+        # last_in_copy['pastX'] = last_class
+
+        # last_in_copy['classX']['past'] = past_udc
+        # last_in_copy['pastX_str'] = past_udc
 
         sL.append(last_in_copy)
         del last_in_copy
@@ -109,10 +148,11 @@ class Executor:
 
         sub_step = 0
         states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
+
         # for d1 in states_list:
         #     for d2 in states_list_copy:
         #         d2['classX'] = d1['classX']
-        #
+
         # print()
         # pp.pprint(states_list_copy)
         # print()
@@ -125,6 +165,7 @@ class Executor:
         sub_step += 1
         for config in configs:
             s_conf, p_conf = config[0], config[1]
+            # states_list["classX"] = deepcopy(classX)
             states_list: List[Dict[str, Any]] = self.partial_state_update(
                 var_dict, sub_step, states_list, s_conf, p_conf, env_processes, time_step, run
             )
