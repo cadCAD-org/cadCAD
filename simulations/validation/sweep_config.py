@@ -4,8 +4,7 @@ from datetime import timedelta
 import pprint
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import proc_trigger, ep_time_step
-from cadCAD.configuration.utils.parameterSweep import config_sim
+from cadCAD.configuration.utils import proc_trigger, ep_time_step, config_sim
 
 from typing import Dict, List
 
@@ -18,7 +17,7 @@ seeds = {
     'c': np.random.RandomState(3)
 }
 
-
+# Optional
 g: Dict[str, List[int]] = {
     'alpha': [1],
     'beta': [2, 5],
@@ -178,16 +177,16 @@ partial_state_update_block = {
     }
 }
 
-
+# config_sim Necessary
 sim_config = config_sim(
     {
         "N": 2,
         "T": range(5),
-        "M": g
+        "M": g # Optional
     }
 )
 
-
+# New Convention
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,

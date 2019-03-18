@@ -6,7 +6,7 @@ import pandas as pd
 
 # Temporary
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates
-from cadCAD.utils import dict_filter, contains_type
+from cadCAD.utils import dict_filter, contains_type, flatten_tabulated_dict, tabulate_dict
 
 
 # ToDo: Fix - Returns empty when partial_state_update is missing in Configuration
@@ -123,3 +123,21 @@ def exo_update_per_ts(ep):
             return y, s[y]
 
     return {es: ep_decorator(f, es) for es, f in ep.items()}
+
+
+# param sweep enabling middleware
+def config_sim(d):
+    def process_variables(d):
+        return flatten_tabulated_dict(tabulate_dict(d))
+    if "M" in d:
+        return [
+            {
+                "N": d["N"],
+                "T": d["T"],
+                "M": M
+            }
+            for M in process_variables(d["M"])
+        ]
+    else:
+        d["M"] = [{}]
+        return d
