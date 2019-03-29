@@ -1,22 +1,22 @@
+from collections import namedtuple
 from typing import Any, Callable, Dict, List, Tuple
 from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
 from fn.op import foldr, call
 
 from cadCAD.engine.utils import engine_exception
-from cadCAD.utils import flatten
-import pprint as pp
+from cadCAD.utils import flatten, UDC_Wrapper
 
 id_exception: Callable = engine_exception(KeyError, KeyError, None)
 
 
 class Executor:
     def __init__(
-                self,
-                policy_ops: List[Callable],
-                policy_update_exception: Callable = id_exception,
-                state_update_exception: Callable = id_exception
-            ) -> None:
+        self,
+        policy_ops: List[Callable],
+        policy_update_exception: Callable = id_exception,
+        state_update_exception: Callable = id_exception
+    ) -> None:
 
         # behavior_ops
         self.policy_ops = policy_ops
@@ -69,6 +69,7 @@ class Executor:
             ) -> List[Dict[str, Any]]:
 
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
+        udc = var_dict[0]['udc']
         # last_in_obj: Dict[str, Any] = sL[-1]
 
         _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sL, last_in_obj, policy_funcs))
@@ -76,38 +77,37 @@ class Executor:
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
         # ToDo: Can be multithreaded ??
 
-        # ToDo: Create Separate past state paradigm for which users specify the use of identity / past function
-        # ToDo: UDC / any class must be deepcopy before every update
-        # vs an assumed update
+        def generate_record(state_funcs, alt_udc_dict):
+            for k, v in last_in_obj.items():
+                if isinstance(v, dict) and hasattr(v, 'class_id'):
+                    del last_in_obj[k]
 
-        # last_class = deepcopy(last_in_obj['classX'])
+            # def HydraObj(_g, step, sL, s, _input):
+            #     y = 'hydra_obj'
+            #     # x = s['hydra_obj']
+            #     x = namedtuple("Hydra", s['hydra_members'].keys())(*s['hydra_members'].values())
+            #     return (y, x)
 
-        # incoming
+            new_last_in_obj = dict(list(last_in_obj.items()) + list(alt_udc_dict.items()))
+            # for f in state_funcs + [HydraObj]:
+            for f in state_funcs:
+                # ToDo: Create Named Tuple Here
+                y, x = f(var_dict, sub_step, sL, new_last_in_obj, _input)
+                # if isinstance(x, dict) and x['hydra_type'] == Dict and 'class_id' in x.keys():
+                #     x = namedtuple("Hydra", x.keys())(*x.values())
+                yield self.state_update_exception((y, x))
 
-        # past_attr_dict = {k: v for k, v in last_in_obj.items() if
-        #                  hasattr(v, 'past_attr') and k == v.past_attr}
-        # incoming_attr_dict = {k: deepcopy(v) for k, v in last_in_obj.items() if
-        #             hasattr(v, 'past_attr') and k != v.past_attr}
 
-        # udcs = {k: deepcopy(v) for k, v in last_in_obj.items() if hasattr(v, 'class_id')}
-        # non_udcs = {k: deepcopy(v) for k, v in last_in_obj.items() if not hasattr(v, 'class_id')}
-
-
-        # past_attr_dict = {k: v for k, v in last_in_obj.items() if 'past' in v.keys()}
-        # incoming_attr_dict = {k: v for k, v in last_in_obj.items() if 'current' in v.keys()}
-
-        # ToDo: Previous Record Cache
-        # last_in_copy_staging = deepcopy(last_in_obj)
-
-        # past_udc = deepcopy(last_in_obj['classX']['current'])
-
-        last_in_copy: Dict[str, Any] = dict(
-            [
-                self.state_update_exception(f(var_dict, sub_step, sL, last_in_obj, _input)) for f in state_funcs
-            ]
-        )
-
-        # a b c d e f g
+        udc_dict = {
+            k: UDC_Wrapper(
+                v['current'],
+                udc(**v['current'].__dict__),
+                current_functions=['update']
+            ).get_hybrid_members()
+            for k, v in last_in_obj.items() if isinstance(v, dict) and 'current' in v.keys()
+        }
+        last_in_copy: Dict[str, Any] = dict(generate_record(state_funcs, udc_dict))
+        del udc_dict
 
         for k in last_in_obj:
             if k not in last_in_copy:
@@ -119,16 +119,6 @@ class Executor:
 
         # ToDo: make 'substep' & 'timestep' reserve fields
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
-
-        # # ToDo: Handle conditions
-        # for k_past, _ in past_attr_dict.items():
-        #     for _, v_current in incoming_attr_dict.items():
-        #         last_in_copy[k_past] = v_current
-
-        # last_in_copy['pastX'] = last_class
-
-        # last_in_copy['classX']['past'] = past_udc
-        # last_in_copy['pastX_str'] = past_udc
 
         sL.append(last_in_copy)
         del last_in_copy
@@ -149,14 +139,6 @@ class Executor:
         sub_step = 0
         states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
 
-        # for d1 in states_list:
-        #     for d2 in states_list_copy:
-        #         d2['classX'] = d1['classX']
-
-        # print()
-        # pp.pprint(states_list_copy)
-        # print()
-
         genesis_states: Dict[str, Any] = states_list_copy[-1]
         del states_list_copy
         genesis_states['substep'], genesis_states['timestep'] = sub_step, time_step
@@ -165,7 +147,6 @@ class Executor:
         sub_step += 1
         for config in configs:
             s_conf, p_conf = config[0], config[1]
-            # states_list["classX"] = deepcopy(classX)
             states_list: List[Dict[str, Any]] = self.partial_state_update(
                 var_dict, sub_step, states_list, s_conf, p_conf, env_processes, time_step, run
             )
@@ -211,10 +192,6 @@ class Executor:
         def execute_run(var_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
             run += 1
             states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
-
-            # for d1 in states_list:
-            #     for d2 in states_list_copy:
-            #         d2['classX'] = d1['classX']
 
             head, *tail = self.run_pipeline(var_dict, states_list_copy, configs, env_processes, time_seq, run)
             del states_list_copy

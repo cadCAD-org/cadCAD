@@ -1,27 +1,26 @@
 from datetime import timedelta
 from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import ep_time_step, config_sim
-from copy import deepcopy
+from copy import deepcopy, copy
 
 
 # ToDo: Create member for past value
 class MyClass:
     def __init__(self, past_attr):
-        self.past_self = self
+        # self.past = self
         self.past_attr = past_attr
         self.class_id = None
         self.x = 0
 
         print(f"Instance of MyClass (mem_id {hex(id(self))}) created with value {self.x}")
 
+
     def update(self):
-        # self.past_self = deepcopy(self)
+        # self.past = copy(self)
         self.x += 1
         print(f"Instance of MyClass (mem_id {hex(id(self))}) has been updated, has now value {self.x}")
         return self.x #self #old_self #self.x
 
-    def past(self):
-        return self.past_self
 
     def getMemID(self):
         return str(hex(id(self)))
@@ -37,8 +36,8 @@ class MyClass:
 # Expected: a == classX's value
 # b should be tracking classX's value and a:
 #     b should be the same value as the previous classX value and the previous a value
-
-udc = MyClass('pastX')
+# https://pymotw.com/2/multiprocessing/communication.html
+udc = MyClass(0)
 
 # z = MyClass()
 # pointer(z)
@@ -49,8 +48,9 @@ udc = MyClass('pastX')
 # udc_json = {'udc': udc, 'udc-1': udc}
 state_dict = {
     'classX': udc,
-    'classX_MemID': udc.getMemID(),
-    # 'pastX': udc,
+    # 'classX_MemID': udc.getMemID(),
+    'pastX': udc,
+    'otherX': udc,
     # 'pastX_MemID': udc.getMemID(),
     'a': 0,
     'b': udc.x,
@@ -72,20 +72,25 @@ def trackClassX(_g, step, sL, s, _input):
     x = s['classX']
     return (y, x)
 
-def trackClassX_str(_g, step, sL, s, _input):
-    y = 'classX_MemID'
-    x = s['classX'].getMemID()
-    return (y, x)
+# def trackClassX_str(_g, step, sL, s, _input):
+#     y = 'classX_MemID'
+#     x = s['classX'].getMemID()
+#     return (y, x)
 
 def updatePastX(_g, step, sL, s, _input):
     y = 'pastX'
     x = s['pastX']
     return (y, x)
 
-def updatePastX_str(_g, step, sL, s, _input):
-    y = 'pastX_MemID'
-    x = s['pastX'].getMemID()
+def updateOtherX(_g, step, sL, s, _input):
+    y = 'otherX'
+    x = s['otherX']
     return (y, x)
+
+# def updatePastX_str(_g, step, sL, s, _input):
+#     y = 'pastX_MemID'
+#     x = s['pastX'].getMemID()
+#     return (y, x)
 
 def updateA(_g, step, sL, s, _input):
     y = 'a'
@@ -109,7 +114,7 @@ def updateZ(_g, step, sL, s, _input):
 
 def updateC2(_g, step, sL, s, _input):
     y = 'c2'
-    x = s['classX'].x
+    x = s['pastX'].x
     return (y, x)
 
 partial_state_update_blocks = {
@@ -122,10 +127,9 @@ partial_state_update_blocks = {
             'c': updateC,
             'c2': updateC2,
             'classX': trackClassX,
+            'otherX': updateOtherX,
             'timestamp': time_model,
-            'classX_MemID': trackClassX_str,
-            # 'pastX': updatePastX,
-            # 'pastX_MemID': updatePastX_str,
+            'pastX': updatePastX,
             'z': updateZ
         }
     },
@@ -138,8 +142,9 @@ partial_state_update_blocks = {
             'c': updateC,
             'c2': updateC2,
             'classX': trackClassX,
-            'classX_MemID': trackClassX_str,
-            # 'pastX': updatePastX,
+            'otherX': updateOtherX,
+            # 'classX_MemID': trackClassX_str,
+            'pastX': updatePastX,
             # 'pastX_MemID': updatePastX_str,
             'z': updateZ
         }
@@ -153,8 +158,9 @@ partial_state_update_blocks = {
             'c': updateC,
             'c2': updateC2,
             'classX': trackClassX,
-            'classX_MemID': trackClassX_str,
-            # 'pastX': updatePastX,
+            'otherX': updateOtherX,
+            # 'classX_MemID': trackClassX_str,
+            'pastX': updatePastX,
             # 'pastX_MemID': updatePastX_str,
             'z': updateZ
         }
