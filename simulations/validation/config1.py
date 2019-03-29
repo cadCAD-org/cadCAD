@@ -3,8 +3,7 @@ import numpy as np
 from datetime import timedelta
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step
-from cadCAD.configuration.utils.parameterSweep import config_sim
+from cadCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step, config_sim
 
 
 seeds = {
@@ -20,6 +19,8 @@ def p1m1(_g, step, sL, s):
     return {'param1': 1}
 def p2m1(_g, step, sL, s):
     return {'param2': 4}
+
+# []
 
 def p1m2(_g, step, sL, s):
     return {'param1': 'a', 'param2': 2}
