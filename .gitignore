@@ -19,3 +19,5 @@ cadCAD.egg-info
 build
 cadCAD.egg-info
 SimCAD.egg-info
+
+monkeytype.sqlite3

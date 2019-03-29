@@ -11,9 +11,10 @@ print("Simulation Execution: Single Configuration")
 print()
 first_config = configs # only contains config1
 single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
-run1 = Executor(exec_context=single_proc_ctx, configs=first_config)
-run1_raw_result, tensor_field = run1.main()
-result = pd.DataFrame(run1_raw_result)
+run = Executor(exec_context=single_proc_ctx, configs=first_config)
+
+raw_result, tensor_field = run.main()
+result = pd.DataFrame(raw_result)
 print()
 print("Tensor Field: config1")
 print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
