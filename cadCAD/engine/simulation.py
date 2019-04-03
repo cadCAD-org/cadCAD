@@ -5,7 +5,7 @@ from copy import deepcopy
 from fn.op import foldr, call
 
 from cadCAD.engine.utils import engine_exception
-from cadCAD.utils import flatten, UDC_Wrapper
+from cadCAD.utils import flatten, UDC_Wrapper, objectview
 
 id_exception: Callable = engine_exception(KeyError, KeyError, None)
 
@@ -70,7 +70,6 @@ class Executor:
 
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
         udc = var_dict[0]['udc']
-        # last_in_obj: Dict[str, Any] = sL[-1]
 
         _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sL, last_in_obj, policy_funcs))
 
@@ -82,20 +81,10 @@ class Executor:
                 if isinstance(v, dict) and hasattr(v, 'class_id'):
                     del last_in_obj[k]
 
-            # def HydraObj(_g, step, sL, s, _input):
-            #     y = 'hydra_obj'
-            #     # x = s['hydra_obj']
-            #     x = namedtuple("Hydra", s['hydra_members'].keys())(*s['hydra_members'].values())
-            #     return (y, x)
-
             new_last_in_obj = dict(list(last_in_obj.items()) + list(alt_udc_dict.items()))
-            # for f in state_funcs + [HydraObj]:
             for f in state_funcs:
                 # ToDo: Create Named Tuple Here
-                y, x = f(var_dict, sub_step, sL, new_last_in_obj, _input)
-                # if isinstance(x, dict) and x['hydra_type'] == Dict and 'class_id' in x.keys():
-                #     x = namedtuple("Hydra", x.keys())(*x.values())
-                yield self.state_update_exception((y, x))
+                yield self.state_update_exception(f(var_dict, sub_step, sL, new_last_in_obj, _input))
 
 
         udc_dict = {
