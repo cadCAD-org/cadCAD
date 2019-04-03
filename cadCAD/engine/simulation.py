@@ -1,11 +1,10 @@
-from collections import namedtuple
 from typing import Any, Callable, Dict, List, Tuple
 from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
 from fn.op import foldr, call
 
 from cadCAD.engine.utils import engine_exception
-from cadCAD.utils import flatten, UDC_Wrapper, objectview
+from cadCAD.utils import flatten
 
 id_exception: Callable = engine_exception(KeyError, KeyError, None)
 
@@ -69,34 +68,16 @@ class Executor:
             ) -> List[Dict[str, Any]]:
 
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
-        udc = var_dict[0]['udc']
 
         _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sL, last_in_obj, policy_funcs))
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
         # ToDo: Can be multithreaded ??
-
-        def generate_record(state_funcs, alt_udc_dict):
-            for k, v in last_in_obj.items():
-                if isinstance(v, dict) and hasattr(v, 'class_id'):
-                    del last_in_obj[k]
-
-            new_last_in_obj = dict(list(last_in_obj.items()) + list(alt_udc_dict.items()))
+        def generate_record(state_funcs):
             for f in state_funcs:
-                # ToDo: Create Named Tuple Here
-                yield self.state_update_exception(f(var_dict, sub_step, sL, new_last_in_obj, _input))
+                yield self.state_update_exception(f(var_dict, sub_step, sL, last_in_obj, _input))
 
-
-        udc_dict = {
-            k: UDC_Wrapper(
-                v['current'],
-                udc(**v['current'].__dict__),
-                current_functions=['update']
-            ).get_hybrid_members()
-            for k, v in last_in_obj.items() if isinstance(v, dict) and 'current' in v.keys()
-        }
-        last_in_copy: Dict[str, Any] = dict(generate_record(state_funcs, udc_dict))
-        del udc_dict
+        last_in_copy: Dict[str, Any] = dict(generate_record(state_funcs))
 
         for k in last_in_obj:
             if k not in last_in_copy:
