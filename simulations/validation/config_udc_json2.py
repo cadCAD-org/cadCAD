@@ -28,7 +28,7 @@ class MyClassA(object):
     # ToDo: id sensitive to lineage, rerepresent
     def __str__(self):
         # return str(self.x)
-        return f"{hex(id(self))} - {self.x}"
+        return f"{self.__class__.__name__} - {hex(id(self))} - {self.__dict__}"
 
 
 class MyClassB:
@@ -75,10 +75,11 @@ g: Dict[str, List[MyClassA]] = {'udc': [MyClassA]}
 # genesis state
 udc = MyClassA(0)
 # namedtuple("Hydra", self.hybrid_members.keys())(*self.hybrid_members.values())
-udc_json = {'current': udc, 'past': udc}
+# udc_json = {'current': udc, 'past': udc}
 hydra = UDC_Wrapper(udc, udc, current_functions=['update'])
 hydra_members = hydra.get_hybrid_members()
-hydra_obj = namedtuple("Hydra", hydra_members.keys())(*hydra_members.values())
+# hydra_obj = namedtuple("Hydra", hydra_members.keys())(*hydra_members.values())
+hydra_view = objectview(hydra_members)
 
 
 state_dict = {
@@ -86,11 +87,11 @@ state_dict = {
     'b': 0,
     'i': 0,
     'j': 0,
-    'k': 0,
+    # 'k': 0,
     # "hydra": hydra,
     "hydra_members": hydra_members,
-    "hydra_obj": hydra_obj,
-    'hydra_view': objectview(hydra_members),
+    # "hydra_obj": hydra_obj,
+    # 'hydra_view': hydra_view,
     'timestamp': '2019-01-01 00:00:00'
 }
 
@@ -128,7 +129,8 @@ def HydraObj(_g, step, sL, s, _input):
     # new_hydra = dict(generate_var_deepcopy(hydra_nt))
 
     # new_hydra_members = dict(generate_var_deepcopy(hydra_members))
-    x = namedtuple("Hydra", s['hydra_members'].keys())(*s['hydra_members'].values())
+    hm = copy(s['hydra_members'])
+    x = namedtuple("Hydra", hm.keys())(*hm.values())
     # x = namedtuple("Hydra", new_hydra.keys())(*new_hydra.values())
 
     # print(x.x)
@@ -136,7 +138,8 @@ def HydraObj(_g, step, sL, s, _input):
 
 def HydraView(_g, step, sL, s, _input):
     y = 'hydra_view'
-    x = objectview(s['hydra_members'])
+    # x = objectview(s['hydra_members'])
+    x = s['hydra_view'].update()
     return (y, x)
 
 def A(_g, step, sL, s, _input):
@@ -147,17 +150,17 @@ def A(_g, step, sL, s, _input):
 def B(_g, step, sL, s, _input):
     y = 'b'
     x = s['hydra_members']['x']
-    # x = s['hydra_members'].x
+    # x = s['hydra_view'].x
     # x = s['hydra_obj'].x
     return (y, x)
 
 def I(_g, step, sL, s, _input):
     y = 'i'
-    # x = s['hydra_members']['update']()
+    x = s['hydra_members']['update']()
 
     # Either works
-    # x = s['hydra_members'].update()
-    x = s['hydra_obj'].update()
+    # x = s['hydra_obj'].update()
+    # x = s['hydra_view'].x
     return (y, x)
 
 def J(_g, step, sL, s, _input):
@@ -165,13 +168,14 @@ def J(_g, step, sL, s, _input):
     x = s['hydra_members']['x']
     # x = s['hydra_members'].x
     # x = s['hydra_obj'].x
+    # x = s['hydra_view'].x
     return (y, x)
 
 
 def K(_g, step, sL, s, _input):
     y = 'k'
-    # x = s['hydra_view'].x
     x = s['hydra_obj'].x
+    # x = s['hydra_view'].x
     return (y, x)
 
 
@@ -185,11 +189,11 @@ partial_state_update_blocks = {
             'b': B,
             # 'hydra': Hydra,
             'hydra_members': HydraMembers,
-            'hydra_obj': HydraObj,
-            'hydra_view': HydraView,
+            # 'hydra_obj': HydraObj,
+            # 'hydra_view': HydraView,
             'i': I,
             'j': J,
-            'k': K,
+            # 'k': K,
             'timestamp': time_model,
         }
     },
@@ -202,11 +206,11 @@ partial_state_update_blocks = {
             'b': B,
             # 'hydra': Hydra,
             'hydra_members': HydraMembers,
-            'hydra_obj': HydraObj,
-            'hydra_view': HydraView,
+            # 'hydra_obj': HydraObj,
+            # 'hydra_view': HydraView,
             'i': I,
             'j': J,
-            'k': K,
+            # 'k': K,
         }
     },
     'PSUB3': {
@@ -217,11 +221,11 @@ partial_state_update_blocks = {
             'b': B,
             # 'hydra': Hydra,
             'hydra_members': HydraMembers,
-            'hydra_obj': HydraObj,
-            'hydra_view': HydraView,
+            # 'hydra_obj': HydraObj,
+            # 'hydra_view': HydraView,
             'i': I,
             'j': J,
-            'k': K,
+            # 'k': K,
         }
     }
 }
