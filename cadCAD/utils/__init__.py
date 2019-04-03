@@ -2,8 +2,6 @@ from typing import Dict, List
 from collections import defaultdict
 from itertools import product
 import warnings
-from inspect import getmembers, ismethod
-from copy import deepcopy, copy
 from collections import namedtuple
 
 
@@ -11,25 +9,35 @@ class objectview(object):
     def __init__(self, d):
         self.__dict__ = d
 
+    def __str__(self):
+        filtered_members = {k: v for k, v in self.__dict__.items() if k != 'obj'}
+        return f"{filtered_members}"
 
-class UDC_Wrapper(object):
-    def __init__(self, current, past, current_functions, past_functions=[]):
-        current_funcs = dict(getmembers(current, ismethod))
 
-        filtered_current_funcs = {k: v for k, v in current_funcs.items() if k in current_functions}
+class UDC(object):
+    def __init__(self, obj):
+        d = vars(obj) # somehow is enough
+        d['obj'] = obj
 
-        filtered_current_funcs.update(vars(past))
-        filtered_current_funcs['hydra_type'] = Dict
-        filtered_current_funcs['current'] = current
-        filtered_current_funcs['past'] = past
+        self.members_dict = d
 
-        self.hybrid_members = filtered_current_funcs
+    def get_members(self):
+        return self.members_dict
 
-    def get_hybrid_members(self):
-        return self.hybrid_members
+    def get_object(self):
+        return objectview(self.members_dict)
 
     def get_namedtuple(self):
-        return namedtuple("Hydra", self.hybrid_members.keys())(*self.hybrid_members.values())
+        return namedtuple("Hydra", self.members_dict.keys())(*self.members_dict.values())
+
+
+# class UDC_Wrapper2(object):
+#     def __init__(self, obj, functions):
+#
+#         self.obj = obj
+#
+#     def get_object(self):
+#         return objectview(self.obj.__dict__)
 
 
 def pipe(x):
