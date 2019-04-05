@@ -28,7 +28,7 @@ class Configuration(object):
 
 
 def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
-                   partial_state_update_blocks={}, _exo_update_per_ts: bool = True) -> None:
+                   partial_state_update_blocks={}, policy_ops=[foldr(dict_elemwise_sum())], _exo_update_per_ts: bool = True) -> None:
     if _exo_update_per_ts is True:
         exogenous_states = exo_update_per_ts(raw_exogenous_states)
     else:
@@ -42,7 +42,8 @@ def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_sta
                 seeds=seeds,
                 exogenous_states=exogenous_states,
                 env_processes=env_processes,
-                partial_state_update_blocks=partial_state_update_blocks
+                partial_state_update_blocks=partial_state_update_blocks,
+                policy_ops=policy_ops
             )
             configs.append(config)
     elif isinstance(sim_configs, dict):
@@ -52,7 +53,8 @@ def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_sta
             seeds=seeds,
             exogenous_states=exogenous_states,
             env_processes=env_processes,
-            partial_state_update_blocks=partial_state_update_blocks
+            partial_state_update_blocks=partial_state_update_blocks,
+            policy_ops=policy_ops
         )
         configs.append(config)
 

@@ -1,7 +1,7 @@
 from typing import Any, Callable, Dict, List, Tuple
 from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
-from fn.op import foldr, call
+from functools import reduce
 
 from cadCAD.engine.utils import engine_exception
 from cadCAD.utils import flatten
@@ -38,7 +38,10 @@ class Executor:
         def get_col_results(var_dict, sub_step, sL, s, funcs):
             return list(map(lambda f: f(var_dict, sub_step, sL, s), funcs))
 
-        return foldr(call, get_col_results(var_dict, sub_step, sL, s, funcs))(ops)
+        # return foldr(call, get_col_results(var_dict, sub_step, sL, s, funcs))(ops)
+
+        col_results = get_col_results(var_dict, sub_step, sL, s, funcs)
+        return reduce(lambda a, b: {**a, **b}, col_results)
 
     def apply_env_proc(
                 self,
@@ -68,6 +71,7 @@ class Executor:
             ) -> List[Dict[str, Any]]:
 
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
+        # last_in_obj: Dict[str, Any] = sL[-1]
 
         _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sL, last_in_obj, policy_funcs))
 
@@ -115,8 +119,7 @@ class Executor:
         states_list: List[Dict[str, Any]] = [genesis_states]
 
         sub_step += 1
-        for config in configs:
-            s_conf, p_conf = config[0], config[1]
+        for [s_conf, p_conf] in configs:
             states_list: List[Dict[str, Any]] = self.partial_state_update(
                 var_dict, sub_step, states_list, s_conf, p_conf, env_processes, time_step, run
             )

@@ -1,43 +1,16 @@
 from typing import Dict, List
-from collections import defaultdict
+from collections import defaultdict, Counter
 from itertools import product
 import warnings
-from collections import namedtuple
 
 
-class objectview(object):
-    def __init__(self, d):
-        self.__dict__ = d
+class IndexCounter:
+    def __init__(self):
+        self.i = 0
 
-    def __str__(self):
-        filtered_members = {k: v for k, v in self.__dict__.items() if k != 'obj'}
-        return f"{filtered_members}"
-
-
-class UDC(object):
-    def __init__(self, obj):
-        d = vars(obj) # somehow is enough
-        d['obj'] = obj
-
-        self.members_dict = d
-
-    def get_members(self):
-        return self.members_dict
-
-    def get_object(self):
-        return objectview(self.members_dict)
-
-    def get_namedtuple(self):
-        return namedtuple("Hydra", self.members_dict.keys())(*self.members_dict.values())
-
-
-# class UDC_Wrapper2(object):
-#     def __init__(self, obj, functions):
-#
-#         self.obj = obj
-#
-#     def get_object(self):
-#         return objectview(self.obj.__dict__)
+    def __call__(self):
+        self.i += 1
+        return self.i
 
 
 def pipe(x):

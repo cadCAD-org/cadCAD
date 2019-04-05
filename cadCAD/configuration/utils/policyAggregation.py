@@ -1,7 +1,6 @@
 from fn.op import foldr
 from fn.func import curried
 
-
 def get_base_value(x):
     if isinstance(x, str):
         return ''
