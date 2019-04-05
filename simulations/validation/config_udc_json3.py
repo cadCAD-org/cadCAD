@@ -1,63 +1,57 @@
 from datetime import timedelta
-from cadCAD.utils import UDC
+
 from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import ep_time_step, config_sim
-from typing import Dict, List
+from cadCAD.configuration.utils.policyAggregation import dict_op, dict_elemwise_sum
+from cadCAD.configuration.utils.udc import udcBroker, next_udc_view, generate_udc_view
 
 
 # ToDo: Create member for past value
-class MyClassA(object):
+class MyClass(object):
     def __init__(self, x):
         self.x = x
-        print(f"Instance of MyClass (mem_id {hex(id(self))}) created with value {self.x}")
 
     def update(self):
         self.x += 1
-        print(f"Instance of MyClass (mem_id {hex(id(self))}) has been updated, has now value {self.x}")
-        # return self.x
         return self
 
     def getMemID(self):
         return str(hex(id(self)))
 
-    # can be accessed after an update within the same substep and timestep
-    # ToDo: id sensitive to lineage, rerepresent
-    def __str__(self):
-        # return f"{self.__class__.__name__} - {hex(id(self))} - {self.__dict__}"
-        return f"{self.__dict__}"
+    pass
 
 
-# a is Correct, and classX's value is Incorrect
-# Expected: a == classX's value
-# b should be tracking classX's value and a:
-#     b should be the same value as the previous classX value and the previous a value
-# https://pymotw.com/2/multiprocessing/communication.html
-# ccc = MyClassA
-# udc = ccc(0)
-# print(MyClassA(**udc.__dict__).__dict__)
+# can be accessed after an update within the same substep and timestep
 
-g: Dict[str, List[MyClassA]] = {'udc': [MyClassA]}
+# udc = MyClassA(0)
+# wrapped_udc = UDC(udc)
+# hydra_members = wrapped_udc.get_object()
+hydra_state_view = generate_udc_view(MyClass(0))
+udc_view_B = generate_udc_view(MyClass(0))
+udc_view_C = generate_udc_view(MyClass(0))
 
-# udcB = MyClassB()
-
-# z = MyClass()
-# pointer(z)
-# separate thread/process for UCD with async calls to this thread/process
-
-# genesis state
-# udc_obj = MyClassA(0)
-# hydra = UDC_Wrapper(udc, udc, current_functions=['update'])
-# hydra = UDC_Wrapper(udc_obj, functions=['update'])
-hydra = UDC(MyClassA(0))
-hydra_members = hydra.get_object()
+# g: Dict[str, List[int]] = {'MyClassB'}
 
 state_dict = {
-    'a': 0,
-    'b': 0,
-    'j': 0,
-    "hydra_members": hydra_members,
+    'a': 0, 'b': 0, 'j': 0,
+    'k': (0, 0), 'q': (0, 0),
+    'hydra_state': hydra_state_view,
+    'policies': {'hydra_B': udc_view_B, 'hydra_C': udc_view_C},
     'timestamp': '2019-01-01 00:00:00'
 }
+
+def p1(_g, step, sL, s):
+    s['policies']['hydra_B'].update()
+    return {'hydra_B': next_udc_view(s['policies']['hydra_B'])}
+
+def p2(_g, step, sL, s):
+    s['policies']['hydra_C'].update()
+    return {'hydra_C': next_udc_view(s['policies']['hydra_C'])}
+
+def policies(_g, step, sL, s, _input):
+    y = 'policies'
+    x = _input
+    return (y, x)
 
 timestep_duration = timedelta(minutes=1) # In this example, a timestep has a duration of 1 minute.
 ts_format = '%Y-%m-%d %H:%M:%S'
@@ -68,90 +62,90 @@ def time_model(_g, step, sL, s, _input):
 
 
 def HydraMembers(_g, step, sL, s, _input):
-    y = 'hydra_members'
-    obj = s['hydra_members'].obj
-    obj.update()
-    x = UDC(obj).get_object()
+    y = 'hydra_state'
+    # PROBLEM:
+    # s['hydra_members'].update()
+    # x = s['hydra_members']
+
+    # SOLUTION:
+    s['hydra_state'].update()
+    x = next_udc_view(s['hydra_state'])
     return (y, x)
 
+def repr(_g, step, sL, s, _input):
+    y = 'z'
+    x = s['hydra_members'].__repr__()
+    return (y, x)
 
 def A(_g, step, sL, s, _input):
     y = 'a'
     x = s['a'] + 1
     return (y, x)
 
-def B(_g, step, sL, s, _input):
-    y = 'b'
-    # x = s['hydra_members']['x']
-    x = s['hydra_members'].x
-    # x = s['hydra_obj'].x
-    return (y, x)
+def hydra_state_tracker(y):
+    return lambda _g, step, sL, s, _input: (y, s['hydra_state'].x)
 
 
-def J(_g, step, sL, s, _input):
-    y = 'j'
-    # x = s['hydra_members']['x']
-    x = s['hydra_members'].x
-    # x = s['hydra_obj'].x
-    # x = s['hydra_view'].x
-    return (y, x)
+def hydra_policy_tracker(y):
+    return lambda _g, step, sL, s, _input: (y, tuple(v.x for k, v in s['policies'].items()))
 
 
+# needs M1&2 need behaviors
 partial_state_update_blocks = {
     'PSUB1': {
-        'behaviors': {
+        'policies': {
+            "b1": p1,
+            "b2": p2
         },
         'states': {
-            # 'ca': CA,
             'a': A,
-            'b': B,
-            # 'hydra': Hydra,
-            'hydra_members': HydraMembers,
-            # 'hydra_obj': HydraObj,
-            # 'hydra_view': HydraView,
-            # 'i': I,
-            'j': J,
-            # 'k': K,
+            'b': hydra_state_tracker('b'),
+            'j': hydra_state_tracker('j'),
+            'k': hydra_policy_tracker('k'),
+            'q': hydra_policy_tracker('q'),
+            'hydra_state': HydraMembers,
             'timestamp': time_model,
+            'policies': policies
         }
     },
     'PSUB2': {
-        'behaviors': {
+        'policies': {
+            "b1": p1,
+            "b2": p2
         },
         'states': {
-            # 'ca': CA,
             'a': A,
-            'b': B,
-            # 'hydra': Hydra,
-            'hydra_members': HydraMembers,
-            # 'hydra_obj': HydraObj,
-            # 'hydra_view': HydraView,
-            # 'i': I,
-            'j': J,
-            # 'k': K,
+            'b': hydra_state_tracker('b'),
+            'j': hydra_state_tracker('j'),
+            'k': hydra_policy_tracker('k'),
+            'q': hydra_policy_tracker('q'),
+            'hydra_state': HydraMembers,
+            'policies': policies
         }
     },
     'PSUB3': {
-        'behaviors': {
+        'policies': {
+            "b1": p1,
+            "b2": p2
         },
         'states': {
             'a': A,
-            'b': B,
-            # 'hydra': Hydra,
-            'hydra_members': HydraMembers,
-            # 'hydra_obj': HydraObj,
-            # 'hydra_view': HydraView,
-            # 'i': I,
-            'j': J,
-            # 'k': K,
+            'b': hydra_state_tracker('b'),
+            'j': hydra_state_tracker('j'),
+            'k': hydra_policy_tracker('k'),
+            'q': hydra_policy_tracker('q'),
+            'hydra_state': HydraMembers,
+            'policies': policies
         }
     }
 }
 
 sim_config = config_sim({
     "N": 2,
-    "T": range(4),
-    "M": g
+    "T": range(4)
 })
 
-append_configs(sim_config, state_dict, {}, {}, {}, partial_state_update_blocks)
+append = lambda a, b: [a, b]
+update_dict = lambda a, b: a.update(b)
+take_first = lambda a, b: [a, b]
+append_configs(sim_config, state_dict, {}, {}, {}, partial_state_update_blocks)#, policy_ops=[foldr(dict_op(take_first))])

@@ -5,6 +5,7 @@ from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from simulations.validation import config_udc_json3
 from cadCAD import configs
 
+import pprint as pp
 
 exec_mode = ExecutionMode()
 
@@ -22,3 +23,4 @@ print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
 print("Output:")
 print(tabulate(result, headers='keys', tablefmt='psql'))
 print()
+print(result.info(verbose=True))
