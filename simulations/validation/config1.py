@@ -1,6 +1,10 @@
 from decimal import Decimal
+from functools import reduce
+
 import numpy as np
 from datetime import timedelta
+
+from cadCAD.configuration.utils.policyAggregation import get_base_value
 
 from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step, config_sim
@@ -17,7 +21,7 @@ seeds = {
 def p1m1(_g, step, sL, s):
     return {'param1': 1}
 def p2m1(_g, step, sL, s):
-    return {'param2': 4}
+    return {'param1': 1, 'param2': 4}
 
 # []
 
@@ -60,6 +64,13 @@ def s2m3(_g, step, sL, s, _input):
     x = _input['param2']
     return (y, x)
 
+def policies(_g, step, sL, s, _input):
+    y = 'policies'
+    x = _input
+    return (y, x)
+
+
+
 
 # Exogenous States
 proc_one_coef_A = 0.7
@@ -97,7 +108,7 @@ genesis_states = {
     's1': Decimal(0.0),
     's2': Decimal(0.0),
     's3': Decimal(1.0),
-    's4': Decimal(1.0),
+    's4': Decimal(1.0)
 #     'timestep': '2018-10-01 15:16:24'
 }
 
@@ -156,12 +167,12 @@ sim_config = config_sim(
     }
 )
 
-
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     seeds=seeds,
     raw_exogenous_states=raw_exogenous_states,
     env_processes=env_processes,
-    partial_state_update_blocks=partial_state_update_block
+    partial_state_update_blocks=partial_state_update_block,
+    policy_ops=[lambda a, b: a + b]
 )
