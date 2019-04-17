@@ -1,4 +1,5 @@
 from typing import Any, Callable, Dict, List, Tuple
+
 from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
 from functools import reduce
@@ -33,22 +34,50 @@ class Executor:
                 funcs: List[Callable]
             ) -> Dict[str, Any]:
 
-        ops = self.policy_ops[::-1]
+        # ops = self.policy_ops[::-1]
+        ops = self.policy_ops
+
 
         def get_col_results(var_dict, sub_step, sL, s, funcs):
             return list(map(lambda f: f(var_dict, sub_step, sL, s), funcs))
 
-        # return foldr(call, get_col_results(var_dict, sub_step, sL, s, funcs))(ops)
+        def compose(init_reduction_funct, funct_list, val_list):
+            result, i = None, 0
+            composition = lambda x: [reduce(init_reduction_funct, x)] + funct_list
+            for g in composition(val_list):
+                if i == 0:
+                    result = g
+                    i = 1
+                else:
+                    result = g(result)
+            return result
 
         col_results = get_col_results(var_dict, sub_step, sL, s, funcs)
-        return reduce(lambda a, b: {**a, **b}, col_results)
+        key_set = list(set(list(reduce(lambda a, b: a + b, list(map(lambda x: list(x.keys()), col_results))))))
+        new_dict = {k: [] for k in key_set}
+        for d in col_results:
+            for k in d.keys():
+                new_dict[k].append(d[k])
+
+        ops_head, *ops_tail = ops
+        return {
+            k: compose(
+                init_reduction_funct=ops_head, # func executed on value list
+                funct_list=ops_tail,
+                val_list=val_list
+            ) for k, val_list in new_dict.items()
+        }
+
+        # [f1] = ops
+        # return {k: reduce(f1, val_list) for k, val_list in new_dict.items()}
+        # return foldr(call, col_results)(ops)
 
     def apply_env_proc(
                 self,
                 env_processes: Dict[str, Callable],
                 state_dict: Dict[str, Any],
                 sub_step: int
-            ) -> None:
+            ) -> Dict[str, Any]:
         for state in state_dict.keys():
             if state in list(env_processes.keys()):
                 env_state: Callable = env_processes[state]
@@ -56,6 +85,8 @@ class Executor:
                     state_dict[state] = env_state(sub_step)(state_dict[state])
                 else:
                     state_dict[state] = env_state(state_dict[state])
+
+        return state_dict
 
     # mech_step
     def partial_state_update(
@@ -81,16 +112,15 @@ class Executor:
             for f in state_funcs:
                 yield self.state_update_exception(f(var_dict, sub_step, sL, last_in_obj, _input))
 
-        last_in_copy: Dict[str, Any] = dict(generate_record(state_funcs))
+        def transfer_missing_fields(source, destination):
+            for k in source:
+                if k not in destination:
+                    destination[k] = source[k]
+            del source # last_in_obj
+            return destination
 
-        for k in last_in_obj:
-            if k not in last_in_copy:
-                last_in_copy[k] = last_in_obj[k]
-
-        del last_in_obj
-
-        self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
-
+        last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, dict(generate_record(state_funcs)))
+        last_in_copy: Dict[str, Any] = self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
         # ToDo: make 'substep' & 'timestep' reserve fields
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
 
@@ -164,15 +194,18 @@ class Executor:
 
         def execute_run(var_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
             run += 1
-            states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
 
-            head, *tail = self.run_pipeline(var_dict, states_list_copy, configs, env_processes, time_seq, run)
+            def generate_init_sys_metrics(genesis_states_list):
+                for d in genesis_states_list:
+                    d['run'], d['substep'], d['timestep'] = run, int(0), int(0)
+                    yield d
+
+            states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(deepcopy(states_list)))
+
+            first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(var_dict, states_list_copy, configs, env_processes, time_seq, run)
             del states_list_copy
 
-            genesis: Dict[str, Any] = head.pop()
-            genesis['substep'], genesis['timestep'], genesis['run'] = 0, 0, run
-            first_timestep_per_run: List[Dict[str, Any]] = [genesis] + tail.pop(0)
-            return [first_timestep_per_run] + tail
+            return first_timestep_per_run
 
         pipe_run: List[List[Dict[str, Any]]] = flatten(
             TPool().map(

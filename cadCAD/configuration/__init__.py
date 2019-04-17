@@ -10,6 +10,8 @@ from cadCAD.configuration.utils import exo_update_per_ts
 from cadCAD.configuration.utils.policyAggregation import dict_elemwise_sum
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates, sanitize_config
 
+# policy_ops=[foldr(dict_elemwise_sum())]
+# policy_ops=[reduce, lambda a, b: {**a, **b}]
 
 class Configuration(object):
     def __init__(self, sim_config={}, initial_state={}, seeds={}, env_processes={},
