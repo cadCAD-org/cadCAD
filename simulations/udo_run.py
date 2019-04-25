@@ -2,7 +2,7 @@ import pandas as pd
 from tabulate import tabulate
 # The following imports NEED to be in the exact order
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import config_udc_json3
+from simulations.validation import udo
 from cadCAD import configs
 
 
@@ -10,13 +10,21 @@ exec_mode = ExecutionMode()
 
 print("Simulation Execution: Single Configuration")
 print()
+
+
 first_config = configs # only contains config1
 single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
 run = Executor(exec_context=single_proc_ctx, configs=first_config)
-
+# cols = configs[0].initial_state.keys()
+cols = [
+    'increment',
+    'state_udo_tracker_a', 'state_udo', 'state_udo_perception_tracker', 'state_udo_tracker_b',
+    'udo_policy_tracker_a', 'udo_policies', 'udo_policy_tracker_b',
+    'timestamp'
+]
 raw_result, tensor_field = run.main()
-result = pd.DataFrame(raw_result)
-result = pd.concat([result.drop(['c'], axis=1), result['c'].apply(pd.Series)], axis=1)
+result = pd.DataFrame(raw_result)[['run', 'substep', 'timestep'] + cols]
+# result = pd.concat([result.drop(['c'], axis=1), result['c'].apply(pd.Series)], axis=1)
 
 # print(list(result['c']))
 

@@ -94,6 +94,7 @@ class Executor:
                 var_dict: Dict[str, List[Any]],
                 sub_step: int,
                 sL: Any,
+                sH: Any,
                 state_funcs: List[Callable],
                 policy_funcs: List[Callable],
                 env_processes: Dict[str, Callable],
@@ -101,16 +102,19 @@ class Executor:
                 run: int
             ) -> List[Dict[str, Any]]:
 
-        last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
-        # last_in_obj: Dict[str, Any] = sL[-1]
+        # last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
+        last_in_obj: Dict[str, Any] = sL[-1]
+        # last_in_obj: Dict[str, Any] = sH[-1]
+        # print(last_in_obj)
+        # print(sH[-1])
 
-        _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sL, last_in_obj, policy_funcs))
+        _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sH, last_in_obj, policy_funcs))
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
         # ToDo: Can be multithreaded ??
         def generate_record(state_funcs):
             for f in state_funcs:
-                yield self.state_update_exception(f(var_dict, sub_step, sL, last_in_obj, _input))
+                yield self.state_update_exception(f(var_dict, sub_step, sH, last_in_obj, _input))
 
         def transfer_missing_fields(source, destination):
             for k in source:
@@ -127,13 +131,16 @@ class Executor:
         sL.append(last_in_copy)
         del last_in_copy
 
+        # print(sL)
+        # print()
+
         return sL
 
     # mech_pipeline - state_update_block
     def state_update_pipeline(
                 self,
                 var_dict: Dict[str, List[Any]],
-                states_list: List[Dict[str, Any]],
+                simulation_list, #states_list: List[Dict[str, Any]],
                 configs: List[Tuple[List[Callable], List[Callable]]],
                 env_processes: Dict[str, Callable],
                 time_step: int,
@@ -141,19 +148,33 @@ class Executor:
             ) -> List[Dict[str, Any]]:
 
         sub_step = 0
-        states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
+        # states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
+        # states_list_copy: List[Dict[str, Any]] = states_list
+        # ToDo: flatten first
+        states_list_copy: List[Dict[str, Any]] = simulation_list[-1]
+        # print(states_list_copy)
 
+        # ToDo: Causes Substep repeats in sL:
         genesis_states: Dict[str, Any] = states_list_copy[-1]
+
+        if len(states_list_copy) == 1:
+            genesis_states['substep'] = sub_step
+        #     genesis_states['timestep'] = 0
+        # else:
+        #     genesis_states['timestep'] = time_step
+
         del states_list_copy
-        genesis_states['substep'], genesis_states['timestep'] = sub_step, time_step
         states_list: List[Dict[str, Any]] = [genesis_states]
 
+        # ToDo: Causes Substep repeats in sL, use for yield
         sub_step += 1
         for [s_conf, p_conf] in configs:
             states_list: List[Dict[str, Any]] = self.partial_state_update(
-                var_dict, sub_step, states_list, s_conf, p_conf, env_processes, time_step, run
+                var_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run
             )
-
+            # print(sub_step)
+            # print(simulation_list)
+            # print(flatten(simulation_list))
             sub_step += 1
 
         time_step += 1
@@ -173,12 +194,20 @@ class Executor:
 
         time_seq: List[int] = [x + 1 for x in time_seq]
         simulation_list: List[List[Dict[str, Any]]] = [states_list]
+
+        # print(simulation_list[-1])
+        # print()
+        # pipe_run = simulation_list[-1]
+        # print(simulation_list)
         for time_step in time_seq:
             pipe_run: List[Dict[str, Any]] = self.state_update_pipeline(
-                var_dict, simulation_list[-1], configs, env_processes, time_step, run
+                var_dict, simulation_list, configs, env_processes, time_step, run
             )
+
             _, *pipe_run = pipe_run
             simulation_list.append(pipe_run)
+            # print(simulation_list)
+            # print()
 
         return simulation_list
 
@@ -197,7 +226,7 @@ class Executor:
 
             def generate_init_sys_metrics(genesis_states_list):
                 for d in genesis_states_list:
-                    d['run'], d['substep'], d['timestep'] = run, int(0), int(0)
+                    d['run'], d['substep'], d['timestep'] = run, 0, 0
                     yield d
 
             states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(deepcopy(states_list)))
