@@ -9,14 +9,18 @@ from pandas import DataFrame
 
 class SilentDF(DataFrame):
     def __repr__(self):
-        return f"{hex(id(DataFrame))})" #"pandas.core.frame.DataFrame"
+        return str(hex(id(DataFrame))) #"pandas.core.frame.DataFrame"
+
+def append_dict(dict, new_dict):
+    dict.update(new_dict)
+    return dict
 
 
-def val_switch(v):
-    if isinstance(v, DataFrame) is True or isinstance(v, SilentDF) is True:
-        return SilentDF(v)
-    else:
-        return v.x
+# def val_switch(v):
+#     if isinstance(v, DataFrame) is True or isinstance(v, SilentDF) is True:
+#         return SilentDF(v)
+#     else:
+#         return v.x
 
 
 class IndexCounter:

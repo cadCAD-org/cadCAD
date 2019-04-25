@@ -1,6 +1,5 @@
 from typing import Dict, Callable, List, Tuple
 from functools import reduce
-from fn.op import foldr
 import pandas as pd
 from pandas.core.frame import DataFrame
 
@@ -13,9 +12,10 @@ from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_stat
 # policy_ops=[foldr(dict_elemwise_sum())]
 # policy_ops=[reduce, lambda a, b: {**a, **b}]
 
+
 class Configuration(object):
     def __init__(self, sim_config={}, initial_state={}, seeds={}, env_processes={},
-                 exogenous_states={}, partial_state_update_blocks={}, policy_ops=[foldr(dict_elemwise_sum())],
+                 exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
                  **kwargs) -> None:
         self.sim_config = sim_config
         self.initial_state = initial_state
@@ -30,7 +30,7 @@ class Configuration(object):
 
 
 def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
-                   partial_state_update_blocks={}, policy_ops=[foldr(dict_elemwise_sum())], _exo_update_per_ts: bool = True) -> None:
+                   partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True) -> None:
     if _exo_update_per_ts is True:
         exogenous_states = exo_update_per_ts(raw_exogenous_states)
     else:

@@ -13,8 +13,9 @@ def val_switch(v):
         return v
 
 class udcView(object):
-    def __init__(self, d):
+    def __init__(self, d, masked_members):
         self.__dict__ = d
+        self.masked_members = masked_members
 
     # returns dict to dataframe
     # def __repr__(self):
@@ -22,7 +23,7 @@ class udcView(object):
         members = {}
         variables = {
             k: val_switch(v) for k, v in self.__dict__.items()
-            if str(type(v)) != "<class 'method'>" and k != 'obj' # and isinstance(v, DataFrame) is not True
+            if str(type(v)) != "<class 'method'>" and k not in self.masked_members # and isinstance(v, DataFrame) is not True
         }
         members['methods'] = [k for k, v in self.__dict__.items() if str(type(v)) == "<class 'method'>"]
         members.update(variables)
@@ -43,19 +44,17 @@ class udcBroker(object):
     def get_members(self):
         return self.members_dict
 
-    def get_view(self):
-        return udcView(self.members_dict)
+    def get_view(self, masked_members):
+        return udcView(self.members_dict, masked_members)
 
     def get_namedtuple(self):
         return namedtuple("Hydra", self.members_dict.keys())(*self.members_dict.values())
 
 
-
-def UDO(udc):
-    return udcBroker(udc).get_view()
+def UDO(udo, masked_members=['obj']):
+    return udcBroker(udo).get_view(masked_members)
 
 
 def udoPipe(obj_view):
-    return UDO(obj_view.obj)
-
+    return UDO(obj_view.obj, obj_view.masked_members)
 

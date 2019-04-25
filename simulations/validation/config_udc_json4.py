@@ -3,7 +3,7 @@ from datetime import timedelta
 from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import ep_time_step, config_sim
 from cadCAD.configuration.utils.policyAggregation import dict_op, dict_elemwise_sum
-from cadCAD.configuration.utils.udo import udcBroker, udoPipe, UDO
+from cadCAD.configuration.utils.userDefinedObject import udcBroker, udoPipe, UDO
 
 
 # ToDo: Create member for past value
