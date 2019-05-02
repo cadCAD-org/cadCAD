@@ -19,6 +19,12 @@ def update_timestamp(y, timedelta, format):
         ep_time_step(s, dt_str=s[y], fromat_str=format, _timedelta=timedelta)
     )
 
+def add(y, x):
+    return lambda _g, step, sH, s, _input: (y, s[y] + x)
+
+def s(y, x):
+    return lambda _g, step, sH, s, _input: (y, x)
+
 
 # def repr(_g, step, sL, s, _input):
 #     y = 'z'

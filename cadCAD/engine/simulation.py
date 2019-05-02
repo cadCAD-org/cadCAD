@@ -88,6 +88,7 @@ class Executor:
 
         return state_dict
 
+    # ToDo: Redifined as a function that applies the tensor field to a set og last conditions
     # mech_step
     def partial_state_update(
                 self,
@@ -106,7 +107,7 @@ class Executor:
         last_in_obj: Dict[str, Any] = sL[-1]
         # last_in_obj: Dict[str, Any] = sH[-1]
         # print(last_in_obj)
-        # print(sH[-1])
+        print(sH[-1])
 
         _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sH, last_in_obj, policy_funcs))
 
@@ -168,7 +169,7 @@ class Executor:
 
         # ToDo: Causes Substep repeats in sL, use for yield
         sub_step += 1
-        for [s_conf, p_conf] in configs:
+        for [s_conf, p_conf] in configs: # tensor field
             states_list: List[Dict[str, Any]] = self.partial_state_update(
                 var_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run
             )
@@ -193,6 +194,7 @@ class Executor:
             ) -> List[List[Dict[str, Any]]]:
 
         time_seq: List[int] = [x + 1 for x in time_seq]
+        # ToDo: simulation_list should be a Tensor that is generated throughout the Executor
         simulation_list: List[List[Dict[str, Any]]] = [states_list]
 
         # print(simulation_list[-1])
@@ -211,6 +213,8 @@ class Executor:
 
         return simulation_list
 
+    # ToDo: Below can be recieved from a tensor field
+    # configs: List[Tuple[List[Callable], List[Callable]]]
     def simulation(
             self,
             var_dict: Dict[str, List[Any]],

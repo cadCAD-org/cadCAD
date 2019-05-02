@@ -1,18 +1,15 @@
-from datetime import timedelta
-
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import ep_time_step, config_sim
-# from cadCAD.configuration.utils.policyAggregation import dict_op, dict_elemwise_sum
-from cadCAD.configuration.utils.userDefinedObject import udcBroker, udoPipe, UDO
+from cadCAD.configuration.utils import config_sim
 import pandas as pd
 from cadCAD.utils import SilentDF
 
-df = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/output.csv'))
+df = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv'))
 
+external_data = {'ds1': None, 'ds2': None, 'ds3': None}
 state_dict = {
     'increment': 0,
-    'external_data': {"ds1": None, "ds2": None, "ds3": None},
-    'policies': {}
+    'external_data': external_data,
+    'policies': external_data,
 }
 
 def query(s, df):
@@ -61,9 +58,11 @@ sim_config = config_sim({
 })
 
 append_configs(
-    sim_config,
-    state_dict,
-    {}, {}, {},
-    partial_state_update_blocks,
+    sim_configs=sim_config,
+    initial_state=state_dict,
+    # seeds=seeds,
+    # raw_exogenous_states=raw_exogenous_states,
+    # env_processes=env_processes,
+    partial_state_update_blocks=partial_state_update_blocks,
     policy_ops=[lambda a, b: {**a, **b}]
 )

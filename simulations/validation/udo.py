@@ -7,7 +7,7 @@ import pandas as pd
 
 from fn.func import curried
 
-DF = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/output.csv'))
+DF = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv'))
 
 class udoExample(object):
     def __init__(self, x, dataset=None):
@@ -153,7 +153,9 @@ sim_config = config_sim({
 append_configs(
     sim_config,
     state_dict,
-    {}, {}, {},
+    # seeds=seeds,
+    # raw_exogenous_states=raw_exogenous_states,
+    # env_processes=env_processes,
     partial_state_update_blocks,
     policy_ops=[lambda a, b: {**a, **b}]
 )
