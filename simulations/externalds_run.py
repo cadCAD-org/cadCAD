@@ -4,7 +4,7 @@ from tabulate import tabulate
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 # from simulations.validation import config1_test_pipe
 # from simulations.validation import config1
-from simulations.validation import externalds
+from simulations.validation import write_simulation
 from cadCAD import configs
 
 exec_mode = ExecutionMode()

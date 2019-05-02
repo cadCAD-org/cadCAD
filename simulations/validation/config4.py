@@ -92,8 +92,6 @@ def env_a(x):
     return 5
 def env_b(x):
     return 10
-# def what_ever(x):
-#     return x + 1
 
 
 # Genesis States
