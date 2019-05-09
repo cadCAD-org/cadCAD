@@ -166,7 +166,8 @@ states = list(state_updates.keys())
 # states_noTS = filter_out(['timestamp'], states)
 # states_grid = [states,states_noTS,states_noTS]
 
-states_grid = [states] * system_substeps #[states,states,states]
+# states_grid = [states] * system_substeps #
+states_grid = [states,states,states]
 policy_grid = [['a', 'b'], ['a', 'b'], ['a', 'b']]
 
 
