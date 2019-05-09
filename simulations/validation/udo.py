@@ -1,7 +1,8 @@
+from copy import deepcopy
 from datetime import timedelta
 from cadCAD.utils import SilentDF #, val_switch
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import ep_time_step, config_sim
+from cadCAD.configuration.utils import time_step, ep_time_step, config_sim
 from cadCAD.configuration.utils.userDefinedObject import udoPipe, UDO
 import pandas as pd
 
@@ -46,14 +47,25 @@ state_udo = UDO(udo=udoExample(0, DF), masked_members=['obj', 'perception'])
 policy_udoA = UDO(udo=udoExample(0, DF), masked_members=['obj', 'perception'])
 policy_udoB = UDO(udo=udoExample(0, DF), masked_members=['obj', 'perception'])
 
+def udo_policyA(_g, step, sL, s):
+    s['udo_policies']['udo_A'].updateX()
+    return {'udo_A': udoPipe(s['udo_policies']['udo_A'])}
+
+def udo_policyB(_g, step, sL, s):
+    s['udo_policies']['udo_B'].updateX()
+    return {'udo_B': udoPipe(s['udo_policies']['udo_B'])}
+
+
+policies = {"p1": udo_policyA, "p2": udo_policyB}
+
 # ToDo: DataFrame Column order
 state_dict = {
     'increment': 0,
     'state_udo': state_udo, 'state_udo_tracker_a': 0, 'state_udo_tracker_b': 0,
     'state_udo_perception_tracker': {"ds1": None, "ds2": None, "ds3": None, "timestep": None},
     'udo_policies': {'udo_A': policy_udoA, 'udo_B': policy_udoB},
-    'udo_policy_tracker_a': (None, None), 'udo_policy_tracker_b': (None, None),
-    'timestamp': '2019-01-01 00:00:00',
+    'udo_policy_tracker_a': (0, 0), 'udo_policy_tracker_b': (0, 0),
+    'timestamp': '2019-01-01 00:00:00'
 }
 
 @curried
@@ -64,24 +76,14 @@ def perceive(s, self):
     return self
 
 def view_udo_policy(_g, step, sL, s, _input):
-    y = 'udo_policies'
-    x = _input
-    return (y, x)
-
-def update_timestamp(y, timedelta, format):
-    return lambda _g, step, sL, s, _input: (
-        y,
-        ep_time_step(s, dt_str=s[y], fromat_str=format, _timedelta=timedelta)
-    )
-time_model = update_timestamp('timestamp', timedelta(minutes=1), '%Y-%m-%d %H:%M:%S')
-
+    return 'udo_policies', _input
 
 def state_udo_update(_g, step, sL, s, _input):
     y = 'state_udo'
     # s['hydra_state'].updateX().anon(perceive(s))
     s['state_udo'].updateX().perceive(s)
     x = udoPipe(s['state_udo'])
-    return (y, x)
+    return y, x
 
 def increment(y, incr_by):
     return lambda _g, step, sL, s, _input: (y, s[y] + incr_by)
@@ -105,17 +107,17 @@ def track_state_udo_perception(destination, source):
             return past_perception
     return lambda _g, step, sL, s, _input: (destination, id(s[source].perception))
 
-def udo_policyA(_g, step, sL, s):
-    s['udo_policies']['udo_A'].updateX()
-    return {'udo_A': udoPipe(s['udo_policies']['udo_A'])}
 
-def udo_policyB(_g, step, sL, s):
-    s['udo_policies']['udo_B'].updateX()
-    return {'udo_B': udoPipe(s['udo_policies']['udo_B'])}
+def time_model(y, substeps, time_delta, ts_format='%Y-%m-%d %H:%M:%S'):
+    def apply_incriment_condition(s):
+        if s['substep'] == 0 or s['substep'] == substeps:
+            return y, time_step(dt_str=s[y], dt_format=ts_format, _timedelta=time_delta)
+        else:
+            return y, s[y]
+    return lambda _g, step, sL, s, _input: apply_incriment_condition(s)
 
-policies = {"p1": udo_policyA, "p2": udo_policyB}
 
-states_with_ts = {
+states = {
     'increment': increment('increment', 1),
     'state_udo_tracker_a': track('state_udo_tracker_a', 'state_udo'),
     'state_udo': state_udo_update,
@@ -123,39 +125,38 @@ states_with_ts = {
     'state_udo_tracker_b': track('state_udo_tracker_b', 'state_udo'),
     'udo_policy_tracker_a': track_udo_policy('udo_policy_tracker_a', 'udo_policies'),
     'udo_policies': view_udo_policy,
-    'udo_policy_tracker_b': track_udo_policy('udo_policy_tracker_b', 'udo_policies'),
-    'timestamp': time_model,
+    'udo_policy_tracker_b': track_udo_policy('udo_policy_tracker_b', 'udo_policies')
 }
-del states_with_ts['timestamp']
-states_without_ts = states_with_ts
+
+substeps=3
+update_timestamp = time_model(
+    'timestamp',
+    substeps=3,
+    time_delta=timedelta(days=0, minutes=0, seconds=1),
+    ts_format='%Y-%m-%d %H:%M:%S'
+)
+states['timestamp'] = update_timestamp
+
+PSUB = {
+    'policies': policies,
+    'states': states
+}
 
 # needs M1&2 need behaviors
-partial_state_update_blocks = {
-    'PSUB1': {
-        'policies': policies,
-        'states': states_with_ts
-    },
-    'PSUB2': {
-        'policies': policies,
-        'states': states_without_ts
-    },
-    'PSUB3': {
-        'policies': policies,
-        'states': states_without_ts
-    }
-}
+partial_state_update_blocks = [PSUB] * substeps
 
 sim_config = config_sim({
     "N": 2,
     "T": range(4)
 })
 
+# ToDo: Bug without specifying parameters
 append_configs(
-    sim_config,
-    state_dict,
-    # seeds=seeds,
-    # raw_exogenous_states=raw_exogenous_states,
-    # env_processes=env_processes,
-    partial_state_update_blocks,
-    policy_ops=[lambda a, b: {**a, **b}]
+    sim_configs=sim_config,
+    initial_state=state_dict,
+    seeds={},
+    raw_exogenous_states={},
+    env_processes={},
+    partial_state_update_blocks=partial_state_update_blocks,
+    # policy_ops=[lambda a, b: {**a, **b}]
 )

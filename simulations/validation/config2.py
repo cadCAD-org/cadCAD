@@ -3,7 +3,7 @@ import numpy as np
 from datetime import timedelta
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step, config_sim
+from cadCAD.configuration.utils import env_proc_trigger, bound_norm_random, ep_time_step, config_sim
 
 seeds = {
     'z': np.random.RandomState(1),
@@ -108,8 +108,8 @@ raw_exogenous_states = {
 
 
 env_processes = {
-    "s3": proc_trigger(1, env_a),
-    "s4": proc_trigger(1, env_b)
+    "s3": env_proc_trigger(1, env_a),
+    "s4": env_proc_trigger(1, env_b)
 }
 
 

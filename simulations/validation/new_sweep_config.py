@@ -1,15 +1,16 @@
 from decimal import Decimal
-from functools import reduce
-
 import numpy as np
 from datetime import timedelta
-
-from cadCAD.configuration.utils.policyAggregation import get_base_value
+import pprint
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import env_proc_trigger, bound_norm_random, ep_time_step, config_sim
+from cadCAD.configuration.utils import env_proc_trigger, ep_time_step, config_sim
 
-from cadCAD.configuration.utils import timestep_trigger
+from typing import Dict, List
+
+# from cadCAD.utils.sys_config import exo, exo_check
+
+pp = pprint.PrettyPrinter(indent=4)
 
 seeds = {
     'z': np.random.RandomState(1),
@@ -18,73 +19,63 @@ seeds = {
     'c': np.random.RandomState(3)
 }
 
+# Optional
+g: Dict[str, List[int]] = {
+    'alpha': [1],
+    'beta': [2, 5],
+    'gamma': [3, 4],
+    'omega': [7]
+}
 
 # Policies per Mechanism
 def p1m1(_g, step, sL, s):
     return {'param1': 1}
+
 def p2m1(_g, step, sL, s):
-    return {'param1': 1, 'param2': 4}
+    return {'param2': 4}
 
 def p1m2(_g, step, sL, s):
-    return {'param1': 'a', 'param2': 2}
+    return {'param1': 'a', 'param2': _g['beta']}
+
 def p2m2(_g, step, sL, s):
-    return {'param1': 'b', 'param2': 4}
+    return {'param1': 'b', 'param2': 0}
 
 def p1m3(_g, step, sL, s):
-    return {'param1': ['c'], 'param2': np.array([10, 100])}
-def p2m3(_g, step, sL, s):
-    return {'param1': ['d'], 'param2': np.array([20, 200])}
+    return {'param1': np.array([10, 100])}
 
+def p2m3(_g, step, sL, s):
+    return {'param1': np.array([20, 200])}
 
 # Internal States per Mechanism
 def s1m1(_g, step, sL, s, _input):
-    y = 's1'
-    x = s['s1'] + 1
-    return (y, x)
+    return 's1', 0
+
 def s2m1(_g, step, sL, s, _input):
-    y = 's2'
-    x = _input['param2']
-    return (y, x)
+    return 's2', _g['beta']
 
 def s1m2(_g, step, sL, s, _input):
-    y = 's1'
-    x = s['s1'] + 1
-    return (y, x)
+    return 's1', _input['param2']
+
 def s2m2(_g, step, sL, s, _input):
-    y = 's2'
-    x = _input['param2']
-    return (y, x)
+    return 's2', _input['param2']
 
 def s1m3(_g, step, sL, s, _input):
-    y = 's1'
-    x = s['s1'] + 1
-    return (y, x)
+    return 's1', 0
+
 def s2m3(_g, step, sL, s, _input):
-    y = 's2'
-    x = _input['param2']
-    return (y, x)
-
-def policies(_g, step, sL, s, _input):
-    y = 'policies'
-    x = _input
-    return (y, x)
-
-
+    return 's2', 0
 
 
 # Exogenous States
 proc_one_coef_A = 0.7
 proc_one_coef_B = 1.3
 
-def es3p1(_g, step, sL, s, _input):
-    y = 's3'
-    x = s['s3'] * bound_norm_random(seeds['a'], proc_one_coef_A, proc_one_coef_B)
-    return (y, x)
 
+def es3p1(_g, step, sL, s, _input):
+    return 's3', _g['gamma']
+# @curried
 def es4p2(_g, step, sL, s, _input):
-    y = 's4'
-    x = s['s4'] * bound_norm_random(seeds['b'], proc_one_coef_A, proc_one_coef_B)
-    return (y, x)
+    return 's4', _g['gamma']
 
 ts_format = '%Y-%m-%d %H:%M:%S'
 t_delta = timedelta(days=0, minutes=0, seconds=1)
@@ -95,12 +86,13 @@ def es5p2(_g, step, sL, s, _input):
 
 
 # Environment States
+# @curried
+# def env_a(param, x):
+#     return x + param
 def env_a(x):
-    return 5
+    return x
 def env_b(x):
     return 10
-# def what_ever(x):
-#     return x + 1
 
 
 # Genesis States
@@ -108,25 +100,37 @@ genesis_states = {
     's1': Decimal(0.0),
     's2': Decimal(0.0),
     's3': Decimal(1.0),
-    's4': Decimal(1.0)
+    's4': Decimal(1.0),
 #     'timestep': '2018-10-01 15:16:24'
 }
 
 
-# raw_exogenous_states = {
-#     "s3": es3p1,
-#     "s4": es4p2,
-# #     "timestep": es5p2
-# }
-
-
-env_processes = {
-    "s3": env_a,
-    "s4": env_proc_trigger(1, env_b)
+# remove `exo_update_per_ts` to update every ts
+raw_exogenous_states = {
+    "s3": es3p1,
+    "s4": es4p2,
+#     "timestep": es5p2
 }
 
 
-partial_state_update_blocks = {
+# ToDo: make env proc trigger field agnostic
+# ToDo: input json into function renaming __name__
+triggered_env_b = env_proc_trigger(1, env_b)
+env_processes = {
+    "s3": env_a, #sweep(beta, env_a),
+    "s4": triggered_env_b #rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)
+}
+# parameterized_env_processes = parameterize_states(env_processes)
+#
+# pp.pprint(parameterized_env_processes)
+# exit()
+
+# ToDo: The number of values entered in sweep should be the # of config objs created,
+# not dependent on the # of times the sweep is applied
+# sweep exo_state func and point to exo-state in every other funtion
+# param sweep on genesis states
+
+partial_state_update_block = {
     "m1": {
         "policies": {
             "b1": p1m1,
@@ -134,21 +138,17 @@ partial_state_update_blocks = {
         },
         "variables": {
             "s1": s1m1,
-            "s2": s2m1,
-            "s3": es3p1,
-            "s4": es4p2,
+            "s2": s2m1
         }
     },
     "m2": {
         "policies": {
             "b1": p1m2,
-            "b2": p2m2
+            "b2": p2m2,
         },
         "variables": {
             "s1": s1m2,
-            "s2": s2m2,
-            # "s3": timestep_trigger(3, 's3', es3p1),
-            # "s4": timestep_trigger(3, 's4', es4p2),
+            "s2": s2m2
         }
     },
     "m3": {
@@ -158,27 +158,26 @@ partial_state_update_blocks = {
         },
         "variables": {
             "s1": s1m3,
-            "s2": s2m3,
-            # "s3": timestep_trigger(3, 's3', es3p1),
-            # "s4": timestep_trigger(3, 's4', es4p2),
+            "s2": s2m3
         }
     }
 }
 
-
+# config_sim Necessary
 sim_config = config_sim(
     {
         "N": 2,
         "T": range(5),
+        "M": g # Optional
     }
 )
 
+# New Convention
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     seeds=seeds,
     raw_exogenous_states={}, #raw_exogenous_states,
     env_processes={}, #env_processes,
-    partial_state_update_blocks=partial_state_update_blocks,
-    policy_ops=[lambda a, b: a + b]
+    partial_state_update_blocks=partial_state_update_block
 )

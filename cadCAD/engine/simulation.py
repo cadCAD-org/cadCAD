@@ -107,7 +107,7 @@ class Executor:
         last_in_obj: Dict[str, Any] = sL[-1]
         # last_in_obj: Dict[str, Any] = sH[-1]
         # print(last_in_obj)
-        print(sH[-1])
+        # print(sH[-1])
 
         _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sH, last_in_obj, policy_funcs))
 
@@ -125,6 +125,7 @@ class Executor:
             return destination
 
         last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, dict(generate_record(state_funcs)))
+        # ToDo: Remove
         last_in_copy: Dict[str, Any] = self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
         # ToDo: make 'substep' & 'timestep' reserve fields
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
@@ -152,7 +153,8 @@ class Executor:
         # states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
         # states_list_copy: List[Dict[str, Any]] = states_list
         # ToDo: flatten first
-        states_list_copy: List[Dict[str, Any]] = simulation_list[-1]
+        # states_list_copy: List[Dict[str, Any]] = simulation_list[-1]
+        states_list_copy: List[Dict[str, Any]] = deepcopy(simulation_list[-1])
         # print(states_list_copy)
 
         # ToDo: Causes Substep repeats in sL:
@@ -169,7 +171,9 @@ class Executor:
 
         # ToDo: Causes Substep repeats in sL, use for yield
         sub_step += 1
+
         for [s_conf, p_conf] in configs: # tensor field
+
             states_list: List[Dict[str, Any]] = self.partial_state_update(
                 var_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run
             )
@@ -177,6 +181,7 @@ class Executor:
             # print(simulation_list)
             # print(flatten(simulation_list))
             sub_step += 1
+            # print(sub_step)
 
         time_step += 1
 
