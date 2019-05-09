@@ -144,6 +144,7 @@ PSUB = {
 
 # needs M1&2 need behaviors
 partial_state_update_blocks = [PSUB] * substeps
+# pp.pprint(partial_state_update_blocks)
 
 sim_config = config_sim({
     "N": 2,

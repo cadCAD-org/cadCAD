@@ -103,8 +103,20 @@ class Executor:
                 run: int
             ) -> List[Dict[str, Any]]:
 
-        # last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
-        last_in_obj: Dict[str, Any] = sL[-1]
+        # def dp_psu(d):
+        #     for k, v in deepcopy(d).items():
+        #         yield k, deepcopy(v)
+        #
+        # def dp_psub(l):
+        #     for d in l:
+        #         yield dict(dp_psu(d))
+
+        # last_in_obj: Dict[str, Any] = dict(dp_psu(sL[-1]))
+
+        last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
+        # print(last_in_obj)
+        # last_in_obj: Dict[str, Any] = sL[-1]
+
         # last_in_obj: Dict[str, Any] = sH[-1]
         # print(last_in_obj)
         # print(sH[-1])
@@ -155,6 +167,16 @@ class Executor:
         # ToDo: flatten first
         # states_list_copy: List[Dict[str, Any]] = simulation_list[-1]
         states_list_copy: List[Dict[str, Any]] = deepcopy(simulation_list[-1])
+
+        # def dp_psu(d):
+        #     for k, v in deepcopy(d).items():
+        #         yield k, deepcopy(v)
+        #
+        # def dp_psub(l):
+        #     for d in l:
+        #         yield dict(dp_psu(d))
+
+        # states_list_copy: List[Dict[str, Any]] = list(dp_psub(simulation_list[-1]))
         # print(states_list_copy)
 
         # ToDo: Causes Substep repeats in sL:
