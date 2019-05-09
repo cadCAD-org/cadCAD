@@ -96,11 +96,3 @@ append_configs(
     partial_state_update_blocks=partial_state_update_block,
     policy_ops=[lambda a, b: a + b, lambda y: y + 10, lambda y: y + 30]
 )
-
-
-# def p1m3(_g, step, sL, s):
-#     return {'param1': 1, 'param2': 2, 'param3': 3}
-# def p2m3(_g, step, sL, s):
-#     return {'param1': 1, 'param2': 2, 'param3': 3}
-#
-# xx = {'param1': [1,1], 'param2': [2,2], 'param3': [3,3]}

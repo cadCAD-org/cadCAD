@@ -2,18 +2,18 @@ from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import config_sim
 
 # last_partial_state_update_block
-def last_update_block(_g, step, sH, s, _input):
+def last_update_block(_g, substep, sH, s, _input):
     return 'sh', sH[-1]
 
 
 # Policies per Mechanism
-def p(_g, step, sH, s):
+def p(_g, substep, sH, s):
     return {'last_update_block': sH[-1]}
 
 def add(y, x):
-    return lambda _g, step, sH, s, _input: (y, s[y] + x)
+    return lambda _g, substep, sH, s, _input: (y, s[y] + x)
 
-def policies(_g, step, sH, s, _input):
+def policies(_g, substep, sH, s, _input):
     y = 'policies'
     x = _input
     return (y, x)
@@ -22,7 +22,7 @@ policies = {"p1": p, "p2": p}
 
 genesis_states = {
     's': 0,
-    'sh': {}, # {[], {}}
+    'sh': [{}], # {[], {}}
     # 'policies': {},
 }
 

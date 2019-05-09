@@ -4,7 +4,7 @@ from datetime import timedelta
 import pprint
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import env_proc_trigger, ep_time_step, config_sim
+from cadCAD.configuration.utils import proc_trigger, ep_time_step, config_sim
 
 from typing import Dict, List
 
@@ -43,6 +43,7 @@ def p1m3(_g, step, sL, s):
 
 def p2m3(_g, step, sL, s):
     return {'param1': np.array([20, 200])}
+
 
 # Internal States per Mechanism
 def s1m1(_g, step, sL, s, _input):
@@ -113,7 +114,7 @@ raw_exogenous_states = {
 
 # ToDo: make env proc trigger field agnostic
 # ToDo: input json into function renaming __name__
-triggered_env_b = env_proc_trigger(1, env_b)
+triggered_env_b = proc_trigger(1, env_b)
 env_processes = {
     "s3": env_a, #sweep(beta, env_a),
     "s4": triggered_env_b #rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)

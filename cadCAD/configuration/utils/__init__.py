@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from copy import deepcopy
+from functools import reduce
+
 from fn.func import curried
+from funcy import curry
 import pandas as pd
 
 # Temporary
@@ -39,7 +42,7 @@ def bound_norm_random(rng, low, high):
 
 
 @curried
-def proc_trigger(trigger_time, update_f, time):
+def env_proc_trigger(trigger_time, update_f, time):
     if time == trigger_time:
         return update_f
     else:
@@ -48,14 +51,17 @@ def proc_trigger(trigger_time, update_f, time):
 
 tstep_delta = timedelta(days=0, minutes=0, seconds=30)
 def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = tstep_delta):
+    # print(dt_str)
     dt = datetime.strptime(dt_str, dt_format)
     t = dt + _timedelta
     return t.strftime(dt_format)
 
 
+# ToDo: Inject in first elem of last PSUB from Historical state
 ep_t_delta = timedelta(days=0, minutes=0, seconds=1)
-def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = ep_t_delta):
-    if s['substep'] == 0:
+def ep_time_step(s_condition, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = ep_t_delta):
+    # print(dt_str)
+    if s_condition:
         return time_step(dt_str, fromat_str, _timedelta)
     else:
         return dt_str
@@ -124,6 +130,28 @@ def exo_update_per_ts(ep):
 
     return {es: ep_decorator(f, es) for es, f in ep.items()}
 
+def trigger_condition(s, conditions, cond_opp):
+    condition_bools = [s[field] in precondition_values for field, precondition_values in conditions.items()]
+    return reduce(cond_opp, condition_bools)
+
+def apply_state_condition(conditions, cond_opp, y, f, _g, step, sL, s, _input):
+    if trigger_condition(s, conditions, cond_opp):
+        return f(_g, step, sL, s, _input)
+    else:
+        return y, s[y]
+
+def proc_trigger(y, f, conditions, cond_op):
+    return lambda _g, step, sL, s, _input: apply_state_condition(conditions, cond_op, y, f, _g, step, sL, s, _input)
+
+
+def timestep_trigger(end_substep, y, f):
+    conditions = {'substep': [0, end_substep]}
+    cond_opp = lambda a, b: a and b
+    return proc_trigger(y, f, conditions, cond_opp)
+
+# trigger = curry(_trigger)
+# print(timestep_trigger)
+
 
 # param sweep enabling middleware
 def config_sim(d):
@@ -141,3 +169,19 @@ def config_sim(d):
     else:
         d["M"] = [{}]
         return d
+
+
+def psub(policies, state_updates):
+    return {
+        'policies': policies,
+        'states': state_updates
+    }
+
+def genereate_psubs(policy_grid, states_grid, policies, state_updates):
+    PSUBS = []
+    for policy_ids, state_list in zip(policy_grid, states_grid):
+        filtered_policies = {k: v for (k, v) in policies.items() if k in policy_ids}
+        filtered_state_updates = {k: v for (k, v) in state_updates.items() if k in state_list}
+        PSUBS.append(psub(filtered_policies, filtered_state_updates))
+
+    return PSUBS
