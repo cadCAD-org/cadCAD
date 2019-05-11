@@ -114,7 +114,6 @@ class Executor:
         # last_in_obj: Dict[str, Any] = dict(dp_psu(sL[-1]))
 
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
-        # print(last_in_obj)
         # last_in_obj: Dict[str, Any] = sL[-1]
 
         # last_in_obj: Dict[str, Any] = sH[-1]
