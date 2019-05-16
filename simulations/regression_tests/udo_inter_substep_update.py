@@ -5,7 +5,7 @@ from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import time_step, ep_time_step, config_sim
 from cadCAD.configuration.utils.userDefinedObject import udoPipe, UDO
 import pandas as pd
-
+import pprint as pp
 from fn.func import curried
 
 DF = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv'))
@@ -161,3 +161,8 @@ append_configs(
     partial_state_update_blocks=partial_state_update_blocks,
     # policy_ops=[lambda a, b: {**a, **b}]
 )
+
+print()
+print("State Updates:")
+pp.pprint(partial_state_update_blocks)
+print()

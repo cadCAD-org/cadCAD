@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, List, Tuple
 from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
 from functools import reduce
+from funcy import compose
 
 from cadCAD.engine.utils import engine_exception
 from cadCAD.utils import flatten
@@ -72,19 +73,48 @@ class Executor:
         # return {k: reduce(f1, val_list) for k, val_list in new_dict.items()}
         # return foldr(call, col_results)(ops)
 
+    # def apply_env_proc(
+    #             self,
+    #             env_processes: Dict[str, Callable],
+    #             state_dict: Dict[str, Any],
+    #             time_step: int
+    #         ) -> Dict[str, Any]:
+    #     for state in state_dict.keys():
+    #         if state in list(env_processes.keys()):
+    #             env_state: Callable = env_processes[state]
+    #             if (env_state.__name__ == '_curried') or (env_state.__name__ == 'proc_trigger'):
+    #                 state_dict[state] = env_state(sub_step)(state_dict[state])
+    #             else:
+    #                 state_dict[state] = env_state(state_dict[state])
+    #
+    #     return state_dict
+
     def apply_env_proc(
                 self,
                 env_processes: Dict[str, Callable],
                 state_dict: Dict[str, Any],
-                sub_step: int
             ) -> Dict[str, Any]:
-        for state in state_dict.keys():
-            if state in list(env_processes.keys()):
-                env_state: Callable = env_processes[state]
-                if (env_state.__name__ == '_curried') or (env_state.__name__ == 'proc_trigger'):
-                    state_dict[state] = env_state(sub_step)(state_dict[state])
-                else:
-                    state_dict[state] = env_state(state_dict[state])
+
+        def env_composition(target_field, state_dict, target_value):
+            function_type = type(lambda x: x)
+            env_update = env_processes[target_field]
+            if isinstance(env_update, list):
+                target_value = compose(*env_update[::-1])(target_value)
+            elif isinstance(env_update, function_type):
+                target_value = env_update(state_dict, target_value)
+            else:
+                target_value = env_update
+
+            return target_value
+
+        filtered_state_dict = {k: v for k, v in state_dict.items() if k in env_processes.keys()}
+        env_proc_dict = {
+            target_field: env_composition(target_field, state_dict, target_value)
+            for target_field, target_value in filtered_state_dict.items()
+        }
+
+        for k, v in env_proc_dict.items():
+            state_dict[k] = v
 
         return state_dict
 
@@ -137,7 +167,10 @@ class Executor:
 
         last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, dict(generate_record(state_funcs)))
         # ToDo: Remove
-        last_in_copy: Dict[str, Any] = self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
+        # last_in_copy: Dict[str, Any] = self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
+        last_in_copy: Dict[str, Any] = self.apply_env_proc(env_processes, last_in_copy)
+
+
         # ToDo: make 'substep' & 'timestep' reserve fields
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
 

@@ -28,7 +28,7 @@ class Configuration(object):
 
         sanitize_config(self)
 
-
+# ToDo: Remove Seeds
 def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
                    partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True) -> None:
     if _exo_update_per_ts is True:

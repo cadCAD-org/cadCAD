@@ -27,7 +27,7 @@ class udcView(object):
         }
         members['methods'] = [k for k, v in self.__dict__.items() if str(type(v)) == "<class 'method'>"]
         members.update(variables)
-        return f"{members}"
+        return f"{members}" #[1:-1]
 
 
 class udcBroker(object):

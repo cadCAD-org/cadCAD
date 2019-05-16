@@ -1,10 +1,12 @@
 from decimal import Decimal
 import numpy as np
 from datetime import timedelta
+from funcy import compose
 import pprint
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import proc_trigger, ep_time_step, config_sim
+from cadCAD.configuration.utils import proc_trigger, env_trigger, var_substep_trigger, config_sim, env_proc_trigger, \
+    time_step, psub_list
 
 from typing import Dict, List
 
@@ -25,74 +27,95 @@ g: Dict[str, List[int]] = {
     'omega': [7]
 }
 
+psu_steps = ['m1', 'm2', 'm3']
+system_substeps = len(psu_steps)
+var_timestep_trigger = var_substep_trigger(system_substeps)
+env_timestep_trigger = env_trigger(system_substeps)
+env_process = {}
+psu_block = {k: {"policies": {}, "variables": {}} for k in psu_steps}
+
+# ['s1', 's2', 's3', 's4']
 # Policies per Mechanism
 def p1m1(_g, step, sL, s):
     return {'param1': 1}
+psu_block['m1']['policies']['p1'] = p1m1
 
 def p2m1(_g, step, sL, s):
     return {'param2': 4}
+psu_block['m1']['policies']['p2'] = p2m1
 
 def p1m2(_g, step, sL, s):
     return {'param1': 'a', 'param2': _g['beta']}
+psu_block['m2']['policies']['p1'] = p1m2
 
 def p2m2(_g, step, sL, s):
     return {'param1': 'b', 'param2': 0}
+psu_block['m2']['policies']['p2'] = p2m2
 
 def p1m3(_g, step, sL, s):
     return {'param1': np.array([10, 100])}
+psu_block['m3']['policies']['p1'] = p1m3
 
 def p2m3(_g, step, sL, s):
     return {'param1': np.array([20, 200])}
+psu_block['m3']['policies']['p2'] = p2m3
 
 
 # Internal States per Mechanism
 def s1m1(_g, step, sL, s, _input):
     return 's1', 0
+psu_block['m1']["variables"]['s1'] = s1m1
 
 def s2m1(_g, step, sL, s, _input):
     return 's2', _g['beta']
+psu_block['m1']["variables"]['s2'] = s2m1
 
 def s1m2(_g, step, sL, s, _input):
     return 's1', _input['param2']
+psu_block['m2']["variables"]['s1'] = s1m2
 
 def s2m2(_g, step, sL, s, _input):
     return 's2', _input['param2']
+psu_block['m2']["variables"]['s2'] = s2m2
 
 def s1m3(_g, step, sL, s, _input):
     return 's1', 0
+psu_block['m3']["variables"]['s1'] = s1m3
 
 def s2m3(_g, step, sL, s, _input):
     return 's2', 0
+psu_block['m3']["variables"]['s2'] = s2m3
 
 
 # Exogenous States
+def update_timestamp(_g, step, sL, s, _input):
+    y = 'timestamp'
+    return y, time_step(dt_str=s[y], dt_format='%Y-%m-%d %H:%M:%S', _timedelta=timedelta(days=0, minutes=0, seconds=1))
+for m in ['m1','m2','m3']:
+    # psu_block[m]["variables"]['timestamp'] = update_timestamp
+    psu_block[m]["variables"]['timestamp'] = var_timestep_trigger(y='timestamp', f=update_timestamp)
+    # psu_block[m]["variables"]['timestamp'] = proc_trigger(
+    #     y='timestamp', f=update_timestamp, pre_conditions={'substep': [0, system_substeps]}, cond_op=lambda a, b: a and b
+    # )
+
 proc_one_coef_A = 0.7
-proc_one_coef_B = 1.3
-
-
 def es3p1(_g, step, sL, s, _input):
-    return 's3', _g['gamma']
-# @curried
+    return 's3', s['s3']
+# use `timestep_trigger` to update every ts
+for m in ['m1','m2','m3']:
+    psu_block[m]["variables"]['s3'] = var_timestep_trigger(y='s3', f=es3p1)
+
+proc_one_coef_B = 1.3
 def es4p2(_g, step, sL, s, _input):
-    return 's4', _g['gamma']
-
-ts_format = '%Y-%m-%d %H:%M:%S'
-t_delta = timedelta(days=0, minutes=0, seconds=1)
-def es5p2(_g, step, sL, s, _input):
-    y = 'timestep'
-    x = ep_time_step(s, dt_str=s['timestep'], fromat_str=ts_format, _timedelta=t_delta)
-    return (y, x)
+    return 's4', s['s4'] #+ 4 #g['gamma'] + proc_one_coef_B
+for m in ['m1','m2','m3']:
+    psu_block[m]["variables"]['s4'] = var_timestep_trigger(y='s4', f=es4p2)
 
 
-# Environment States
-# @curried
-# def env_a(param, x):
-#     return x + param
-def env_a(x):
-    return x
-def env_b(x):
-    return 10
-
+# ToDo: The number of values entered in sweep should be the # of config objs created,
+# not dependent on the # of times the sweep is applied
+# sweep exo_state func and point to exo-state in every other funtion
+# param sweep on genesis states
 
 # Genesis States
 genesis_states = {
@@ -100,83 +123,37 @@ genesis_states = {
     's2': Decimal(0.0),
     's3': Decimal(1.0),
     's4': Decimal(1.0),
-#     'timestep': '2018-10-01 15:16:24'
+    'timestamp': '2018-10-01 15:16:24'
 }
+# Environment Process
+# ToDo: Validate - make env proc trigger field agnostic
+env_process["s3"] = [lambda x: x + 1, lambda x: x + 1]
+env_process["s4"] = env_timestep_trigger(trigger_field='timestep', trigger_vals=[5], funct_list=[lambda x: 1, lambda x: x + 2])
 
-
-# remove `exo_update_per_ts` to update every ts
-raw_exogenous_states = {
-    "s3": es3p1,
-    "s4": es4p2,
-#     "timestep": es5p2
-}
-
-
-# ToDo: make env proc trigger field agnostic
-# ToDo: input json into function renaming __name__
-triggered_env_b = proc_trigger(1, env_b)
-env_processes = {
-    "s3": env_a, #sweep(beta, env_a),
-    "s4": triggered_env_b #rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)
-}
-# parameterized_env_processes = parameterize_states(env_processes)
-#
-# pp.pprint(parameterized_env_processes)
-# exit()
-
-# ToDo: The number of values entered in sweep should be the # of config objs created,
-# not dependent on the # of times the sweep is applied
-# sweep exo_state func and point to exo-state in every other funtion
-# param sweep on genesis states
-
-partial_state_update_block = {
-    "m1": {
-        "policies": {
-            "b1": p1m1,
-            "b2": p2m1
-        },
-        "variables": {
-            "s1": s1m1,
-            "s2": s2m1
-        }
-    },
-    "m2": {
-        "policies": {
-            "b1": p1m2,
-            "b2": p2m2,
-        },
-        "variables": {
-            "s1": s1m2,
-            "s2": s2m2
-        }
-    },
-    "m3": {
-        "policies": {
-            "b1": p1m3,
-            "b2": p2m3
-        },
-        "variables": {
-            "s1": s1m3,
-            "s2": s2m3
-        }
-    }
-}
 
 # config_sim Necessary
 sim_config = config_sim(
     {
         "N": 2,
         "T": range(5),
-        "M": g # Optional
+        "M": g, # Optional
     }
 )
 
 # New Convention
+partial_state_update_blocks = psub_list(psu_block, psu_steps)
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     seeds=seeds,
-    raw_exogenous_states=raw_exogenous_states,
-    env_processes=env_processes,
-    partial_state_update_blocks=partial_state_update_block
+    env_processes=env_process,
+    partial_state_update_blocks=partial_state_update_blocks
 )
+
+
+print()
+print("Policie State Update Block:")
+pp.pprint(partial_state_update_blocks)
+print()
+print()
+
