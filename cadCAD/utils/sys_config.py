@@ -1,5 +1,10 @@
+from copy import deepcopy
+
+from fn.func import curried
+
 from cadCAD.configuration.utils import ep_time_step, time_step
 from funcy import curry
+import pprint as pp
 # from fn import _
 from functools import reduce
 
@@ -25,7 +30,7 @@ def update_timestamp(y, timedelta, format):
 def apply(f, y: str, incr_by: int):
     return lambda _g, step, sL, s, _input: (y, curry(f)(s[y])(incr_by))
 
-def add(y: str, incr_by: int):
+def add(y: str, incr_by):
     return apply(lambda a, b: a + b, y, incr_by)
 
 def increment_state_by_int(y: str, incr_by: int):
@@ -85,15 +90,22 @@ def time_model(y, substeps, time_delta, ts_format='%Y-%m-%d %H:%M:%S'):
 #     multi_cond_opp = lambda a, b: a and b
 #     return proc_trigger2(y, f, multi_conditions, multi_cond_opp)
 
+#
+# @curried
 
 
-def env_trigger(trigger_field, trigger_val, input, funct_list):
-    y, x = input
-    if trigger_field == trigger_val:
-        i = 0
-        for g in funct_list:
-            x = g(x)
-    return y, x
+
+# print(env_trigger(3).__module__)
+# pp.pprint(dir(env_trigger))
+
+
+
+# @curried
+# def env_proc_trigger(trigger_time, update_f, time):
+#     if time == trigger_time:
+#         return update_f
+#     else:
+#         return lambda x: x
 
 
 

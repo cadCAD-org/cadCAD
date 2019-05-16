@@ -16,7 +16,6 @@ run = Executor(exec_context=single_proc_ctx, configs=first_config)
 raw_result, tensor_field = run.main()
 result = pd.DataFrame(raw_result)
 def delSH(d):
-    print(d)
     if 'sh' in d.keys():
         del d['sh']
     return d

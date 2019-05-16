@@ -5,7 +5,6 @@ from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from simulations.regression_tests import udo
 from cadCAD import configs
 
-
 exec_mode = ExecutionMode()
 
 print("Simulation Execution: Single Configuration")

@@ -134,20 +134,43 @@ def trigger_condition(s, conditions, cond_opp):
     condition_bools = [s[field] in precondition_values for field, precondition_values in conditions.items()]
     return reduce(cond_opp, condition_bools)
 
-def apply_state_condition(conditions, cond_opp, y, f, _g, step, sL, s, _input):
-    if trigger_condition(s, conditions, cond_opp):
+def apply_state_condition(pre_conditions, cond_opp, y, f, _g, step, sL, s, _input):
+    if trigger_condition(s, pre_conditions, cond_opp):
         return f(_g, step, sL, s, _input)
     else:
         return y, s[y]
 
-def proc_trigger(y, f, conditions, cond_op):
-    return lambda _g, step, sL, s, _input: apply_state_condition(conditions, cond_op, y, f, _g, step, sL, s, _input)
+def var_trigger(y, f, pre_conditions, cond_op):
+    return lambda _g, step, sL, s, _input: apply_state_condition(pre_conditions, cond_op, y, f, _g, step, sL, s, _input)
 
 
-def timestep_trigger(end_substep, y, f):
-    conditions = {'substep': [0, end_substep]}
-    cond_opp = lambda a, b: a and b
-    return proc_trigger(y, f, conditions, cond_opp)
+def var_substep_trigger(substeps):
+    def trigger(end_substep, y, f):
+        pre_conditions = {'substep': substeps}
+        cond_opp = lambda a, b: a and b
+        return var_trigger(y, f, pre_conditions, cond_opp)
+    return lambda y, f: curry(trigger)(substeps)(y)(f)
+
+
+def env_trigger(end_substep):
+    def trigger(end_substep, trigger_field, trigger_vals, funct_list):
+        def env_update(state_dict, target_value):
+            state_dict_copy = deepcopy(state_dict)
+            # Use supstep to simulate current sysMetrics
+            if state_dict_copy['substep'] == end_substep:
+                state_dict_copy['timestep'] = state_dict_copy['timestep'] + 1
+
+            if state_dict_copy[trigger_field] in trigger_vals:
+                for g in funct_list:
+                    target_value = g(target_value)
+
+            del state_dict_copy
+            return target_value
+
+        return env_update
+
+    return lambda trigger_field, trigger_vals, funct_list: \
+        curry(trigger)(end_substep)(trigger_field)(trigger_vals)(funct_list)
 
 # trigger = curry(_trigger)
 # print(timestep_trigger)
@@ -157,19 +180,15 @@ def timestep_trigger(end_substep, y, f):
 def config_sim(d):
     def process_variables(d):
         return flatten_tabulated_dict(tabulate_dict(d))
+
     if "M" in d:
-        return [
-            {
-                "N": d["N"],
-                "T": d["T"],
-                "M": M
-            }
-            for M in process_variables(d["M"])
-        ]
+        return [{"N": d["N"], "T": d["T"], "M": M} for M in process_variables(d["M"])]
     else:
         d["M"] = [{}]
         return d
 
+def psub_list(psu_block, psu_steps):
+    return [psu_block[psu] for psu in psu_steps]
 
 def psub(policies, state_updates):
     return {

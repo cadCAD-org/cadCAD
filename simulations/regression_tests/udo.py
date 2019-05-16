@@ -4,7 +4,8 @@ from functools import reduce
 
 from cadCAD.utils import SilentDF #, val_switch
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import time_step, config_sim, proc_trigger, timestep_trigger, genereate_psubs
+from cadCAD.configuration.utils import time_step, config_sim, var_trigger, var_substep_trigger, genereate_psubs, \
+    env_trigger, psub_list
 from cadCAD.configuration.utils.userDefinedObject import udoPipe, UDO
 import pandas as pd
 
@@ -69,32 +70,36 @@ state_dict = {
     'timestamp': '2019-01-01 00:00:00'
 }
 
-policies, state_updates = {}, {}
-#
-# def assign_udo_policy(udo):
-#     def policy(_g, step, sL, s):
-#         s['udo_policies'][udo].updateX()
-#         return {udo: udoPipe(s['udo_policies'][udo])}
-#     return policy
-# policies_updates = {p: assign_udo_policy(udo) for p, udo in zip(['p1', 'p2'], ['udo_A', 'udo_B'])}
+psu_steps = ['m1', 'm2', 'm3']
+system_substeps = len(psu_steps)
+var_timestep_trigger = var_substep_trigger([0, system_substeps])
+env_timestep_trigger = env_trigger(system_substeps)
+psu_block = {k: {"policies": {}, "variables": {}} for k in psu_steps}
 
 def udo_policyA(_g, step, sL, s):
     s['udo_policies']['udo_A'].updateX()
     return {'udo_A': udoPipe(s['udo_policies']['udo_A'])}
-policies['a'] = udo_policyA
+# policies['a'] = udo_policyA
+for m in psu_steps:
+    psu_block[m]['policies']['a'] = udo_policyA
 
 def udo_policyB(_g, step, sL, s):
     s['udo_policies']['udo_B'].updateX()
     return {'udo_B': udoPipe(s['udo_policies']['udo_B'])}
-policies['b'] = udo_policyB
+# policies['b'] = udo_policyB
+for m in psu_steps:
+    psu_block[m]['policies']['b'] = udo_policyB
 
 
 # policies = {"p1": udo_policyA, "p2": udo_policyB}
 # policies = {"A": udo_policyA, "B": udo_policyB}
 
-# def increment_state_by_int(y: str, incr_by: int):
-#     return lambda _g, step, sL, s, _input: (y, s[y] + incr_by)
-state_updates['increment'] = add('increment', 1)
+def add(y: str, added_val):
+    return lambda _g, step, sL, s, _input: (y, s[y] + added_val)
+# state_updates['increment'] = add('increment', 1)
+for m in psu_steps:
+    psu_block[m]["variables"]['increment'] = add('increment', 1)
+
 
 @curried
 def perceive(s, self):
@@ -110,12 +115,15 @@ def state_udo_update(_g, step, sL, s, _input):
     s['state_udo'].updateX().perceive(s)
     x = udoPipe(s['state_udo'])
     return y, x
-state_updates['state_udo'] = state_udo_update
+for m in psu_steps:
+    psu_block[m]["variables"]['state_udo'] = state_udo_update
 
 
 def track(destination, source):
     return lambda _g, step, sL, s, _input: (destination, s[source].x)
-state_updates['state_udo_tracker'] = track('state_udo_tracker', 'state_udo')
+state_udo_tracker = track('state_udo_tracker', 'state_udo')
+for m in psu_steps:
+    psu_block[m]["variables"]['state_udo_tracker'] = state_udo_tracker
 
 
 def track_state_udo_perception(destination, source):
@@ -125,12 +133,15 @@ def track_state_udo_perception(destination, source):
         else:
             return past_perception
     return lambda _g, step, sL, s, _input: (destination, id(s[source].perception))
-state_updates['state_udo_perception_tracker'] = track_state_udo_perception('state_udo_perception_tracker', 'state_udo')
+state_udo_perception_tracker = track_state_udo_perception('state_udo_perception_tracker', 'state_udo')
+for m in psu_steps:
+    psu_block[m]["variables"]['state_udo_perception_tracker'] = state_udo_perception_tracker
 
 
 def view_udo_policy(_g, step, sL, s, _input):
     return 'udo_policies', _input
-state_updates['udo_policies'] = view_udo_policy
+for m in psu_steps:
+    psu_block[m]["variables"]['udo_policies'] = view_udo_policy
 
 
 def track_udo_policy(destination, source):
@@ -140,56 +151,32 @@ def track_udo_policy(destination, source):
         else:
             return v.x
     return lambda _g, step, sL, s, _input: (destination, tuple(val_switch(v) for _, v in s[source].items()))
-state_updates['udo_policy_tracker'] = track_udo_policy('udo_policy_tracker', 'udo_policies')
+udo_policy_tracker = track_udo_policy('udo_policy_tracker', 'udo_policies')
+for m in psu_steps:
+    psu_block[m]["variables"]['udo_policy_tracker'] = udo_policy_tracker
+
 
 def update_timestamp(_g, step, sL, s, _input):
     y = 'timestamp'
     return y, time_step(dt_str=s[y], dt_format='%Y-%m-%d %H:%M:%S', _timedelta=timedelta(days=0, minutes=0, seconds=1))
+for m in psu_steps:
+    psu_block[m]["variables"]['timestamp'] = var_timestep_trigger(y='timestamp', f=update_timestamp)
+    # psu_block[m]["variables"]['timestamp'] = var_trigger(
+    #     y='timestamp', f=update_timestamp,
+    #     pre_conditions={'substep': [0, system_substeps]}, cond_op=lambda a, b: a and b
+    # )
+    # psu_block[m]["variables"]['timestamp'] = update_timestamp
 
-
-system_substeps = 3
-# state_updates['timestamp'] = update_timestamp
-state_updates['timestamp'] = timestep_trigger(end_substep=system_substeps, y='timestamp', f=update_timestamp)
-# state_updates['timestamp'] = proc_trigger(y='timestamp', f=update_timestamp, conditions={'substep': [0, substeps]}, cond_op=lambda a, b: a and b)
-
-print()
-print("State Updates:")
-pp.pprint(state_updates)
-print()
-print("Policies:")
-pp.pprint(policies)
-print()
-
-filter_out = lambda remove_list, state_list: list(filter(lambda state: state not in remove_list, state_list))
-
-states = list(state_updates.keys())
-# states_noTS = filter_out(['timestamp'], states)
-# states_grid = [states,states_noTS,states_noTS]
-
-# states_grid = [states] * system_substeps #
-states_grid = [states,states,states]
-policy_grid = [['a', 'b'], ['a', 'b'], ['a', 'b']]
-
-
-PSUBS = genereate_psubs(policy_grid, states_grid, policies, state_updates)
-pp.pprint(PSUBS)
 # ToDo: Bug without specifying parameters
+# New Convention
+partial_state_update_blocks = psub_list(psu_block, psu_steps)
 append_configs(
     sim_configs=sim_config,
     initial_state=state_dict,
-    seeds={},
-    raw_exogenous_states={},
-    env_processes={},
-    partial_state_update_blocks=PSUBS,
-    # policy_ops=[lambda a, b: {**a, **b}]
+    partial_state_update_blocks=partial_state_update_blocks
 )
 
-# pp.pprint(partial_state_update_blocks)
-
-# PSUB = {
-#     'policies': policies,
-#     'states': state_updates
-# }
-# partial_state_update_blocks = [PSUB] * substeps
-
-
+print()
+print("State Updates:")
+pp.pprint(partial_state_update_blocks)
+print()
