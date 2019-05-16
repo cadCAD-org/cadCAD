@@ -9,11 +9,11 @@ exec_mode = ExecutionMode()
 
 print("Simulation Execution: Concurrent Execution")
 multi_proc_ctx = ExecutionContext(context=exec_mode.multi_proc)
-run2 = Executor(exec_context=multi_proc_ctx, configs=configs)
+run = Executor(exec_context=multi_proc_ctx, configs=configs)
 
 i = 0
 config_names = ['config1', 'config2']
-for raw_result, tensor_field in run2.main():
+for raw_result, tensor_field in run.main():
     result = pd.DataFrame(raw_result)
     print()
     print("Tensor Field: " + config_names[i])

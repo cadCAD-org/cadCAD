@@ -14,7 +14,7 @@ def get_base_value(x):
 
 
 def policy_to_dict(v):
-    return dict(list(zip(map(lambda n: 'b' + str(n + 1), list(range(len(v)))), v)))
+    return dict(list(zip(map(lambda n: 'p' + str(n + 1), list(range(len(v)))), v)))
 
 
 add = lambda a, b: a + b

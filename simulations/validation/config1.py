@@ -3,8 +3,7 @@ import numpy as np
 from datetime import timedelta
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step
-from cadCAD.configuration.utils.parameterSweep import config_sim
+from cadCAD.configuration.utils import proc_trigger, bound_norm_random, ep_time_step, config_sim
 
 
 seeds = {
@@ -20,6 +19,8 @@ def p1m1(_g, step, sL, s):
     return {'param1': 1}
 def p2m1(_g, step, sL, s):
     return {'param2': 4}
+
+# []
 
 def p1m2(_g, step, sL, s):
     return {'param1': 'a', 'param2': 2}
@@ -78,8 +79,8 @@ def es4p2(_g, step, sL, s, _input):
 ts_format = '%Y-%m-%d %H:%M:%S'
 t_delta = timedelta(days=0, minutes=0, seconds=1)
 def es5p2(_g, step, sL, s, _input):
-    y = 'timestep'
-    x = ep_time_step(s, dt_str=s['timestep'], fromat_str=ts_format, _timedelta=t_delta)
+    y = 'timestamp'
+    x = ep_time_step(s, dt_str=s['timestamp'], fromat_str=ts_format, _timedelta=t_delta)
     return (y, x)
 
 
@@ -98,14 +99,14 @@ genesis_states = {
     's2': Decimal(0.0),
     's3': Decimal(1.0),
     's4': Decimal(1.0),
-#     'timestep': '2018-10-01 15:16:24'
+    'timestamp': '2018-10-01 15:16:24'
 }
 
 
 raw_exogenous_states = {
     "s3": es3p1,
     "s4": es4p2,
-#     "timestep": es5p2
+    "timestamp": es5p2
 }
 
 
