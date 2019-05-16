@@ -1,9 +1,10 @@
+from typing import Dict, Callable, List, Tuple
 from functools import reduce
 from fn.op import foldr
 import pandas as pd
+from pandas.core.frame import DataFrame
 
 from cadCAD import configs
-
 from cadCAD.utils import key_filter
 from cadCAD.configuration.utils import exo_update_per_ts
 from cadCAD.configuration.utils.policyAggregation import dict_elemwise_sum
@@ -12,7 +13,8 @@ from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_stat
 
 class Configuration(object):
     def __init__(self, sim_config={}, initial_state={}, seeds={}, env_processes={},
-                 exogenous_states={}, partial_state_update_blocks={}, policy_ops=[foldr(dict_elemwise_sum())], **kwargs):
+                 exogenous_states={}, partial_state_update_blocks={}, policy_ops=[foldr(dict_elemwise_sum())],
+                 **kwargs) -> None:
         self.sim_config = sim_config
         self.initial_state = initial_state
         self.seeds = seeds
@@ -25,7 +27,8 @@ class Configuration(object):
         sanitize_config(self)
 
 
-def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={}, partial_state_update_blocks={}, _exo_update_per_ts=True):
+def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
+                   partial_state_update_blocks={}, _exo_update_per_ts: bool = True) -> None:
     if _exo_update_per_ts is True:
         exogenous_states = exo_update_per_ts(raw_exogenous_states)
     else:
@@ -55,22 +58,22 @@ def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_sta
 
 
 class Identity:
-    def __init__(self, policy_id={'identity': 0}):
+    def __init__(self, policy_id: Dict[str, int] = {'identity': 0}) -> None:
         self.beh_id_return_val = policy_id
 
     def p_identity(self, var_dict, sub_step, sL, s):
         return self.beh_id_return_val
 
-    def policy_identity(self, k):
+    def policy_identity(self, k: str) -> Callable:
         return self.p_identity
 
     def no_state_identity(self, var_dict, sub_step, sL, s, _input):
         return None
 
-    def state_identity(self, k):
+    def state_identity(self, k: str) -> Callable:
         return lambda var_dict, sub_step, sL, s, _input: (k, s[k])
 
-    def apply_identity_funcs(self, identity, df, cols):
+    def apply_identity_funcs(self, identity: Callable, df: DataFrame, cols: List[str]) -> List[DataFrame]:
         def fillna_with_id_func(identity, df, col):
             return df[[col]].fillna(value=identity(col))
 
@@ -78,7 +81,7 @@ class Identity:
 
 
 class Processor:
-    def __init__(self, id=Identity()):
+    def __init__(self, id: Identity = Identity()) -> None:
         self.id = id
         self.p_identity = id.p_identity
         self.policy_identity = id.policy_identity
@@ -86,7 +89,7 @@ class Processor:
         self.state_identity = id.state_identity
         self.apply_identity_funcs = id.apply_identity_funcs
 
-    def create_matrix_field(self, partial_state_updates, key):
+    def create_matrix_field(self, partial_state_updates, key: str) -> DataFrame:
         if key == 'variables':
             identity = self.state_identity
         elif key == 'policies':
@@ -99,7 +102,8 @@ class Processor:
         else:
             return pd.DataFrame({'empty': []})
 
-    def generate_config(self, initial_state, partial_state_updates, exo_proc):
+    def generate_config(self, initial_state, partial_state_updates, exo_proc
+                       ) -> List[Tuple[List[Callable], List[Callable]]]:
 
         def no_update_handler(bdf, sdf):
             if (bdf.empty == False) and (sdf.empty == True):

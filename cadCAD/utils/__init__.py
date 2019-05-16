@@ -1,6 +1,8 @@
+from typing import Dict, List
 from collections import defaultdict
 from itertools import product
 import warnings
+
 
 def pipe(x):
     return x
@@ -41,11 +43,11 @@ def dict_filter(dictionary, condition):
     return dict([(k, v) for k, v in dictionary.items() if condition(v)])
 
 
-def get_max_dict_val_len(g):
+def get_max_dict_val_len(g: Dict[str, List[int]]) -> int:
     return len(max(g.values(), key=len))
 
 
-def tabulate_dict(d):
+def tabulate_dict(d: Dict[str, List[int]]) -> Dict[str, List[int]]:
     max_len = get_max_dict_val_len(d)
     _d = {}
     for k, vl in d.items():
@@ -57,7 +59,7 @@ def tabulate_dict(d):
     return _d
 
 
-def flatten_tabulated_dict(d):
+def flatten_tabulated_dict(d: Dict[str, List[int]]) -> List[Dict[str, int]]:
     max_len = get_max_dict_val_len(d)
     dl = [{} for i in range(max_len)]
 

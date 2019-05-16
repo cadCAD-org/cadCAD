@@ -4,8 +4,9 @@ from datetime import timedelta
 import pprint
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import proc_trigger, ep_time_step
-from cadCAD.configuration.utils.parameterSweep import config_sim
+from cadCAD.configuration.utils import proc_trigger, ep_time_step, config_sim
+
+from typing import Dict, List
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -17,7 +18,7 @@ seeds = {
 }
 
 
-g = {
+g: Dict[str, List[int]] = {
     'alpha': [1],
     'beta': [2, 5],
     'gamma': [3, 4],
@@ -93,15 +94,12 @@ def es4p2(_g, step, sL, s, _input):
 ts_format = '%Y-%m-%d %H:%M:%S'
 t_delta = timedelta(days=0, minutes=0, seconds=1)
 def es5p2(_g, step, sL, s, _input):
-    y = 'timestep'
-    x = ep_time_step(s, dt_str=s['timestep'], fromat_str=ts_format, _timedelta=t_delta)
+    y = 'timestamp'
+    x = ep_time_step(s, dt_str=s['timestamp'], fromat_str=ts_format, _timedelta=t_delta)
     return (y, x)
 
 
 # Environment States
-# @curried
-# def env_a(param, x):
-#     return x + param
 def env_a(x):
     return x
 def env_b(x):
@@ -114,7 +112,7 @@ genesis_states = {
     's2': Decimal(0.0),
     's3': Decimal(1.0),
     's4': Decimal(1.0),
-#     'timestep': '2018-10-01 15:16:24'
+    'timestamp': '2018-10-01 15:16:24'
 }
 
 
@@ -122,26 +120,14 @@ genesis_states = {
 raw_exogenous_states = {
     "s3": es3p1,
     "s4": es4p2,
-#     "timestep": es5p2
+    'timestamp': es5p2
 }
 
-
-# ToDo: make env proc trigger field agnostic
-# ToDo: input json into function renaming __name__
 triggered_env_b = proc_trigger(1, env_b)
 env_processes = {
-    "s3": env_a, #sweep(beta, env_a),
-    "s4": triggered_env_b #rename('parameterized', triggered_env_b) #sweep(beta, triggered_env_b)
+    "s3": env_a,
+    "s4": triggered_env_b
 }
-# parameterized_env_processes = parameterize_states(env_processes)
-#
-# pp.pprint(parameterized_env_processes)
-# exit()
-
-# ToDo: The number of values entered in sweep should be the # of config objs created,
-# not dependent on the # of times the sweep is applied
-# sweep exo_state func and point to exo-state in every other funtion
-# param sweep on genesis states
 
 partial_state_update_block = {
     "m1": {
