@@ -15,7 +15,7 @@ simulations/.ipynb_checkpoints
 simulations/validation/config3.py
 dist/*.gz
 cadCAD.egg-info
-
+monkeytype.sqlite3
 build
 cadCAD.egg-info
 SimCAD.egg-info
