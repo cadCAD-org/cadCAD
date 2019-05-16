@@ -5,7 +5,7 @@ from funcy import compose
 import pprint
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import proc_trigger, env_trigger, var_substep_trigger, config_sim, env_proc_trigger, \
+from cadCAD.configuration.utils import var_trigger, env_trigger, var_substep_trigger, config_sim, env_proc_trigger, \
     time_step, psub_list
 
 from typing import Dict, List
@@ -94,9 +94,9 @@ def update_timestamp(_g, step, sL, s, _input):
 for m in ['m1','m2','m3']:
     # psu_block[m]["variables"]['timestamp'] = update_timestamp
     psu_block[m]["variables"]['timestamp'] = var_timestep_trigger(y='timestamp', f=update_timestamp)
-    # psu_block[m]["variables"]['timestamp'] = proc_trigger(
-    #     y='timestamp', f=update_timestamp, pre_conditions={'substep': [0, system_substeps]}, cond_op=lambda a, b: a and b
-    # )
+    psu_block[m]["variables"]['timestamp'] = var_trigger(
+        y='timestamp', f=update_timestamp, pre_conditions={'substep': [0, system_substeps]}, cond_op=lambda a, b: a and b
+    )
 
 proc_one_coef_A = 0.7
 def es3p1(_g, step, sL, s, _input):
@@ -128,7 +128,7 @@ genesis_states = {
 # Environment Process
 # ToDo: Validate - make env proc trigger field agnostic
 env_process["s3"] = [lambda x: x + 1, lambda x: x + 1]
-env_process["s4"] = env_timestep_trigger(trigger_field='timestep', trigger_vals=[5], funct_list=[lambda x: 1, lambda x: x + 2])
+env_process["s4"] = env_timestep_trigger(trigger_field='field', trigger_vals=[5], funct_list=[lambda x: 1, lambda x: x + 2])
 
 
 # config_sim Necessary
@@ -156,4 +156,3 @@ print("Policie State Update Block:")
 pp.pprint(partial_state_update_blocks)
 print()
 print()
-
