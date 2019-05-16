@@ -33,7 +33,7 @@ class Executor:
 
     # mech_step
     def partial_state_update(self, var_dict, sub_step, sL, state_funcs, policy_funcs, env_processes, time_step, run):
-        last_in_obj = sL[-1]
+        last_in_obj = deepcopy(sL[-1])
 
         _input = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sL, last_in_obj, policy_funcs))
 
