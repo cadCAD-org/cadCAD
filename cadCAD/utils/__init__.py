@@ -1,8 +1,41 @@
+from functools import reduce
 from typing import Dict, List
-from collections import defaultdict
+from collections import defaultdict, Counter
 from itertools import product
 import warnings
 
+from pandas import DataFrame
+
+
+class SilentDF(DataFrame):
+    def __repr__(self):
+        return str(hex(id(DataFrame))) #"pandas.core.frame.DataFrame"
+
+def append_dict(dict, new_dict):
+    dict.update(new_dict)
+    return dict
+
+
+# def val_switch(v):
+#     if isinstance(v, DataFrame) is True or isinstance(v, SilentDF) is True:
+#         return SilentDF(v)
+#     else:
+#         return v.x
+
+
+class IndexCounter:
+    def __init__(self):
+        self.i = 0
+
+    def __call__(self):
+        self.i += 1
+        return self.i
+
+# def compose(*functions):
+#     return reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
+
+def compose(*functions):
+    return reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
 
 def pipe(x):
     return x

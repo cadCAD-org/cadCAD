@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
-from decimal import Decimal
 from copy import deepcopy
+from functools import reduce
 from fn.func import curried
+from funcy import curry
 import pandas as pd
 
 # Temporary
@@ -35,27 +36,31 @@ def bound_norm_random(rng, low, high):
     res = rng.normal((high+low)/2, (high-low)/6)
     if res < low or res > high:
         res = bound_norm_random(rng, low, high)
-    return Decimal(res)
+    # return Decimal(res)
+    return float(res)
 
 
 @curried
-def proc_trigger(trigger_time, update_f, time):
-    if time == trigger_time:
-        return update_f
+def env_proc_trigger(timestep, f, time):
+    if time == timestep:
+        return f
     else:
         return lambda x: x
 
 
 tstep_delta = timedelta(days=0, minutes=0, seconds=30)
 def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = tstep_delta):
+    # print(dt_str)
     dt = datetime.strptime(dt_str, dt_format)
     t = dt + _timedelta
     return t.strftime(dt_format)
 
 
+# ToDo: Inject in first elem of last PSUB from Historical state
 ep_t_delta = timedelta(days=0, minutes=0, seconds=1)
-def ep_time_step(s, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = ep_t_delta):
-    if s['substep'] == 0:
+def ep_time_step(s_condition, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = ep_t_delta):
+    # print(dt_str)
+    if s_condition:
         return time_step(dt_str, fromat_str, _timedelta)
     else:
         return dt_str
@@ -124,21 +129,92 @@ def exo_update_per_ts(ep):
 
     return {es: ep_decorator(f, es) for es, f in ep.items()}
 
+def trigger_condition(s, pre_conditions, cond_opp):
+    condition_bools = [s[field] in precondition_values for field, precondition_values in pre_conditions.items()]
+    return reduce(cond_opp, condition_bools)
 
-# Param Sweep enabling middleware
+def apply_state_condition(pre_conditions, cond_opp, y, f, _g, step, sL, s, _input):
+    if trigger_condition(s, pre_conditions, cond_opp):
+        return f(_g, step, sL, s, _input)
+    else:
+        return y, s[y]
+
+def var_trigger(y, f, pre_conditions, cond_op):
+    return lambda _g, step, sL, s, _input: apply_state_condition(pre_conditions, cond_op, y, f, _g, step, sL, s, _input)
+
+
+def var_substep_trigger(substeps):
+    def trigger(end_substep, y, f):
+        pre_conditions = {'substep': substeps}
+        cond_opp = lambda a, b: a and b
+        return var_trigger(y, f, pre_conditions, cond_opp)
+
+    return lambda y, f: curry(trigger)(substeps)(y)(f)
+
+
+def env_trigger(end_substep):
+    def trigger(end_substep, trigger_field, trigger_vals, funct_list):
+        def env_update(state_dict, sweep_dict, target_value):
+            state_dict_copy = deepcopy(state_dict)
+            # Use supstep to simulate current sysMetrics
+            if state_dict_copy['substep'] == end_substep:
+                state_dict_copy['timestep'] = state_dict_copy['timestep'] + 1
+
+            if state_dict_copy[trigger_field] in trigger_vals:
+                for g in funct_list:
+                    target_value = g(sweep_dict, target_value)
+
+            del state_dict_copy
+            return target_value
+
+        return env_update
+
+    return lambda trigger_field, trigger_vals, funct_list: \
+        curry(trigger)(end_substep)(trigger_field)(trigger_vals)(funct_list)
+
+
+# param sweep enabling middleware
 def config_sim(d):
     def process_variables(d):
         return flatten_tabulated_dict(tabulate_dict(d))
 
     if "M" in d:
-        return [
-            {
-                "N": d["N"],
-                "T": d["T"],
-                "M": M
-            }
-            for M in process_variables(d["M"])
-        ]
+        return [{"N": d["N"], "T": d["T"], "M": M} for M in process_variables(d["M"])]
     else:
         d["M"] = [{}]
         return d
+
+def psub_list(psu_block, psu_steps):
+    return [psu_block[psu] for psu in psu_steps]
+
+def psub(policies, state_updates):
+    return {
+        'policies': policies,
+        'states': state_updates
+    }
+
+def genereate_psubs(policy_grid, states_grid, policies, state_updates):
+    PSUBS = []
+    for policy_ids, state_list in zip(policy_grid, states_grid):
+        filtered_policies = {k: v for (k, v) in policies.items() if k in policy_ids}
+        filtered_state_updates = {k: v for (k, v) in state_updates.items() if k in state_list}
+        PSUBS.append(psub(filtered_policies, filtered_state_updates))
+
+    return PSUBS
+
+def access_block(sH, y, psu_block_offset, exculsion_list=[]):
+    exculsion_list += [y]
+    def filter_history(key_list, sH):
+        filter = lambda key_list: \
+            lambda d: {k: v for k, v in d.items() if k not in key_list}
+        return list(map(filter(key_list), sH))
+
+    if psu_block_offset < -1:
+        if len(sH) >= abs(psu_block_offset):
+            return filter_history(exculsion_list, sH[psu_block_offset])
+        else:
+            return []
+    elif psu_block_offset < 0:
+        return filter_history(exculsion_list, sH[psu_block_offset])
+    else:
+        return []
