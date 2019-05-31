@@ -3,3 +3,4 @@ wheel
 pathos
 fn
 tabulate
+funcy
