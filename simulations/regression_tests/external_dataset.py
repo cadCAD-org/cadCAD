@@ -5,12 +5,6 @@ from cadCAD.utils import SilentDF
 
 df = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv'))
 
-external_data = {'ds1': None, 'ds2': None, 'ds3': None}
-state_dict = {
-    'increment': 0,
-    'external_data': external_data,
-    'policies': external_data,
-}
 
 def query(s, df):
     return df[
@@ -22,7 +16,7 @@ def p1(_g, substep, sL, s):
     del result_dict["ds3"]
     return {k: list(v.values()).pop() for k, v in result_dict.items()}
 
-def p2(_g, step, sL, s):
+def p2(_g, substep, sL, s):
     result_dict = query(s, df).to_dict()
     del result_dict["ds1"], result_dict["ds2"]
     return {k: list(v.values()).pop() for k, v in result_dict.items()}
@@ -39,6 +33,14 @@ increment = increment('increment', 1)
 
 def view_policies(_g, step, sL, s, _input):
     return 'policies', _input
+
+
+external_data = {'ds1': None, 'ds2': None, 'ds3': None}
+state_dict = {
+    'increment': 0,
+    'external_data': external_data,
+    'policies': external_data
+}
 
 
 policies = {"p1": p1, "p2": p2}

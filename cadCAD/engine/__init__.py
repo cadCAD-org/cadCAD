@@ -27,9 +27,11 @@ def single_proc_exec(
         Ts: List[range],
         Ns: List[int]
     ):
-
+    # print(env_processes_list)
+    # print(configs_structs)
     l = [simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns]
     simulation_exec, states_list, config, env_processes, T, N = list(map(lambda x: x.pop(), l))
+    # print(config.env_processes)
     result = simulation_exec(var_dict_list, states_list, config, env_processes, T, N)
     return flatten(result)
 
@@ -66,7 +68,7 @@ class Executor:
         self.exec_method = exec_context.method
         self.exec_context = exec_context.name
         self.configs = configs
-        self.main = self.execute
+        # self.main = self.execute
 
     def execute(self) -> Tuple[List[Dict[str, Any]], DataFrame]:
         config_proc = Processor()
@@ -76,6 +78,7 @@ class Executor:
         var_dict_list, states_lists, Ts, Ns, eps, configs_structs, env_processes_list, partial_state_updates, simulation_execs = \
             [], [], [], [], [], [], [], [], []
         config_idx = 0
+        print(self.configs)
         for x in self.configs:
 
             Ts.append(x.sim_config['T'])
@@ -84,6 +87,7 @@ class Executor:
             states_lists.append([x.initial_state])
             eps.append(list(x.exogenous_states.values()))
             configs_structs.append(config_proc.generate_config(x.initial_state, x.partial_state_updates, eps[config_idx]))
+            # print(env_processes_list)
             env_processes_list.append(x.env_processes)
             partial_state_updates.append(x.partial_state_updates)
             simulation_execs.append(SimExecutor(x.policy_ops).simulation)
@@ -98,12 +102,12 @@ class Executor:
             result = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
             final_result = result, tensor_field
         elif self.exec_context == ExecutionMode.multi_proc:
-            if len(self.configs) > 1:
-                simulations = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
-                results = []
-                for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
-                    results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
+            # if len(self.configs) > 1:
+            simulations = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
+            results = []
+            for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
+                results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
 
-                final_result = results
+            final_result = results
 
         return final_result
