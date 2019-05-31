@@ -1,12 +1,6 @@
-from copy import deepcopy
-
-from fn.func import curried
+from funcy import curry
 
 from cadCAD.configuration.utils import ep_time_step, time_step
-from funcy import curry
-import pprint as pp
-# from fn import _
-from functools import reduce
 
 def increment(y, incr_by):
     return lambda _g, step, sL, s, _input: (y, s[y] + incr_by)
@@ -25,7 +19,6 @@ def update_timestamp(y, timedelta, format):
         y,
         ep_time_step(s, dt_str=s[y], fromat_str=format, _timedelta=timedelta)
     )
-
 
 def apply(f, y: str, incr_by: int):
     return lambda _g, step, sL, s, _input: (y, curry(f)(s[y])(incr_by))
