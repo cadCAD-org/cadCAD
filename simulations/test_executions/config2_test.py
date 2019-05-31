@@ -10,7 +10,6 @@ exec_mode = ExecutionMode()
 print("Simulation Execution: Single Configuration")
 print()
 first_config = configs # only contains config2
-# print(configs[0].env_processes)
 single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
 run = Executor(exec_context=single_proc_ctx, configs=first_config)
 

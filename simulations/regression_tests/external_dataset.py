@@ -62,9 +62,6 @@ sim_config = config_sim({
 append_configs(
     sim_configs=sim_config,
     initial_state=state_dict,
-    # seeds=seeds,
-    # raw_exogenous_states=raw_exogenous_states,
-    # env_processes=env_processes,
     partial_state_update_blocks=partial_state_update_blocks,
     policy_ops=[lambda a, b: {**a, **b}]
 )

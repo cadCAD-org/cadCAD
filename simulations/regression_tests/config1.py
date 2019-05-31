@@ -3,9 +3,7 @@ from datetime import timedelta
 
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import env_proc_trigger, bound_norm_random, ep_time_step, config_sim, time_step, \
-    env_trigger
-
+from cadCAD.configuration.utils import bound_norm_random, config_sim, time_step, env_trigger
 
 seeds = {
     'z': np.random.RandomState(1),
@@ -154,8 +152,6 @@ sim_config = config_sim(
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
-    # seeds=seeds,
-    # raw_exogenous_states=raw_exogenous_states,
     env_processes=env_processes,
     partial_state_update_blocks=partial_state_update_blocks,
     policy_ops=[lambda a, b: a + b]

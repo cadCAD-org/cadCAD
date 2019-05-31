@@ -1,12 +1,13 @@
-from copy import deepcopy
-from datetime import timedelta
-from cadCAD.utils import SilentDF #, val_switch
-from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import time_step, ep_time_step, config_sim
-from cadCAD.configuration.utils.userDefinedObject import udoPipe, UDO
 import pandas as pd
 import pprint as pp
 from fn.func import curried
+from datetime import timedelta
+
+from cadCAD.utils import SilentDF #, val_switch
+from cadCAD.configuration import append_configs
+from cadCAD.configuration.utils import time_step, config_sim
+from cadCAD.configuration.utils.userDefinedObject import udoPipe, UDO
+
 
 DF = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv'))
 
