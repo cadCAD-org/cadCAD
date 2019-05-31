@@ -68,7 +68,6 @@ def s1m1(_g, step, sL, s, _input):
 psu_block['m1']["variables"]['s1'] = s1m1
 
 def s2m1(_g, step, sL, s, _input):
-    print(_g)
     return 's2', _g['beta']
 psu_block['m1']["variables"]['s2'] = s2m1
 

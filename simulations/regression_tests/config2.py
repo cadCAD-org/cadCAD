@@ -139,7 +139,6 @@ sim_config = config_sim(
     }
 )
 
-
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,

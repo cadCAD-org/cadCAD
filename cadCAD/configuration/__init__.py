@@ -12,7 +12,6 @@ from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_stat
 # policy_ops=[foldr(dict_elemwise_sum())]
 # policy_ops=[reduce, lambda a, b: {**a, **b}]
 
-
 class Configuration(object):
     def __init__(self, sim_config={}, initial_state={}, seeds={}, env_processes={},
                  exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
@@ -37,21 +36,12 @@ def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_sta
     else:
         exogenous_states = raw_exogenous_states
 
-    if isinstance(sim_configs, list):
-        for sim_config in sim_configs:
-            config = Configuration(
-                sim_config=sim_config,
-                initial_state=initial_state,
-                seeds=seeds,
-                exogenous_states=exogenous_states,
-                env_processes=env_processes,
-                partial_state_update_blocks=partial_state_update_blocks,
-                policy_ops=policy_ops
-            )
-            configs.append(config)
-    elif isinstance(sim_configs, dict):
+    if isinstance(sim_configs, dict):
+        sim_configs = [sim_configs]
+
+    for sim_config in sim_configs:
         config = Configuration(
-            sim_config=sim_configs,
+            sim_config=sim_config,
             initial_state=initial_state,
             seeds=seeds,
             exogenous_states=exogenous_states,
