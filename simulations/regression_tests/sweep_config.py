@@ -1,11 +1,9 @@
-from decimal import Decimal
 import numpy as np
 from datetime import timedelta
 import pprint
 
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import var_trigger, env_trigger, var_substep_trigger, config_sim, env_proc_trigger, \
-    time_step, psub_list
+from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, time_step, psub_list
 
 from typing import Dict, List
 

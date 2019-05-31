@@ -3,14 +3,6 @@ from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import config_sim
 
 
-seeds = {
-    'z': np.random.RandomState(1),
-    'a': np.random.RandomState(2),
-    'b': np.random.RandomState(3),
-    'c': np.random.RandomState(3)
-}
-
-
 # Policies per Mechanism
 def p1m1(_g, step, sL, s):
     return {'policy1': 1}
@@ -48,8 +40,6 @@ variables = {
     's1': add('s1', 1),
     "policies": policies
 }
-# test_varablies = deepcopy(variables)
-# test_varablies['test'] = test
 
 partial_state_update_block = {
     "m1": {
@@ -91,7 +81,6 @@ sim_config = config_sim(
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
-    seeds=seeds,
     partial_state_update_blocks=partial_state_update_block,
     policy_ops=[lambda a, b: a + b, lambda y: y * 2] # Default: lambda a, b: a + b ToDO: reduction function requires high lvl explanation
 )
