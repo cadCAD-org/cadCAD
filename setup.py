@@ -11,7 +11,7 @@ long_description = "cadCAD is a differential games based simulation software pac
     monte carlo analysis and other common numerical methods is provided."
 
 setup(name='cadCAD',
-      version='0.2.2',
+      version='0.2.4',
       description="cadCAD: a differential games based simulation software package for research, validation, and \
         Computer Aided Design of economic systems",
       long_description=long_description,

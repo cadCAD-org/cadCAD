@@ -1,7 +1,6 @@
 from fn.op import foldr
 from fn.func import curried
 
-
 def get_base_value(x):
     if isinstance(x, str):
         return ''
@@ -18,7 +17,7 @@ def policy_to_dict(v):
 
 
 add = lambda a, b: a + b
-
+# df_union = lambda a, b: ...
 
 @curried
 def foldr_dict_vals(f, d):
@@ -40,7 +39,6 @@ def dict_op(f, d1, d2):
     key_set = set(list(d1.keys()) + list(d2.keys()))
 
     return {k: f(set_base_value(d1, d2, k), set_base_value(d2, d1, k)) for k in key_set}
-
 
 def dict_elemwise_sum():
     return dict_op(add)

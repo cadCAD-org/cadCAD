@@ -8,6 +8,8 @@ from cadCAD.configuration.utils import env_proc_trigger, ep_time_step, config_si
 
 from typing import Dict, List
 
+# from cadCAD.utils.sys_config import exo, exo_check
+
 pp = pprint.PrettyPrinter(indent=4)
 
 seeds = {
@@ -175,7 +177,7 @@ append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     seeds=seeds,
-    raw_exogenous_states=raw_exogenous_states,
-    env_processes=env_processes,
+    raw_exogenous_states={}, #raw_exogenous_states,
+    env_processes={}, #env_processes,
     partial_state_update_blocks=partial_state_update_block
 )
