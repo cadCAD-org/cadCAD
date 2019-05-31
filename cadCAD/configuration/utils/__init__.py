@@ -1,9 +1,6 @@
 from datetime import datetime, timedelta
-from decimal import Decimal
 from copy import deepcopy
 from functools import reduce
-from pprint import pprint
-
 from fn.func import curried
 from funcy import curry
 import pandas as pd
@@ -175,9 +172,6 @@ def env_trigger(end_substep):
     return lambda trigger_field, trigger_vals, funct_list: \
         curry(trigger)(end_substep)(trigger_field)(trigger_vals)(funct_list)
 
-# trigger = curry(_trigger)
-# print(timestep_trigger)
-
 
 # param sweep enabling middleware
 def config_sim(d):
@@ -185,7 +179,6 @@ def config_sim(d):
         return flatten_tabulated_dict(tabulate_dict(d))
 
     if "M" in d:
-        # print([{"N": d["N"], "T": d["T"], "M": M} for M in process_variables(d["M"])])
         return [{"N": d["N"], "T": d["T"], "M": M} for M in process_variables(d["M"])]
     else:
         d["M"] = [{}]

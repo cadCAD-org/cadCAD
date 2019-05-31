@@ -1,9 +1,7 @@
 from typing import Any, Callable, Dict, List, Tuple
-
 from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
 from functools import reduce
-from funcy import compose
 
 from cadCAD.engine.utils import engine_exception
 from cadCAD.utils import flatten
@@ -19,13 +17,10 @@ class Executor:
         state_update_exception: Callable = id_exception
     ) -> None:
 
-        # behavior_ops
         self.policy_ops = policy_ops
         self.state_update_exception = state_update_exception
         self.policy_update_exception = policy_update_exception
-        # behavior_update_exception
 
-    # get_behavior_input # sL: State Window
     def get_policy_input(
                 self,
                 sweep_dict: Dict[str, List[Any]],
@@ -35,9 +30,7 @@ class Executor:
                 funcs: List[Callable]
             ) -> Dict[str, Any]:
 
-        # ops = self.policy_ops[::-1]
         ops = self.policy_ops
-
 
         def get_col_results(sweep_dict, sub_step, sL, s, funcs):
             return list(map(lambda f: f(sweep_dict, sub_step, sL, s), funcs))
@@ -119,23 +112,7 @@ class Executor:
                 run: int
             ) -> List[Dict[str, Any]]:
 
-        # def dp_psu(d):
-        #     for k, v in deepcopy(d).items():
-        #         yield k, deepcopy(v)
-        #
-        # def dp_psub(l):
-        #     for d in l:
-        #         yield dict(dp_psu(d))
-
-        # last_in_obj: Dict[str, Any] = dict(dp_psu(sL[-1]))
-
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
-        # last_in_obj: Dict[str, Any] = sL[-1]
-
-        # last_in_obj: Dict[str, Any] = sH[-1]
-        # print(last_in_obj)
-        # print(sH[-1])
-
         _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs))
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
@@ -152,21 +129,12 @@ class Executor:
             return destination
 
         last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, dict(generate_record(state_funcs)))
-        # ToDo: Remove
-        # last_in_copy: Dict[str, Any] = self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
-        # print(env_processes)
-        # print()
         last_in_copy: Dict[str, Any] = self.apply_env_proc(sweep_dict, env_processes, last_in_copy)
-
-
         # ToDo: make 'substep' & 'timestep' reserve fields
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
 
         sL.append(last_in_copy)
         del last_in_copy
-
-        # print(sL)
-        # print()
 
         return sL
 
@@ -182,23 +150,7 @@ class Executor:
             ) -> List[Dict[str, Any]]:
 
         sub_step = 0
-        # states_list_copy: List[Dict[str, Any]] = deepcopy(states_list)
-        # states_list_copy: List[Dict[str, Any]] = states_list
-        # ToDo: flatten first
-        # states_list_copy: List[Dict[str, Any]] = simulation_list[-1]
         states_list_copy: List[Dict[str, Any]] = deepcopy(simulation_list[-1])
-
-        # def dp_psu(d):
-        #     for k, v in deepcopy(d).items():
-        #         yield k, deepcopy(v)
-        #
-        # def dp_psub(l):
-        #     for d in l:
-        #         yield dict(dp_psu(d))
-
-        # states_list_copy: List[Dict[str, Any]] = list(dp_psub(simulation_list[-1]))
-        # print(states_list_copy)
-
         # ToDo: Causes Substep repeats in sL:
         genesis_states: Dict[str, Any] = states_list_copy[-1]
 
@@ -211,7 +163,7 @@ class Executor:
         del states_list_copy
         states_list: List[Dict[str, Any]] = [genesis_states]
 
-        # ToDo: Causes Substep repeats in sL, use for yield
+        # ToDo: Was causing Substep repeats in sL, use for yield
         sub_step += 1
 
         for [s_conf, p_conf] in configs: # tensor field
@@ -219,11 +171,7 @@ class Executor:
             states_list: List[Dict[str, Any]] = self.partial_state_update(
                 sweep_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run
             )
-            # print(sub_step)
-            # print(simulation_list)
-            # print(flatten(simulation_list))
             sub_step += 1
-            # print(sub_step)
 
         time_step += 1
 
@@ -244,10 +192,6 @@ class Executor:
         # ToDo: simulation_list should be a Tensor that is generated throughout the Executor
         simulation_list: List[List[Dict[str, Any]]] = [states_list]
 
-        # print(simulation_list[-1])
-        # print()
-        # pipe_run = simulation_list[-1]
-        # print(simulation_list)
         for time_step in time_seq:
             pipe_run: List[Dict[str, Any]] = self.state_update_pipeline(
                 sweep_dict, simulation_list, configs, env_processes, time_step, run
@@ -255,8 +199,6 @@ class Executor:
 
             _, *pipe_run = pipe_run
             simulation_list.append(pipe_run)
-            # print(simulation_list)
-            # print()
 
         return simulation_list
 

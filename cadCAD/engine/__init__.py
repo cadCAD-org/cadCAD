@@ -27,11 +27,8 @@ def single_proc_exec(
         Ts: List[range],
         Ns: List[int]
     ):
-    # print(env_processes_list)
-    # print(configs_structs)
     l = [simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns]
     simulation_exec, states_list, config, env_processes, T, N = list(map(lambda x: x.pop(), l))
-    # print(config.env_processes)
     result = simulation_exec(var_dict_list, states_list, config, env_processes, T, N)
     return flatten(result)
 
@@ -68,7 +65,6 @@ class Executor:
         self.exec_method = exec_context.method
         self.exec_context = exec_context.name
         self.configs = configs
-        # self.main = self.execute
 
     def execute(self) -> Tuple[List[Dict[str, Any]], DataFrame]:
         config_proc = Processor()
