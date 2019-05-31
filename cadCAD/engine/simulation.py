@@ -28,7 +28,7 @@ class Executor:
     # get_behavior_input # sL: State Window
     def get_policy_input(
                 self,
-                var_dict: Dict[str, List[Any]],
+                sweep_dict: Dict[str, List[Any]],
                 sub_step: int,
                 sL: List[Dict[str, Any]],
                 s: Dict[str, Any],
@@ -39,8 +39,8 @@ class Executor:
         ops = self.policy_ops
 
 
-        def get_col_results(var_dict, sub_step, sL, s, funcs):
-            return list(map(lambda f: f(var_dict, sub_step, sL, s), funcs))
+        def get_col_results(sweep_dict, sub_step, sL, s, funcs):
+            return list(map(lambda f: f(sweep_dict, sub_step, sL, s), funcs))
 
         def compose(init_reduction_funct, funct_list, val_list):
             result, i = None, 0
@@ -53,7 +53,7 @@ class Executor:
                     result = g(result)
             return result
 
-        col_results = get_col_results(var_dict, sub_step, sL, s, funcs)
+        col_results = get_col_results(sweep_dict, sub_step, sL, s, funcs)
         key_set = list(set(list(reduce(lambda a, b: a + b, list(map(lambda x: list(x.keys()), col_results))))))
         new_dict = {k: [] for k in key_set}
         for d in col_results:
@@ -73,24 +73,9 @@ class Executor:
         # return {k: reduce(f1, val_list) for k, val_list in new_dict.items()}
         # return foldr(call, col_results)(ops)
 
-    # def apply_env_proc(
-    #             self,
-    #             env_processes: Dict[str, Callable],
-    #             state_dict: Dict[str, Any],
-    #             time_step: int
-    #         ) -> Dict[str, Any]:
-    #     for state in state_dict.keys():
-    #         if state in list(env_processes.keys()):
-    #             env_state: Callable = env_processes[state]
-    #             if (env_state.__name__ == '_curried') or (env_state.__name__ == 'proc_trigger'):
-    #                 state_dict[state] = env_state(sub_step)(state_dict[state])
-    #             else:
-    #                 state_dict[state] = env_state(state_dict[state])
-    #
-    #     return state_dict
-
     def apply_env_proc(
                 self,
+                sweep_dict,
                 env_processes: Dict[str, Callable],
                 state_dict: Dict[str, Any],
             ) -> Dict[str, Any]:
@@ -99,9 +84,10 @@ class Executor:
             function_type = type(lambda x: x)
             env_update = env_processes[target_field]
             if isinstance(env_update, list):
-                target_value = compose(*env_update[::-1])(target_value)
+                for f in env_update:
+                    target_value = f(sweep_dict, target_value)
             elif isinstance(env_update, function_type):
-                target_value = env_update(state_dict, target_value)
+                target_value = env_update(state_dict, sweep_dict, target_value)
             else:
                 target_value = env_update
 
@@ -122,7 +108,7 @@ class Executor:
     # mech_step
     def partial_state_update(
                 self,
-                var_dict: Dict[str, List[Any]],
+                sweep_dict: Dict[str, List[Any]],
                 sub_step: int,
                 sL: Any,
                 sH: Any,
@@ -150,13 +136,13 @@ class Executor:
         # print(last_in_obj)
         # print(sH[-1])
 
-        _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(var_dict, sub_step, sH, last_in_obj, policy_funcs))
+        _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs))
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
         # ToDo: Can be multithreaded ??
         def generate_record(state_funcs):
             for f in state_funcs:
-                yield self.state_update_exception(f(var_dict, sub_step, sH, last_in_obj, _input))
+                yield self.state_update_exception(f(sweep_dict, sub_step, sH, last_in_obj, _input))
 
         def transfer_missing_fields(source, destination):
             for k in source:
@@ -168,7 +154,9 @@ class Executor:
         last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, dict(generate_record(state_funcs)))
         # ToDo: Remove
         # last_in_copy: Dict[str, Any] = self.apply_env_proc(env_processes, last_in_copy, last_in_copy['timestep'])
-        last_in_copy: Dict[str, Any] = self.apply_env_proc(env_processes, last_in_copy)
+        # print(env_processes)
+        # print()
+        last_in_copy: Dict[str, Any] = self.apply_env_proc(sweep_dict, env_processes, last_in_copy)
 
 
         # ToDo: make 'substep' & 'timestep' reserve fields
@@ -185,7 +173,7 @@ class Executor:
     # mech_pipeline - state_update_block
     def state_update_pipeline(
                 self,
-                var_dict: Dict[str, List[Any]],
+                sweep_dict: Dict[str, List[Any]],
                 simulation_list, #states_list: List[Dict[str, Any]],
                 configs: List[Tuple[List[Callable], List[Callable]]],
                 env_processes: Dict[str, Callable],
@@ -229,7 +217,7 @@ class Executor:
         for [s_conf, p_conf] in configs: # tensor field
 
             states_list: List[Dict[str, Any]] = self.partial_state_update(
-                var_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run
+                sweep_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run
             )
             # print(sub_step)
             # print(simulation_list)
@@ -244,7 +232,7 @@ class Executor:
     # state_update_pipeline
     def run_pipeline(
                 self,
-                var_dict: Dict[str, List[Any]],
+                sweep_dict: Dict[str, List[Any]],
                 states_list: List[Dict[str, Any]],
                 configs: List[Tuple[List[Callable], List[Callable]]],
                 env_processes: Dict[str, Callable],
@@ -262,7 +250,7 @@ class Executor:
         # print(simulation_list)
         for time_step in time_seq:
             pipe_run: List[Dict[str, Any]] = self.state_update_pipeline(
-                var_dict, simulation_list, configs, env_processes, time_step, run
+                sweep_dict, simulation_list, configs, env_processes, time_step, run
             )
 
             _, *pipe_run = pipe_run
@@ -276,7 +264,7 @@ class Executor:
     # configs: List[Tuple[List[Callable], List[Callable]]]
     def simulation(
             self,
-            var_dict: Dict[str, List[Any]],
+            sweep_dict: Dict[str, List[Any]],
             states_list: List[Dict[str, Any]],
             configs: List[Tuple[List[Callable], List[Callable]]],
             env_processes: Dict[str, Callable],
@@ -284,7 +272,7 @@ class Executor:
             runs: int
         ) -> List[List[Dict[str, Any]]]:
 
-        def execute_run(var_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
+        def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
             run += 1
 
             def generate_init_sys_metrics(genesis_states_list):
@@ -294,14 +282,14 @@ class Executor:
 
             states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(deepcopy(states_list)))
 
-            first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(var_dict, states_list_copy, configs, env_processes, time_seq, run)
+            first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(sweep_dict, states_list_copy, configs, env_processes, time_seq, run)
             del states_list_copy
 
             return first_timestep_per_run
 
         pipe_run: List[List[Dict[str, Any]]] = flatten(
             TPool().map(
-                lambda run: execute_run(var_dict, states_list, configs, env_processes, time_seq, run),
+                lambda run: execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run),
                 list(range(runs))
             )
         )

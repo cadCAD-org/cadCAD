@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from copy import deepcopy
 from functools import reduce
+from pprint import pprint
 
 from fn.func import curried
 from funcy import curry
@@ -38,13 +39,14 @@ def bound_norm_random(rng, low, high):
     res = rng.normal((high+low)/2, (high-low)/6)
     if res < low or res > high:
         res = bound_norm_random(rng, low, high)
-    return Decimal(res)
+    # return Decimal(res)
+    return float(res)
 
 
 @curried
-def env_proc_trigger(trigger_time, update_f, time):
-    if time == trigger_time:
-        return update_f
+def env_proc_trigger(timestep, f, time):
+    if time == timestep:
+        return f
     else:
         return lambda x: x
 
@@ -130,8 +132,8 @@ def exo_update_per_ts(ep):
 
     return {es: ep_decorator(f, es) for es, f in ep.items()}
 
-def trigger_condition(s, conditions, cond_opp):
-    condition_bools = [s[field] in precondition_values for field, precondition_values in conditions.items()]
+def trigger_condition(s, pre_conditions, cond_opp):
+    condition_bools = [s[field] in precondition_values for field, precondition_values in pre_conditions.items()]
     return reduce(cond_opp, condition_bools)
 
 def apply_state_condition(pre_conditions, cond_opp, y, f, _g, step, sL, s, _input):
@@ -149,12 +151,13 @@ def var_substep_trigger(substeps):
         pre_conditions = {'substep': substeps}
         cond_opp = lambda a, b: a and b
         return var_trigger(y, f, pre_conditions, cond_opp)
+
     return lambda y, f: curry(trigger)(substeps)(y)(f)
 
 
 def env_trigger(end_substep):
     def trigger(end_substep, trigger_field, trigger_vals, funct_list):
-        def env_update(state_dict, target_value):
+        def env_update(state_dict, sweep_dict, target_value):
             state_dict_copy = deepcopy(state_dict)
             # Use supstep to simulate current sysMetrics
             if state_dict_copy['substep'] == end_substep:
@@ -162,7 +165,7 @@ def env_trigger(end_substep):
 
             if state_dict_copy[trigger_field] in trigger_vals:
                 for g in funct_list:
-                    target_value = g(target_value)
+                    target_value = g(sweep_dict, target_value)
 
             del state_dict_copy
             return target_value
@@ -182,6 +185,7 @@ def config_sim(d):
         return flatten_tabulated_dict(tabulate_dict(d))
 
     if "M" in d:
+        # print([{"N": d["N"], "T": d["T"], "M": M} for M in process_variables(d["M"])])
         return [{"N": d["N"], "T": d["T"], "M": M} for M in process_variables(d["M"])]
     else:
         d["M"] = [{}]
@@ -204,3 +208,20 @@ def genereate_psubs(policy_grid, states_grid, policies, state_updates):
         PSUBS.append(psub(filtered_policies, filtered_state_updates))
 
     return PSUBS
+
+def access_block(sH, y, psu_block_offset, exculsion_list=[]):
+    exculsion_list += [y]
+    def filter_history(key_list, sH):
+        filter = lambda key_list: \
+            lambda d: {k: v for k, v in d.items() if k not in key_list}
+        return list(map(filter(key_list), sH))
+
+    if psu_block_offset < -1:
+        if len(sH) >= abs(psu_block_offset):
+            return filter_history(exculsion_list, sH[psu_block_offset])
+        else:
+            return []
+    elif psu_block_offset < 0:
+        return filter_history(exculsion_list, sH[psu_block_offset])
+    else:
+        return []

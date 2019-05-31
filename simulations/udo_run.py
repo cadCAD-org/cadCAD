@@ -21,7 +21,7 @@ cols = [
     'udo_policy_tracker_a', 'udo_policies', 'udo_policy_tracker_b',
     'timestamp'
 ]
-raw_result, tensor_field = run.main()
+raw_result, tensor_field = run.execute()
 result = pd.DataFrame(raw_result)[['run', 'substep', 'timestep'] + cols]
 # result = pd.concat([result.drop(['c'], axis=1), result['c'].apply(pd.Series)], axis=1)
 

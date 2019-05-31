@@ -17,6 +17,7 @@ class Configuration(object):
     def __init__(self, sim_config={}, initial_state={}, seeds={}, env_processes={},
                  exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
                  **kwargs) -> None:
+        # print(exogenous_states)
         self.sim_config = sim_config
         self.initial_state = initial_state
         self.seeds = seeds

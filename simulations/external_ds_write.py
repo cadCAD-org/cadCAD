@@ -17,7 +17,7 @@ run = Executor(exec_context=single_proc_ctx, configs=first_config)
 
 raw_result, _ = run.main()
 result = pd.DataFrame(raw_result)
-result.to_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/output.csv', index=False)
+result.to_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv', index=False)
 
 print("Output:")
 print(tabulate(result, headers='keys', tablefmt='psql'))

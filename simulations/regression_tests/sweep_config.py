@@ -1,7 +1,6 @@
 from decimal import Decimal
 import numpy as np
 from datetime import timedelta
-from funcy import compose
 import pprint
 
 from cadCAD.configuration import append_configs
@@ -22,6 +21,8 @@ seeds = {
 # Optional
 g: Dict[str, List[int]] = {
     'alpha': [1],
+    # 'beta': [2],
+    # 'gamma': [3],
     'beta': [2, 5],
     'gamma': [3, 4],
     'omega': [7]
@@ -29,7 +30,7 @@ g: Dict[str, List[int]] = {
 
 psu_steps = ['m1', 'm2', 'm3']
 system_substeps = len(psu_steps)
-var_timestep_trigger = var_substep_trigger(system_substeps)
+var_timestep_trigger = var_substep_trigger([0, system_substeps])
 env_timestep_trigger = env_trigger(system_substeps)
 env_process = {}
 psu_block = {k: {"policies": {}, "variables": {}} for k in psu_steps}
@@ -67,6 +68,7 @@ def s1m1(_g, step, sL, s, _input):
 psu_block['m1']["variables"]['s1'] = s1m1
 
 def s2m1(_g, step, sL, s, _input):
+    print(_g)
     return 's2', _g['beta']
 psu_block['m1']["variables"]['s2'] = s2m1
 
@@ -94,22 +96,22 @@ def update_timestamp(_g, step, sL, s, _input):
 for m in ['m1','m2','m3']:
     # psu_block[m]["variables"]['timestamp'] = update_timestamp
     psu_block[m]["variables"]['timestamp'] = var_timestep_trigger(y='timestamp', f=update_timestamp)
-    psu_block[m]["variables"]['timestamp'] = var_trigger(
-        y='timestamp', f=update_timestamp, pre_conditions={'substep': [0, system_substeps]}, cond_op=lambda a, b: a and b
-    )
+    # psu_block[m]["variables"]['timestamp'] = var_trigger(
+    #     y='timestamp', f=update_timestamp, pre_conditions={'substep': [0, system_substeps]}, cond_op=lambda a, b: a and b
+    # )
 
-proc_one_coef_A = 0.7
-def es3p1(_g, step, sL, s, _input):
-    return 's3', s['s3']
+proc_one_coef = 0.7
+def es3(_g, step, sL, s, _input):
+    return 's3', s['s3'] + proc_one_coef
 # use `timestep_trigger` to update every ts
 for m in ['m1','m2','m3']:
-    psu_block[m]["variables"]['s3'] = var_timestep_trigger(y='s3', f=es3p1)
+    psu_block[m]["variables"]['s3'] = var_timestep_trigger(y='s3', f=es3)
 
-proc_one_coef_B = 1.3
-def es4p2(_g, step, sL, s, _input):
-    return 's4', s['s4'] #+ 4 #g['gamma'] + proc_one_coef_B
+
+def es4(_g, step, sL, s, _input):
+    return 's4', s['s4'] + _g['gamma']
 for m in ['m1','m2','m3']:
-    psu_block[m]["variables"]['s4'] = var_timestep_trigger(y='s4', f=es4p2)
+    psu_block[m]["variables"]['s4'] = var_timestep_trigger(y='s4', f=es4)
 
 
 # ToDo: The number of values entered in sweep should be the # of config objs created,
@@ -119,16 +121,18 @@ for m in ['m1','m2','m3']:
 
 # Genesis States
 genesis_states = {
-    's1': Decimal(0.0),
-    's2': Decimal(0.0),
-    's3': Decimal(1.0),
-    's4': Decimal(1.0),
+    's1': 0.0,
+    's2': 0.0,
+    's3': 1.0,
+    's4': 1.0,
     'timestamp': '2018-10-01 15:16:24'
 }
+
+
 # Environment Process
 # ToDo: Validate - make env proc trigger field agnostic
-env_process["s3"] = [lambda x: x + 1, lambda x: x + 1]
-env_process["s4"] = env_timestep_trigger(trigger_field='field', trigger_vals=[5], funct_list=[lambda x: 1, lambda x: x + 2])
+env_process["s3"] = [lambda _g, x: _g['beta'], lambda _g, x: x + 1]
+env_process["s4"] = env_timestep_trigger(trigger_field='timestep', trigger_vals=[5], funct_list=[lambda _g, x: _g['beta']])
 
 
 # config_sim Necessary
