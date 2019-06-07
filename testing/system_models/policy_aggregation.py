@@ -1,5 +1,7 @@
 from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import config_sim
+from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+from cadCAD import configs
 
 
 # Policies per Mechanism
@@ -72,12 +74,17 @@ sim_config = config_sim(
     }
 )
 
+
 # Aggregation == Reduce Map / Reduce Map Aggregation
+# ToDo: subsequent functions should accept the entire datastructure
 # using env functions (include in reg test using / for env proc)
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     partial_state_update_blocks=partial_state_update_block,
-    # ToDo: subsequent functions should include policy dict for access to each policy (i.e shouldnt be a map)
     policy_ops=[lambda a, b: a + b, lambda y: y * 2] # Default: lambda a, b: a + b ToDO: reduction function requires high lvl explanation
 )
+
+exec_mode = ExecutionMode()
+single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
+run = Executor(exec_context=single_proc_ctx, configs=configs)

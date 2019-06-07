@@ -202,19 +202,20 @@ def genereate_psubs(policy_grid, states_grid, policies, state_updates):
 
     return PSUBS
 
-def access_block(sH, y, psu_block_offset, exculsion_list=[]):
-    exculsion_list += [y]
+# ToDo: DO NOT filter sH for every state/policy update. Requires a consumable sH (new sH)
+def access_block(state_history, target_field, psu_block_offset, exculsion_list=[]):
+    exculsion_list += [target_field]
     def filter_history(key_list, sH):
         filter = lambda key_list: \
             lambda d: {k: v for k, v in d.items() if k not in key_list}
         return list(map(filter(key_list), sH))
 
     if psu_block_offset < -1:
-        if len(sH) >= abs(psu_block_offset):
-            return filter_history(exculsion_list, sH[psu_block_offset])
+        if len(state_history) >= abs(psu_block_offset):
+            return filter_history(exculsion_list, state_history[psu_block_offset])
         else:
             return []
-    elif psu_block_offset < 0:
-        return filter_history(exculsion_list, sH[psu_block_offset])
+    elif psu_block_offset == -1:
+        return filter_history(exculsion_list, state_history[psu_block_offset])
     else:
         return []
