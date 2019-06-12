@@ -22,7 +22,7 @@ A/B testing policies, monte carlo analysis and other common numerical methods is
 
 ***IMPORTANT NOTE:*** Tokens are issued to and meant to be used by trial users and BlockScience employees **ONLY**. Replace \<TOKEN\> with an issued token in the script below.
 ```bash
-pip3 install pandas pathos fn tabulate
+pip3 install pandas pathos fn funcy tabulate
 pip3 install cadCAD --extra-index-url https://<TOKEN>@repo.fury.io/blockscience/
 ```
 
