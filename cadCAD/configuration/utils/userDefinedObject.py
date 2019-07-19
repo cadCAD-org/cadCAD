@@ -5,7 +5,6 @@ from pandas.core.frame import DataFrame
 
 from cadCAD.utils import SilentDF
 
-
 def val_switch(v):
     if isinstance(v, DataFrame) is True:
         return SilentDF(v)
@@ -18,7 +17,7 @@ class udcView(object):
         self.masked_members = masked_members
 
     # returns dict to dataframe
-    # def __repr__(self):
+
     def __repr__(self):
         members = {}
         variables = {
@@ -26,8 +25,19 @@ class udcView(object):
             if str(type(v)) != "<class 'method'>" and k not in self.masked_members # and isinstance(v, DataFrame) is not True
         }
         members['methods'] = [k for k, v in self.__dict__.items() if str(type(v)) == "<class 'method'>"]
+
         members.update(variables)
         return f"{members}" #[1:-1]
+
+    # def __repr__(self):
+    #     members = {}
+    #     variables = {
+    #         k: val_switch(v) for k, v in self.__dict__.items()
+    #         if str(type(v)) != "<class 'method'>" and k not in self.masked_members and k == 'x' # and isinstance(v, DataFrame) is not True
+    #     }
+    #
+    #     members.update(variables)
+    #     return f"{members}" #[1:-1]
 
 
 class udcBroker(object):
@@ -36,7 +46,8 @@ class udcBroker(object):
         funcs = dict(getmembers(obj, ismethod))
         filtered_functions = {k: v for k, v in funcs.items() if k not in function_filter}
         d['obj'] = obj
-        d.update(deepcopy(vars(obj)))  # somehow is enough
+        # d.update(deepcopy(vars(obj)))  # somehow is enough
+        d.update(vars(obj))  # somehow is enough
         d.update(filtered_functions)
 
         self.members_dict = d
@@ -57,4 +68,3 @@ def UDO(udo, masked_members=['obj']):
 
 def udoPipe(obj_view):
     return UDO(obj_view.obj, obj_view.masked_members)
-

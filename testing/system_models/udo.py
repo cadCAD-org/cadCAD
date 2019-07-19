@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 import pandas as pd
 from fn.func import curried
 from datetime import timedelta
@@ -9,6 +7,9 @@ from cadCAD.utils import SilentDF #, val_switch
 from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import time_step, config_sim, var_trigger, var_substep_trigger, env_trigger, psub_list
 from cadCAD.configuration.utils.userDefinedObject import udoPipe, UDO
+
+from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+from cadCAD import configs
 
 
 DF = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv'))
@@ -26,11 +27,6 @@ class udoExample(object):
 
     def updateX(self):
         self.x += 1
-        return self
-
-    def updateDS(self):
-        self.ds.iloc[0,0] -= 10
-        # pp.pprint(self.ds)
         return self
 
     def perceive(self, s):
@@ -113,7 +109,7 @@ def perceive(s, self):
 def state_udo_update(_g, step, sL, s, _input):
     y = 'state_udo'
     # s['hydra_state'].updateX().anon(perceive(s))
-    s['state_udo'].updateX().perceive(s).updateDS()
+    s['state_udo'].updateX().perceive(s)
     x = udoPipe(s['state_udo'])
     return y, x
 for m in psu_steps:
@@ -181,3 +177,9 @@ print()
 print("State Updates:")
 pp.pprint(partial_state_update_blocks)
 print()
+
+
+exec_mode = ExecutionMode()
+first_config = configs # only contains config1
+single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
+run = Executor(exec_context=single_proc_ctx, configs=first_config)

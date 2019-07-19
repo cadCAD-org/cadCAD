@@ -1,15 +1,14 @@
 import numpy as np
 from datetime import timedelta
 
-
 from cadCAD.configuration import append_configs
-from cadCAD.configuration.utils import bound_norm_random, config_sim, time_step, env_trigger
+from cadCAD.configuration.utils import bound_norm_random, config_sim, env_trigger, time_step
 
 seeds = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
     'b': np.random.RandomState(3),
-    'c': np.random.RandomState(4)
+    'c': np.random.RandomState(3)
 }
 
 
@@ -17,7 +16,7 @@ seeds = {
 def p1m1(_g, step, sL, s):
     return {'param1': 1}
 def p2m1(_g, step, sL, s):
-    return {'param1': 1, 'param2': 4}
+    return {'param2': 4}
 
 def p1m2(_g, step, sL, s):
     return {'param1': 'a', 'param2': 2}
@@ -33,7 +32,7 @@ def p2m3(_g, step, sL, s):
 # Internal States per Mechanism
 def s1m1(_g, step, sL, s, _input):
     y = 's1'
-    x = s['s1'] + 1
+    x = _input['param1']
     return (y, x)
 def s2m1(_g, step, sL, s, _input):
     y = 's2'
@@ -42,7 +41,7 @@ def s2m1(_g, step, sL, s, _input):
 
 def s1m2(_g, step, sL, s, _input):
     y = 's1'
-    x = s['s1'] + 1
+    x = _input['param1']
     return (y, x)
 def s2m2(_g, step, sL, s, _input):
     y = 's2'
@@ -51,16 +50,11 @@ def s2m2(_g, step, sL, s, _input):
 
 def s1m3(_g, step, sL, s, _input):
     y = 's1'
-    x = s['s1'] + 1
+    x = _input['param1']
     return (y, x)
 def s2m3(_g, step, sL, s, _input):
     y = 's2'
     x = _input['param2']
-    return (y, x)
-
-def policies(_g, step, sL, s, _input):
-    y = 'policies'
-    x = _input
     return (y, x)
 
 
@@ -85,10 +79,10 @@ def update_timestamp(_g, step, sL, s, _input):
 
 # Genesis States
 genesis_states = {
-    's1': 0.0,
-    's2': 0.0,
-    's3': 1.0,
-    's4': 1.0,
+    's1': 0,
+    's2': 0,
+    's3': 1,
+    's4': 1,
     'timestamp': '2018-10-01 15:16:24'
 }
 
@@ -101,31 +95,28 @@ env_processes = {
     "s4": env_trigger(3)(trigger_field='timestamp', trigger_vals=trigger_timestamps, funct_list=[lambda _g, x: 10])
 }
 
-
 partial_state_update_block = [
     {
         "policies": {
             "b1": p1m1,
-            "b2": p2m1
+            # "b2": p2m1
         },
-        "variables": {
+        "states": {
             "s1": s1m1,
-            "s2": s2m1,
+            # "s2": s2m1
             "s3": es3,
             "s4": es4,
-            "timestamp": update_timestamp
+            "timestep": update_timestamp
         }
     },
     {
         "policies": {
             "b1": p1m2,
-            "b2": p2m2
+            # "b2": p2m2
         },
-        "variables": {
+        "states": {
             "s1": s1m2,
-            "s2": s2m2,
-            # "s3": es3p1,
-            # "s4": es4p2,
+            # "s2": s2m2
         }
     },
     {
@@ -133,11 +124,9 @@ partial_state_update_block = [
             "b1": p1m3,
             "b2": p2m3
         },
-        "variables": {
+        "states": {
             "s1": s1m3,
-            "s2": s2m3,
-            # "s3": es3p1,
-            # "s4": es4p2,
+            "s2": s2m3
         }
     }
 ]
@@ -154,6 +143,5 @@ append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_processes,
-    partial_state_update_blocks=partial_state_update_block,
-    policy_ops=[lambda a, b: a + b]
+    partial_state_update_blocks=partial_state_update_block
 )

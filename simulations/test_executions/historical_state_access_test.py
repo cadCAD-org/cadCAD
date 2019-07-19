@@ -15,9 +15,9 @@ run = Executor(exec_context=single_proc_ctx, configs=first_config)
 
 raw_result, tensor_field = run.execute()
 result = pd.DataFrame(raw_result)
-cols = ['run','substep','timestep','x','nonexsistant','last_x','2nd_to_last_x','3rd_to_last_x','4th_to_last_x']
+# cols = ['run','substep','timestep','x','nonexsistant','last_x','2nd_to_last_x','3rd_to_last_x','4th_to_last_x']
+cols = ['last_x']
 result = result[cols]
-
 
 print()
 print("Tensor Field: config1")

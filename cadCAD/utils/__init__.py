@@ -15,13 +15,11 @@ def append_dict(dict, new_dict):
     dict.update(new_dict)
     return dict
 
-
 # def val_switch(v):
 #     if isinstance(v, DataFrame) is True or isinstance(v, SilentDF) is True:
 #         return SilentDF(v)
 #     else:
 #         return v.x
-
 
 class IndexCounter:
     def __init__(self):

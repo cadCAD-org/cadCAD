@@ -115,11 +115,47 @@ class Executor:
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
         _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs))
 
+
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
         # ToDo: Can be multithreaded ??
         def generate_record(state_funcs):
             for f in state_funcs:
                 yield self.state_update_exception(f(sweep_dict, sub_step, sH, last_in_obj, _input))
+
+        # def generate_record(state_funcs):
+        #     for f in state_funcs:
+        #         tmp_last_in_copy = deepcopy(last_in_obj)
+        #         new_kv = self.state_update_exception(f(sweep_dict, sub_step, sH, tmp_last_in_copy, _input))
+        #         del tmp_last_in_copy
+        #         yield new_kv
+        #
+        # # get `state` from  last_in_obj.keys()
+        # # vals = last_in_obj.values()
+        # def generate_record(state_funcs):
+        #     for state, v, f in zip(states, vals, state_funcs):
+        #         v_copy = deepcopy(v)
+        #         last_in_obj[state] = v_copy
+        #         new_kv = self.state_update_exception(f(sweep_dict, sub_step, sH, last_in_copy, _input))
+        #         del v
+        #         yield new_kv
+
+        # {k: v for k, v in l}
+
+        # r() - r(a') -> r(a',b') -> r(a',b',c')
+
+        # r(f(a),b,c) -> r(a'f(b),c) -> r(a',b',f(c)) => r(a',b',c')
+        # r(a',b.update(),c)
+        # r1(f(a1),b1,c1) -> r2(a2,f(b1),c1) -> r3(a3,b1,f(c1)) => r(a',b',c')
+
+        # r1(f(a1),b,c) -> r2(a,f(b1),c) -> r3(a,b,f(c1)) => r(a',b',c')
+
+        # r1(f(a1),b1,c1) -> r(a2',b2.update(),c2) -> r3(a3,b1,f(c1)) => r(a',b',c')
+
+
+        # r1(f(a1),b1,c1) -> r2(a2,f(b1),c1) -> r3(a3,b1,f(c1)) => r(a',b',c')
+
+
+        # reduce(lambda r: F(r), [r2(f(a),b,c), r2(a,f(b),c), r3(a,b,f(c))]) => R(a',b',c')
 
         def transfer_missing_fields(source, destination):
             for k in source:
