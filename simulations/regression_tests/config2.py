@@ -8,7 +8,7 @@ seeds = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
     'b': np.random.RandomState(3),
-    'c': np.random.RandomState(4)
+    'c': np.random.RandomState(3)
 }
 
 
@@ -89,9 +89,10 @@ genesis_states = {
 
 # Environment Process
 # ToDo: Depreciation Waring for env_proc_trigger convention
+trigger_timestamps = ['2018-10-01 15:16:25', '2018-10-01 15:16:27', '2018-10-01 15:16:29']
 env_processes = {
     "s3": [lambda _g, x: 5],
-    "s4": env_trigger(3)(trigger_field='timestep', trigger_vals=[2], funct_list=[lambda _g, x: 10])
+    "s4": env_trigger(3)(trigger_field='timestamp', trigger_vals=trigger_timestamps, funct_list=[lambda _g, x: 10])
 }
 
 partial_state_update_block = {
