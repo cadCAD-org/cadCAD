@@ -31,7 +31,7 @@ Previous State:
 `y = 0`
 
 ```python
-def state_update(_params, step, sL, s, _input):
+def state_update(_params, step, sH, s, _input):
     y = 'state'
     x = s['state'] + _params['alpha'] + _params['gamma']
     return y, x
@@ -43,8 +43,8 @@ def state_update(_params, step, sL, s, _input):
 ##### Example Policy Updates
 ```python
 # Internal States per Mechanism
-def policies(_g, step, sL, s):
-    return {'beta': _g['beta'], 'gamma': _g['gamma']}
+def policies(_params, step, sH, s):
+    return {'beta': _params['beta'], 'gamma': _params['gamma']}
 ```
 * Simulation 1: `{'beta': 2, 'gamma': 3]}` 
 * Simulation 2: `{'beta': 5, 'gamma': 4}`
@@ -52,6 +52,13 @@ def policies(_g, step, sL, s):
 ##### Configure Simulation
 ```python
 from cadCAD.configuration.utils import config_sim
+
+g = {
+    'alpha': [1],
+    'beta': [2, 5],
+    'gamma': [3, 4],
+    'omega': [7]
+}
 
 sim_config = config_sim(
     {
@@ -64,5 +71,3 @@ sim_config = config_sim(
 
 #### [Example Configuration](link)
 #### [Example Results](link)
-
-

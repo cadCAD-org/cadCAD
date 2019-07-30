@@ -75,7 +75,7 @@ PSUB = {
     "variables": variables
 }
 
-partial_state_update_block = {
+psubs = {
     "PSUB1": PSUB,
     "PSUB2": PSUB,
     "PSUB3": PSUB
@@ -91,7 +91,7 @@ sim_config = config_sim(
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
-    partial_state_update_blocks=partial_state_update_block
+    partial_state_update_blocks=psubs
 )
 
 exec_mode = ExecutionMode()

@@ -13,46 +13,46 @@ seeds = {
 
 
 # Policies per Mechanism
-def p1m1(_g, step, sL, s):
+def p1m1(_g, step, sH, s):
     return {'param1': 1}
-def p2m1(_g, step, sL, s):
+def p2m1(_g, step, sH, s):
     return {'param2': 4}
 
-def p1m2(_g, step, sL, s):
+def p1m2(_g, step, sH, s):
     return {'param1': 'a', 'param2': 2}
-def p2m2(_g, step, sL, s):
+def p2m2(_g, step, sH, s):
     return {'param1': 'b', 'param2': 4}
 
-def p1m3(_g, step, sL, s):
+def p1m3(_g, step, sH, s):
     return {'param1': ['c'], 'param2': np.array([10, 100])}
-def p2m3(_g, step, sL, s):
+def p2m3(_g, step, sH, s):
     return {'param1': ['d'], 'param2': np.array([20, 200])}
 
 
 # Internal States per Mechanism
-def s1m1(_g, step, sL, s, _input):
+def s1m1(_g, step, sH, s, _input):
     y = 's1'
     x = _input['param1']
     return (y, x)
-def s2m1(_g, step, sL, s, _input):
+def s2m1(_g, step, sH, s, _input):
     y = 's2'
     x = _input['param2']
     return (y, x)
 
-def s1m2(_g, step, sL, s, _input):
+def s1m2(_g, step, sH, s, _input):
     y = 's1'
     x = _input['param1']
     return (y, x)
-def s2m2(_g, step, sL, s, _input):
+def s2m2(_g, step, sH, s, _input):
     y = 's2'
     x = _input['param2']
     return (y, x)
 
-def s1m3(_g, step, sL, s, _input):
+def s1m3(_g, step, sH, s, _input):
     y = 's1'
     x = _input['param1']
     return (y, x)
-def s2m3(_g, step, sL, s, _input):
+def s2m3(_g, step, sH, s, _input):
     y = 's2'
     x = _input['param2']
     return (y, x)
@@ -62,17 +62,17 @@ def s2m3(_g, step, sL, s, _input):
 proc_one_coef_A = 0.7
 proc_one_coef_B = 1.3
 
-def es3(_g, step, sL, s, _input):
+def es3(_g, step, sH, s, _input):
     y = 's3'
     x = s['s3'] * bound_norm_random(seeds['a'], proc_one_coef_A, proc_one_coef_B)
     return (y, x)
 
-def es4(_g, step, sL, s, _input):
+def es4(_g, step, sH, s, _input):
     y = 's4'
     x = s['s4'] * bound_norm_random(seeds['b'], proc_one_coef_A, proc_one_coef_B)
     return (y, x)
 
-def update_timestamp(_g, step, sL, s, _input):
+def update_timestamp(_g, step, sH, s, _input):
     y = 'timestamp'
     return y, time_step(dt_str=s[y], dt_format='%Y-%m-%d %H:%M:%S', _timedelta=timedelta(days=0, minutes=0, seconds=1))
 
@@ -95,7 +95,7 @@ env_processes = {
     "s4": env_trigger(3)(trigger_field='timestamp', trigger_vals=trigger_timestamps, funct_list=[lambda _g, x: 10])
 }
 
-partial_state_update_block = [
+psubs = [
     {
         "policies": {
             "b1": p1m1,
@@ -143,5 +143,5 @@ append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_processes,
-    partial_state_update_blocks=partial_state_update_block
+    partial_state_update_blocks=psubs
 )
