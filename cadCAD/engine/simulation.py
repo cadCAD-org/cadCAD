@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Any, Callable, Dict, List, Tuple
 from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
@@ -113,7 +114,9 @@ class Executor:
             ) -> List[Dict[str, Any]]:
 
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
-        _input: Dict[str, Any] = self.policy_update_exception(self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs))
+        _input: Dict[str, Any] = self.policy_update_exception(
+            self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs)
+        )
 
 
         # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
@@ -211,6 +214,9 @@ class Executor:
 
         time_step += 1
 
+        pprint(states_list)
+        print()
+
         return states_list
 
     # state_update_pipeline
@@ -260,7 +266,9 @@ class Executor:
 
             states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(deepcopy(states_list)))
 
-            first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(sweep_dict, states_list_copy, configs, env_processes, time_seq, run)
+            first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(
+                sweep_dict, states_list_copy, configs, env_processes, time_seq, run
+            )
             del states_list_copy
 
             return first_timestep_per_run
@@ -271,5 +279,4 @@ class Executor:
                 list(range(runs))
             )
         )
-
         return pipe_run
