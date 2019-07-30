@@ -71,7 +71,7 @@ simulation_result = pd.DataFrame(raw_system_events)
 Example [System Model Configurations](link): 
 * [System Model A](link): `/documentation/examples/sys_model_A.py`
 * [System Model B](link): `/documentation/examples/sys_model_B.py`
-Execution Examples:
+Example Simulation Executions:
 * [System Model A](link): `/documentation/examples/sys_model_A_exec.py`
 * [System Model B](link): `/documentation/examples/sys_model_B_exec.py`
 ```python
@@ -103,7 +103,7 @@ print()
 
 * ##### *Multi Process Execution*
 Documentation: [Simulation Execution](link) 
-[Execution Example:](link) `/documentation/examples/sys_model_AB_exec.py`
+[Example Simulation Executions::](link) `/documentation/examples/sys_model_AB_exec.py`
 Example [System Model Configurations](link): 
 * [System Model A](link): `/documentation/examples/sys_model_A.py`
 * [System Model B](link): `/documentation/examples/sys_model_B.py`

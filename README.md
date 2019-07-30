@@ -27,12 +27,13 @@ It allows us to use code to solidify our conceptualized ideas and see if the out
 iteratively refine our work until we have constructed a model that closely reflects reality at the start of the model, 
 and see how it evolves. We can then use these results to inform business decisions.
 
-#### Simulation Instructional:
+#### Documentation:
 * ##### [System Model Configuration](link)
 * ##### [System Simulation Execution](link)
+* ##### [Tutorials](link)
 
-#### Installation:
-**1. Install Dependencies:**
+
+#### 0. Installation: Install Dependencies
 
 **Option A:** Package Repository Access
 
@@ -49,22 +50,17 @@ python3 setup.py sdist bdist_wheel
 pip3 install dist/*.whl
 ```
 
-**2. Configure Simulation:**
 
-Intructions:
-`/Simulation.md`
+#### 1. [Configure System Model](link)
 
-Examples:
-`/simulations/validation/*`
-
-**3. Import cadCAD & Run Simulations:**
+#### 2. [Execute Simulations:](link)
 
 
 ##### Single Process Execution:
 Example [System Model Configurations](link): 
 * [System Model A](link): `/documentation/examples/sys_model_A.py`
 * [System Model B](link): `/documentation/examples/sys_model_B.py`
-Execution Examples:
+Example Simulation Executions:
 * [System Model A](link): `/documentation/examples/sys_model_A_exec.py`
 * [System Model B](link): `/documentation/examples/sys_model_B_exec.py`
 ```python
@@ -98,7 +94,7 @@ Documentation: [Simulation Execution](link)
 Example [System Model Configurations](link): 
 * [System Model A](link): `/documentation/examples/sys_model_A.py`
 * [System Model B](link): `/documentation/examples/sys_model_B.py`
-[Execution Example:](link) `/documentation/examples/sys_model_AB_exec.py`
+[Example Simulation Executions::](link) `/documentation/examples/sys_model_AB_exec.py`
 ```python
 import pandas as pd
 from tabulate import tabulate
