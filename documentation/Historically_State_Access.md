@@ -1,24 +1,21 @@
 Historical State Access
 ==
-The 3rd parameter of state and policy update functions (labels as `sH` of type `List[List[dict]]`) provides access to 
-past Partial State Updates (PSU) given a negative offset number. `access_block` is used to access past PSUs 
-(`List[dict]`) from `sH`.
+#### Motivation
+The current state (values of state variables) is accessed through the `s` list. When the user requires previous state variable values, they may be accessed through the state history list, `sH`. Accessing the state history should be implemented without creating unintended feedback loops on the current state.
 
-Example: `-2` denotes to second to last PSU
+The 3rd parameter of state and policy update functions (labeled as `sH` of type `List[List[dict]]`) provides access to past Partial State Update Block (PSUB) given a negative offset number. `access_block` is used to access past PSUBs (`List[dict]`) from `sH`. For example, an offset of `-2` denotes the second to last PSUB.
 
-##### Exclusion List
+#### Exclusion List
 Create a list of states to exclude from the reported PSU.
 ```python
 exclusion_list = [
-    'nonexsistant', 'last_x', '2nd_to_last_x', '3rd_to_last_x', '4th_to_last_x'
+    'nonexistent', 'last_x', '2nd_to_last_x', '3rd_to_last_x', '4th_to_last_x'
 ]
 ```
 ##### Example Policy Updates
 ###### Last partial state update
 ```python
-from cadCAD.configuration.utils import config_sim, access_block
-
-def last_update(_g, substep, sH, s):
+def last_update(_params, substep, sH, s):
     return {"last_x": access_block(
             state_history=sH,
             target_field="last_x", # Add a field to the exclusion list
@@ -27,30 +24,30 @@ def last_update(_g, substep, sH, s):
         )
     }
 ```
-* Note: Although `target_field` adding a field to the exclusion may seem redundant, it is useful in the case of 
-the exclusion list being empty while the `target_field` is assigned to a state or a policy key.
+* Note: Although `target_field` adding a field to the exclusion may seem redundant, it is useful in the case of the exclusion list being empty while the `target_field` is assigned to a state or a policy key.
+##### Define State Updates
 ###### 2nd to last partial state update
 ```python
-def second2last_update(_g, substep, sH, s):
+def second2last_update(_params, substep, sH, s):
     return {"2nd_to_last_x": access_block(sH, "2nd_to_last_x", -2, exclusion_list)}
 ```
 
-##### Define State Updates
+
 ###### 3rd to last partial state update
 ```python
-def third_to_last_x(_g, substep, sH, s, _input):
+def third_to_last_x(_params, substep, sH, s, _input):
     return '3rd_to_last_x', access_block(sH, "3rd_to_last_x", -3, exclusion_list)
 ```
 ###### 4rd to last partial state update
 ```python
-def fourth_to_last_x(_g, substep, sH, s, _input):
+def fourth_to_last_x(_params, substep, sH, s, _input):
     return '4th_to_last_x', access_block(sH, "4th_to_last_x", -4, exclusion_list)
 ```
-###### Non-exsistant partial state update
-* `psu_block_offset >= 0` doesn't exsist
+###### Non-exsistent partial state update
+* `psu_block_offset >= 0` doesn't exist
 ```python
-def nonexsistant(_g, substep, sH, s, _input):
-    return 'nonexsistant', access_block(sH, "nonexsistant", 0, exclusion_list)
+def nonexistent(_params, substep, sH, s, _input):
+    return 'nonexistent', access_block(sH, "nonexistent", 0, exclusion_list)
 ```
 
 #### Example Simulation
@@ -92,6 +89,3 @@ Example: `last_x`
 |  9 | [{'x': 4, 'run': 1, 'substep': 1, 'timestep': 2}, {'x': 5, 'run': 1, 'substep': 2, 'timestep': 2}, {'x': 6, 'run': 1, 'substep': 3, 'timestep': 2}] |
 +----+-----------------------------------------------------------------------------------------------------------------------------------------------------+
 ```
-
-#### [Example Configuration](link)
-#### [Example Results](link)

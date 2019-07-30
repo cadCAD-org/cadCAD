@@ -7,19 +7,19 @@ from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from cadCAD import configs
 
 # Policies per Mechanism
-def p1m1(_g, step, sL, s):
+def p1m1(_g, step, sH, s):
     return {'policy1': 1}
-def p2m1(_g, step, sL, s):
+def p2m1(_g, step, sH, s):
     return {'policy2': 2}
 
-def p1m2(_g, step, sL, s):
+def p1m2(_g, step, sH, s):
     return {'policy1': 2, 'policy2': 2}
-def p2m2(_g, step, sL, s):
+def p2m2(_g, step, sH, s):
     return {'policy1': 2, 'policy2': 2}
 
-def p1m3(_g, step, sL, s):
+def p1m3(_g, step, sH, s):
     return {'policy1': 1, 'policy2': 2, 'policy3': 3}
-def p2m3(_g, step, sL, s):
+def p2m3(_g, step, sH, s):
     return {'policy1': 1, 'policy2': 2, 'policy3': 3}
 
 
@@ -44,7 +44,7 @@ variables = {
     "policies": policies
 }
 
-partial_state_update_block = {
+psubs = {
     "m1": {
         "policies": {
             "p1": p1m1,
@@ -79,7 +79,7 @@ sim_config = config_sim(
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
-    partial_state_update_blocks=partial_state_update_block,
+    partial_state_update_blocks=psubs,
     policy_ops=[lambda a, b: a + b, lambda y: y * 2] # Default: lambda a, b: a + b
 )
 

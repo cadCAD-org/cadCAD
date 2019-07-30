@@ -59,90 +59,95 @@ Examples:
 
 **3. Import cadCAD & Run Simulations:**
 
-Examples: `/simulations/*.py` or `/simulations/*.ipynb`
 
-Single Simulation: `/simulations/single_config_run.py`
-```python
-from tabulate import tabulate
-# The following imports NEED to be in the exact order
-from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import config1
-from cadCAD import configs
-
-exec_mode = ExecutionMode()
-
-print("Simulation Execution: Single Configuration")
-print()
-first_config = configs # only contains config1
-single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
-run1 = Executor(exec_context=single_proc_ctx, configs=first_config)
-run1_raw_result, tensor_field = run1.main()
-result = pd.DataFrame(run1_raw_result)
-print()
-print("Tensor Field: config1")
-print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
-print("Output:")
-print(tabulate(result, headers='keys', tablefmt='psql'))
-print()
-```
-
-Parameter Sweep Simulation (Concurrent): `/simulations/param_sweep_run.py`
+##### Single Process Execution:
+Example [System Model Configurations](link): 
+* [System Model A](link): `/documentation/examples/sys_model_A.py`
+* [System Model B](link): `/documentation/examples/sys_model_B.py`
+Execution Examples:
+* [System Model A](link): `/documentation/examples/sys_model_A_exec.py`
+* [System Model B](link): `/documentation/examples/sys_model_B_exec.py`
 ```python
 import pandas as pd
 from tabulate import tabulate
-# The following imports NEED to be in the exact order
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import sweep_config
+from documentation.examples import sys_model_A
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
 
-print("Simulation Execution: Concurrent Execution")
+# Single Process Execution using a Single System Model Configuration:
+# sys_model_A
+sys_model_A = [configs[0]] # sys_model_A
+single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
+sys_model_A_simulation = Executor(exec_context=single_proc_ctx, configs=sys_model_A)
+
+sys_model_A_raw_result, sys_model_A_tensor_field = sys_model_A_simulation.execute()
+sys_model_A_result = pd.DataFrame(sys_model_A_raw_result)
+print()
+print("Tensor Field: sys_model_A")
+print(tabulate(sys_model_A_tensor_field, headers='keys', tablefmt='psql'))
+print("Result: System Events DataFrame")
+print(tabulate(sys_model_A_result, headers='keys', tablefmt='psql'))
+print()
+```
+
+### Multiple Simulations (Concurrent):
+##### Multiple Simulation Execution (Multi Process Execution)
+Documentation: [Simulation Execution](link) 
+Example [System Model Configurations](link): 
+* [System Model A](link): `/documentation/examples/sys_model_A.py`
+* [System Model B](link): `/documentation/examples/sys_model_B.py`
+[Execution Example:](link) `/documentation/examples/sys_model_AB_exec.py`
+```python
+import pandas as pd
+from tabulate import tabulate
+from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+from documentation.examples import sys_model_A, sys_model_B
+from cadCAD import configs
+
+exec_mode = ExecutionMode()
+
+# # Multiple Processes Execution using Multiple System Model Configurations:
+# # sys_model_A & sys_model_B
 multi_proc_ctx = ExecutionContext(context=exec_mode.multi_proc)
-run2 = Executor(exec_context=multi_proc_ctx, configs=configs)
+sys_model_AB_simulation = Executor(exec_context=multi_proc_ctx, configs=configs)
 
 i = 0
-config_names = ['sweep_config_A', 'sweep_config_B']
-for raw_result, tensor_field in run2.main():
-    result = pd.DataFrame(raw_result)
+config_names = ['sys_model_A', 'sys_model_B']
+for sys_model_AB_raw_result, sys_model_AB_tensor_field in sys_model_AB_simulation.execute():
+    sys_model_AB_result = pd.DataFrame(sys_model_AB_raw_result)
     print()
-    print("Tensor Field: " + config_names[i])
-    print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
-    print("Output:")
-    print(tabulate(result, headers='keys', tablefmt='psql'))
+    print(f"Tensor Field: {config_names[i]}")
+    print(tabulate(sys_model_AB_tensor_field, headers='keys', tablefmt='psql'))
+    print("Result: System Events DataFrame:")
+    print(tabulate(sys_model_AB_result, headers='keys', tablefmt='psql'))
     print()
     i += 1
 ```
 
-Multiple Simulations (Concurrent): `/simulations/multi_config run.py`
+### Parameter Sweep Simulation (Concurrent):
+Documentation: [System Model Parameter Sweep](link) 
+[Example:](link) `/documentation/examples/param_sweep.py`
 ```python
 import pandas as pd
 from tabulate import tabulate
 # The following imports NEED to be in the exact order
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.validation import config1, config2
+from documentation.examples import param_sweep
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
-
-print("Simulation Execution: Concurrent Execution")
 multi_proc_ctx = ExecutionContext(context=exec_mode.multi_proc)
-run2 = Executor(exec_context=multi_proc_ctx, configs=configs)
+run = Executor(exec_context=multi_proc_ctx, configs=configs)
 
-i = 0
-config_names = ['config1', 'config2']
-for raw_result, tensor_field in run2.main():
+for raw_result, tensor_field in run.execute():
     result = pd.DataFrame(raw_result)
     print()
-    print("Tensor Field: " + config_names[i])
+    print("Tensor Field:")
     print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
     print("Output:")
     print(tabulate(result, headers='keys', tablefmt='psql'))
     print()
-    i =+ 1
 ```
 
-The above can be run in Jupyter.
-```bash
-jupyter notebook
-```

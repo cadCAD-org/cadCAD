@@ -31,31 +31,31 @@ env_process = {}
 
 
 # Policies
-def gamma(_params, step, sL, s):
+def gamma(_params, step, sH, s):
     return {'gamma': _params['gamma']}
 
 
-def omega(_params, step, sL, s):
+def omega(_params, step, sH, s):
     return {'omega': _params['omega'](7)}
 
 
 # Internal States
-def alpha(_params, step, sL, s, _input):
+def alpha(_params, step, sH, s, _input):
     return 'alpha', _params['alpha']
 
-def alpha_plus_gamma(_params, step, sL, s, _input):
+def alpha_plus_gamma(_params, step, sH, s, _input):
     return 'alpha_plus_gamma', _params['alpha'] + _params['gamma']
 
 
-def beta(_params, step, sL, s, _input):
+def beta(_params, step, sH, s, _input):
     return 'beta', _params['beta']
 
 
-def policies(_params, step, sL, s, _input):
+def policies(_params, step, sH, s, _input):
     return 'policies', _input
 
 
-def sweeped(_params, step, sL, s, _input):
+def sweeped(_params, step, sH, s, _input):
     return 'sweeped', {'beta': _params['beta'], 'gamma': _params['gamma']}
 
 
@@ -90,7 +90,7 @@ for m in psu_steps:
     psu_block[m]['variables']['policies'] = policies
     psu_block[m]["variables"]['sweeped'] = var_timestep_trigger(y='sweeped', f=sweeped)
 
-partial_state_update_blocks = psub_list(psu_block, psu_steps)
+psubs = psub_list(psu_block, psu_steps)
 print()
 pp.pprint(psu_block)
 print()
@@ -99,7 +99,7 @@ append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_process,
-    partial_state_update_blocks=partial_state_update_blocks
+    partial_state_update_blocks=psubs
 )
 
 exec_mode = ExecutionMode()
