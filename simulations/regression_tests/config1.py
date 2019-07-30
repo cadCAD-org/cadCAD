@@ -145,7 +145,8 @@ partial_state_update_block = [
 
 sim_config = config_sim(
     {
-        "N": 2,
+        "N": 1,
+        # "N": 5,
         "T": range(5),
     }
 )
