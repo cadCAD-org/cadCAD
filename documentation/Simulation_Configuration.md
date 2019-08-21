@@ -7,7 +7,8 @@ Given a **Simulation Configuration**, cadCAD produces datasets that represent th
 
 A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of [Simulation Properties](#Simulation-Properties)
 
-`append_configs`, stores a **Simulation Configuration** to be [Executed](/JS4Q9oayQASihxHBJzz4Ug) by cadCAD
+`append_configs`, stores a **Simulation Configuration** to be 
+[Executed](https://github.com/BlockScience/cadCAD-Tutorials/blob/master/Documentation/Simulation_Execution.md) by cadCAD
 
 ```python
 from cadCAD.configuration import append_configs
@@ -21,13 +22,20 @@ append_configs(
 ```
 Parameters:
 * **initial_state** : _dict_
+
     [State Variables](#State-Variables) and their initial values
+
 * **partial_state_update_blocks** : List[dict[dict]]
+
     List of [Partial State Update Blocks](#Partial-State-Update-Blocks)
+
 * **policy_ops** : List[functions]
-    See [Policy Aggregation](/63k2ncjITuqOPCUHzK7Viw) 
-* **sim_configs** : _???_
-    See [System Model Parameter Sweep](/4oJ_GT6zRWW8AO3yMhFKrg)
+
+    See [Policy Aggregation](https://github.com/BlockScience/cadCAD-Tutorials/blob/master/Documentation/Policy_Aggregation.md) 
+
+* **sim_configs** : 
+
+    See 
 
 ## Simulation Properties
 

@@ -69,5 +69,5 @@ sim_config = config_sim(
 )
 ```
 
-#### [Example Configuration](link)
-#### [Example Results](link)
+#### [Example](link)
+

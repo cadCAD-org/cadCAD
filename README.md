@@ -33,11 +33,12 @@ and see how it evolves. We can then use these results to inform business decisio
 * ##### [Tutorials](link)
 
 
-#### 0. Installation: Install Dependencies
+#### 0. Installation:
 
 **Option A:** Package Repository Access
 
-***IMPORTANT NOTE:*** Tokens are issued to and meant to be used by trial users and BlockScience employees **ONLY**. Replace \<TOKEN\> with an issued token in the script below.
+***IMPORTANT NOTE:*** Tokens are issued to and meant to be used by trial users and BlockScience employees **ONLY**. 
+Replace \<TOKEN\> with an issued token in the script below.
 ```bash
 pip3 install pandas pathos fn funcy tabulate 
 pip3 install cadCAD --extra-index-url https://<TOKEN>@repo.fury.io/blockscience/
@@ -54,7 +55,6 @@ pip3 install dist/*.whl
 #### 1. [Configure System Model](link)
 
 #### 2. [Execute Simulations:](link)
-
 
 ##### Single Process Execution:
 Example [System Model Configurations](link): 
