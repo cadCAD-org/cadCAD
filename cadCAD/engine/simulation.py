@@ -63,9 +63,6 @@ class Executor:
             ) for k, val_list in new_dict.items()
         }
 
-        # [f1] = ops
-        # return {k: reduce(f1, val_list) for k, val_list in new_dict.items()}
-        # return foldr(call, col_results)(ops)
 
     def apply_env_proc(
                 self,
@@ -98,7 +95,6 @@ class Executor:
 
         return state_dict
 
-    # ToDo: Redifined as a function that applies the tensor field to a set og last conditions
     # mech_step
     def partial_state_update(
                 self,
@@ -119,8 +115,6 @@ class Executor:
         )
 
 
-        # ToDo: add env_proc generator to `last_in_copy` iterator as wrapper function
-        # ToDo: Can be multithreaded ??
         def generate_record(state_funcs):
             for f in state_funcs:
                 yield self.state_update_exception(f(sweep_dict, sub_step, sH, last_in_obj, _input))
@@ -134,7 +128,6 @@ class Executor:
 
         last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, dict(generate_record(state_funcs)))
         last_in_copy: Dict[str, Any] = self.apply_env_proc(sweep_dict, env_processes, last_in_copy)
-        # ToDo: make 'substep' & 'timestep' reserve fields
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
 
         sL.append(last_in_copy)
@@ -155,7 +148,6 @@ class Executor:
 
         sub_step = 0
         states_list_copy: List[Dict[str, Any]] = deepcopy(simulation_list[-1])
-        # ToDo: Causes Substep repeats in sL:
         genesis_states: Dict[str, Any] = states_list_copy[-1]
 
         if len(states_list_copy) == 1:
@@ -167,7 +159,6 @@ class Executor:
         del states_list_copy
         states_list: List[Dict[str, Any]] = [genesis_states]
 
-        # ToDo: Was causing Substep repeats in sL, use for yield
         sub_step += 1
 
         for [s_conf, p_conf] in configs: # tensor field
@@ -196,7 +187,6 @@ class Executor:
             ) -> List[List[Dict[str, Any]]]:
 
         time_seq: List[int] = [x + 1 for x in time_seq]
-        # ToDo: simulation_list should be a Tensor that is generated throughout the Executor
         simulation_list: List[List[Dict[str, Any]]] = [states_list]
 
         for time_step in time_seq:
@@ -209,8 +199,6 @@ class Executor:
 
         return simulation_list
 
-    # ToDo: Below can be recieved from a tensor field
-    # configs: List[Tuple[List[Callable], List[Callable]]]
     def simulation(
             self,
             sweep_dict: Dict[str, List[Any]],

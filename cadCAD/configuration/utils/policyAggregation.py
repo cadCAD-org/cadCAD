@@ -1,6 +1,7 @@
 from fn.op import foldr
 from fn.func import curried
 
+
 def get_base_value(x):
     if isinstance(x, str):
         return ''
@@ -17,7 +18,7 @@ def policy_to_dict(v):
 
 
 add = lambda a, b: a + b
-# df_union = lambda a, b: ...
+
 
 @curried
 def foldr_dict_vals(f, d):

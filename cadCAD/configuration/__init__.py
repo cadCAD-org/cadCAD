@@ -9,8 +9,6 @@ from cadCAD.configuration.utils import exo_update_per_ts
 from cadCAD.configuration.utils.policyAggregation import dict_elemwise_sum
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates, sanitize_config
 
-# policy_ops=[foldr(dict_elemwise_sum())]
-# policy_ops=[reduce, lambda a, b: {**a, **b}]
 
 class Configuration(object):
     def __init__(self, sim_config={}, initial_state={}, seeds={}, env_processes={},
@@ -28,7 +26,7 @@ class Configuration(object):
 
         sanitize_config(self)
 
-# ToDo: Remove Seeds
+
 def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
                    partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True) -> None:
     if _exo_update_per_ts is True:

@@ -11,15 +11,11 @@ class SilentDF(DataFrame):
     def __repr__(self):
         return str(hex(id(DataFrame))) #"pandas.core.frame.DataFrame"
 
+
 def append_dict(dict, new_dict):
     dict.update(new_dict)
     return dict
 
-# def val_switch(v):
-#     if isinstance(v, DataFrame) is True or isinstance(v, SilentDF) is True:
-#         return SilentDF(v)
-#     else:
-#         return v.x
 
 class IndexCounter:
     def __init__(self):
@@ -29,8 +25,6 @@ class IndexCounter:
         self.i += 1
         return self.i
 
-# def compose(*functions):
-#     return reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
 
 def compose(*functions):
     return reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
@@ -108,8 +102,7 @@ def contains_type(_collection, type):
 def drop_right(l, n):
     return l[:len(l) - n]
 
-# backwards compatibility
-# ToDo: Encapsulate in function
+
 def key_filter(l, keyname):
     if (type(l) == list):
         return [v[keyname] for v in l]
@@ -147,23 +140,3 @@ def curry_pot(f, *argv):
         return f(argv[0], argv[1], argv[2])
     else:
         raise TypeError('curry_pot() needs 3 or 4 positional arguments')
-
-# def curry_pot(f, *argv):
-#     sweep_ind = f.__name__[0:5] == 'sweep'
-#     arg_len = len(argv)
-#     if sweep_ind is True and arg_len == 4:
-#         return f(argv[0])(argv[1])(argv[2])(argv[3])
-#     elif sweep_ind is False and arg_len == 4:
-#         return f(argv[0])(argv[1])(argv[2])(argv[3])
-#     elif sweep_ind is True and arg_len == 3:
-#         return f(argv[0])(argv[1])(argv[2])
-#     elif sweep_ind is False and arg_len == 3:
-#         return f(argv[0])(argv[1])(argv[2])
-#     else:
-#         raise TypeError('curry_pot() needs 3 or 4 positional arguments')
-
-# def rename(newname):
-#     def decorator(f):
-#         f.__name__ = newname
-#         return f
-#     return decorator

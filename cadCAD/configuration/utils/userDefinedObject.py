@@ -1,9 +1,9 @@
 from collections import namedtuple
-from copy import deepcopy
 from inspect import getmembers, ismethod
 from pandas.core.frame import DataFrame
 
 from cadCAD.utils import SilentDF
+
 
 def val_switch(v):
     if isinstance(v, DataFrame) is True:
@@ -11,12 +11,11 @@ def val_switch(v):
     else:
         return v
 
+
 class udcView(object):
     def __init__(self, d, masked_members):
         self.__dict__ = d
         self.masked_members = masked_members
-
-    # returns dict to dataframe
 
     def __repr__(self):
         members = {}
@@ -27,17 +26,7 @@ class udcView(object):
         members['methods'] = [k for k, v in self.__dict__.items() if str(type(v)) == "<class 'method'>"]
 
         members.update(variables)
-        return f"{members}" #[1:-1]
-
-    # def __repr__(self):
-    #     members = {}
-    #     variables = {
-    #         k: val_switch(v) for k, v in self.__dict__.items()
-    #         if str(type(v)) != "<class 'method'>" and k not in self.masked_members and k == 'x' # and isinstance(v, DataFrame) is not True
-    #     }
-    #
-    #     members.update(variables)
-    #     return f"{members}" #[1:-1]
+        return f"{members}"
 
 
 class udcBroker(object):
