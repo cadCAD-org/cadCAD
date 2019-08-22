@@ -11,7 +11,6 @@ Pipfile.lock
 results
 .mypy_cache
 *.csv
-*.txt
 simulations/.ipynb_checkpoints
 simulations/validation/config3.py
 cadCAD.egg-info
