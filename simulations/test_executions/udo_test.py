@@ -11,9 +11,9 @@ print("Simulation Execution: Single Configuration")
 print()
 
 
-first_config = configs # only contains config1
+
 single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
-run = Executor(exec_context=single_proc_ctx, configs=first_config)
+run = Executor(exec_context=single_proc_ctx, configs=configs)
 # cols = configs[0].initial_state.keys()
 cols = [
     'increment',
@@ -28,6 +28,10 @@ result = pd.DataFrame(raw_result)[['run', 'substep', 'timestep'] + cols]
 # print(list(result['c']))
 
 # print(tabulate(result['c'].apply(pd.Series), headers='keys', tablefmt='psql'))
+
+# print(result.iloc[8,:]['state_udo'].ds)
+
+# ctypes.cast(id(v['state_udo']['mem_id']), ctypes.py_object).value
 
 print()
 print("Tensor Field: config1")

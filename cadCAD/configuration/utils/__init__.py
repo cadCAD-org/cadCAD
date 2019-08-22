@@ -5,12 +5,10 @@ from fn.func import curried
 from funcy import curry
 import pandas as pd
 
-# Temporary
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates
 from cadCAD.utils import dict_filter, contains_type, flatten_tabulated_dict, tabulate_dict
 
 
-# ToDo: Fix - Returns empty when partial_state_update is missing in Configuration
 class TensorFieldReport:
     def __init__(self, config_proc):
         self.config_proc = config_proc
@@ -56,7 +54,6 @@ def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = tstep_delta):
     return t.strftime(dt_format)
 
 
-# ToDo: Inject in first elem of last PSUB from Historical state
 ep_t_delta = timedelta(days=0, minutes=0, seconds=1)
 def ep_time_step(s_condition, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = ep_t_delta):
     # print(dt_str)
@@ -65,7 +62,7 @@ def ep_time_step(s_condition, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta
     else:
         return dt_str
 
-# mech_sweep_filter
+
 def partial_state_sweep_filter(state_field, partial_state_updates):
     partial_state_dict = dict([(k, v[state_field]) for k, v in partial_state_updates.items()])
     return dict([
@@ -77,7 +74,7 @@ def partial_state_sweep_filter(state_field, partial_state_updates):
 def state_sweep_filter(raw_exogenous_states):
     return dict([(k, v) for k, v in raw_exogenous_states.items() if isinstance(v, list)])
 
-# sweep_mech_states
+
 @curried
 def sweep_partial_states(_type, in_config):
     configs = []
@@ -129,15 +126,18 @@ def exo_update_per_ts(ep):
 
     return {es: ep_decorator(f, es) for es, f in ep.items()}
 
+
 def trigger_condition(s, pre_conditions, cond_opp):
     condition_bools = [s[field] in precondition_values for field, precondition_values in pre_conditions.items()]
     return reduce(cond_opp, condition_bools)
+
 
 def apply_state_condition(pre_conditions, cond_opp, y, f, _g, step, sL, s, _input):
     if trigger_condition(s, pre_conditions, cond_opp):
         return f(_g, step, sL, s, _input)
     else:
         return y, s[y]
+
 
 def var_trigger(y, f, pre_conditions, cond_op):
     return lambda _g, step, sL, s, _input: apply_state_condition(pre_conditions, cond_op, y, f, _g, step, sL, s, _input)
@@ -173,7 +173,6 @@ def env_trigger(end_substep):
         curry(trigger)(end_substep)(trigger_field)(trigger_vals)(funct_list)
 
 
-# param sweep enabling middleware
 def config_sim(d):
     def process_variables(d):
         return flatten_tabulated_dict(tabulate_dict(d))
@@ -184,14 +183,17 @@ def config_sim(d):
         d["M"] = [{}]
         return d
 
+
 def psub_list(psu_block, psu_steps):
     return [psu_block[psu] for psu in psu_steps]
+
 
 def psub(policies, state_updates):
     return {
         'policies': policies,
         'states': state_updates
     }
+
 
 def genereate_psubs(policy_grid, states_grid, policies, state_updates):
     PSUBS = []
@@ -202,19 +204,20 @@ def genereate_psubs(policy_grid, states_grid, policies, state_updates):
 
     return PSUBS
 
-def access_block(sH, y, psu_block_offset, exculsion_list=[]):
-    exculsion_list += [y]
+
+def access_block(state_history, target_field, psu_block_offset, exculsion_list=[]):
+    exculsion_list += [target_field]
     def filter_history(key_list, sH):
         filter = lambda key_list: \
             lambda d: {k: v for k, v in d.items() if k not in key_list}
         return list(map(filter(key_list), sH))
 
     if psu_block_offset < -1:
-        if len(sH) >= abs(psu_block_offset):
-            return filter_history(exculsion_list, sH[psu_block_offset])
+        if len(state_history) >= abs(psu_block_offset):
+            return filter_history(exculsion_list, state_history[psu_block_offset])
         else:
             return []
-    elif psu_block_offset < 0:
-        return filter_history(exculsion_list, sH[psu_block_offset])
+    elif psu_block_offset == -1:
+        return filter_history(exculsion_list, state_history[psu_block_offset])
     else:
         return []

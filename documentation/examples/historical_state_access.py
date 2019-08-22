@@ -1,12 +1,16 @@
+import pandas as pd
+from tabulate import tabulate
 from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import config_sim, access_block
+from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+from cadCAD import configs
+
 
 policies, variables = {}, {}
 exclusion_list = ['nonexsistant', 'last_x', '2nd_to_last_x', '3rd_to_last_x', '4th_to_last_x']
 
 # Policies per Mechanism
 
-# WARNING: DO NOT delete elements from sH
 # state_history, target_field, psu_block_offset, exculsion_list
 def last_update(_g, substep, sH, s):
     return {"last_x": access_block(
@@ -70,7 +74,7 @@ PSUB = {
     "variables": variables
 }
 
-partial_state_update_block = {
+psubs = {
     "PSUB1": PSUB,
     "PSUB2": PSUB,
     "PSUB3": PSUB
@@ -83,9 +87,24 @@ sim_config = config_sim(
     }
 )
 
-
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
-    partial_state_update_blocks=partial_state_update_block
+    partial_state_update_blocks=psubs
 )
+
+exec_mode = ExecutionMode()
+single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
+run = Executor(exec_context=single_proc_ctx, configs=configs)
+
+raw_result, tensor_field = run.execute()
+result = pd.DataFrame(raw_result)
+cols = ['run','substep','timestep','x','nonexsistant','last_x','2nd_to_last_x','3rd_to_last_x','4th_to_last_x']
+result = result[cols]
+
+print()
+print("Tensor Field:")
+print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
+print("Output:")
+print(tabulate(result, headers='keys', tablefmt='psql'))
+print()

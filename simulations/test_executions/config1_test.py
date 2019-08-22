@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import List
 from tabulate import tabulate
 # The following imports NEED to be in the exact order
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
@@ -17,7 +18,8 @@ raw_result, tensor_field = run.execute()
 result = pd.DataFrame(raw_result)
 print()
 print("Tensor Field: config1")
-print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
+# print(raw_result)
+print(tabulate(tensor_field[['m', 'b1', 's1', 's2']], headers='keys', tablefmt='psql'))
 print("Output:")
 print(tabulate(result, headers='keys', tablefmt='psql'))
 print()

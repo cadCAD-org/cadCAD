@@ -24,8 +24,6 @@ def retrieve_state(l, offset):
     return l[last_index(l) + offset + 1]
 
 
-# exception_function = f(sub_step, sL, sL[-2], _input)
-# try_function = f(sub_step, sL, last_mut_obj, _input)
 @curried
 def engine_exception(ErrorType, error_message, exception_function, try_function):
     try:
@@ -38,5 +36,3 @@ def engine_exception(ErrorType, error_message, exception_function, try_function)
 @curried
 def fit_param(param, x):
     return x + param
-
-# fit_param = lambda param: lambda x: x + param
