@@ -70,11 +70,22 @@ class Executor:
         config_proc = Processor()
         create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
 
-        print(self.exec_context+": "+str(self.configs))
+
+        print(r'''
+                            __________   ____ 
+          ________ __ _____/ ____/   |  / __ \
+         / ___/ __` / __  / /   / /| | / / / /
+        / /__/ /_/ / /_/ / /___/ ___ |/ /_/ / 
+        \___/\__,_/\__,_/\____/_/  |_/_____/  
+        by BlockScience
+        ''')
+        print(f'Execution Mode: {self.exec_context + ": " + str(self.configs)}')
+        print(f'Configurations: {self.configs}')
+
         var_dict_list, states_lists, Ts, Ns, eps, configs_structs, env_processes_list, partial_state_updates, simulation_execs = \
             [], [], [], [], [], [], [], [], []
         config_idx = 0
-        print(self.configs)
+
         for x in self.configs:
 
             Ts.append(x.sim_config['T'])
