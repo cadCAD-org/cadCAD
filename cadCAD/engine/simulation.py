@@ -1,4 +1,3 @@
-from pprint import pprint
 from typing import Any, Callable, Dict, List, Tuple
 from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
@@ -169,9 +168,6 @@ class Executor:
             sub_step += 1
 
         time_step += 1
-
-        pprint(states_list)
-        print()
 
         return states_list
 
