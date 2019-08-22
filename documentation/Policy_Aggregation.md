@@ -57,7 +57,7 @@ append_configs(
 ```
 
 #### Example
-##### * [System Model Configuration](https://github.com/BlockScience/cadCAD-Tutorials/blob/master/Documentation/examples/policy_aggregation.py)
+##### * [System Model Configuration](examples/policy_aggregation.py)
 ##### * Simulation Results:
 ```
 +----+---------------------------------------------+-------+------+-----------+------------+
