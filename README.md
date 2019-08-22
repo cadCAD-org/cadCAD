@@ -47,7 +47,7 @@ and see how it evolves. We can then use these results to inform business decisio
 
 #### 0. Installation:
 
-Python 3.6.5 :: Anaconda, Inc.
+**Python 3.6.5** :: Anaconda, Inc.
 
 **Option A:** Build From Source
 ```bash
