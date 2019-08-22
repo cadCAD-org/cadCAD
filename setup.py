@@ -18,6 +18,6 @@ setup(name='cadCAD',
       url='https://github.com/BlockScience/DiffyQ-SimCAD',
       author='Joshua E. Jodesty',
       author_email='joshua@block.science, joshua.jodesty@gmail.com',
-      # license='LICENSE',
+      license='LICENSE.txt',
       packages=find_packages()
 )
