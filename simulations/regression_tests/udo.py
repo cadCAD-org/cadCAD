@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pandas as pd
 from fn.func import curried
 from datetime import timedelta
@@ -24,6 +26,11 @@ class udoExample(object):
 
     def updateX(self):
         self.x += 1
+        return self
+
+    def updateDS(self):
+        self.ds.iloc[0,0] -= 10
+        # pp.pprint(self.ds)
         return self
 
     def perceive(self, s):
@@ -106,7 +113,7 @@ def perceive(s, self):
 def state_udo_update(_g, step, sL, s, _input):
     y = 'state_udo'
     # s['hydra_state'].updateX().anon(perceive(s))
-    s['state_udo'].updateX().perceive(s)
+    s['state_udo'].updateX().perceive(s).updateDS()
     x = udoPipe(s['state_udo'])
     return y, x
 for m in psu_steps:
