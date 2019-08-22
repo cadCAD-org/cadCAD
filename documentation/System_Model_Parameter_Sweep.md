@@ -69,5 +69,4 @@ sim_config = config_sim(
 )
 ```
 #### Example
-##### * [System Model Configuration](https://github.com/BlockScience/cadCAD-Tutorials/blob/master/Documentation/examples/param_sweep.py)
-##### * Simulation Results:
+##### * [System Model Configuration](examples/param_sweep.py)
