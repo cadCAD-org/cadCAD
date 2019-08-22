@@ -19,6 +19,13 @@ cadCAD.egg-info
 
 build
 cadCAD.egg-info
-SimCAD.egg-info
+
+testing/example.py
+testing/example2.py
+testing/multi_config_test.py
+testing/udo.py
+testing/udo_test.py
+
+Simulation.md
 
 monkeytype.sqlite3

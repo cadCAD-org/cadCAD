@@ -1,5 +1,4 @@
 from collections import namedtuple
-from copy import deepcopy
 from inspect import getmembers, ismethod
 from pandas.core.frame import DataFrame
 
@@ -12,13 +11,12 @@ def val_switch(v):
     else:
         return v
 
+
 class udcView(object):
     def __init__(self, d, masked_members):
         self.__dict__ = d
         self.masked_members = masked_members
 
-    # returns dict to dataframe
-    # def __repr__(self):
     def __repr__(self):
         members = {}
         variables = {
@@ -26,8 +24,9 @@ class udcView(object):
             if str(type(v)) != "<class 'method'>" and k not in self.masked_members # and isinstance(v, DataFrame) is not True
         }
         members['methods'] = [k for k, v in self.__dict__.items() if str(type(v)) == "<class 'method'>"]
+
         members.update(variables)
-        return f"{members}" #[1:-1]
+        return f"{members}"
 
 
 class udcBroker(object):
@@ -36,7 +35,8 @@ class udcBroker(object):
         funcs = dict(getmembers(obj, ismethod))
         filtered_functions = {k: v for k, v in funcs.items() if k not in function_filter}
         d['obj'] = obj
-        d.update(deepcopy(vars(obj)))  # somehow is enough
+        # d.update(deepcopy(vars(obj)))  # somehow is enough
+        d.update(vars(obj))  # somehow is enough
         d.update(filtered_functions)
 
         self.members_dict = d
@@ -57,4 +57,3 @@ def UDO(udo, masked_members=['obj']):
 
 def udoPipe(obj_view):
     return UDO(obj_view.obj, obj_view.masked_members)
-

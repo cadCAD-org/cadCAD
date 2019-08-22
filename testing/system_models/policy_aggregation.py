@@ -72,12 +72,12 @@ sim_config = config_sim(
     }
 )
 
-# Aggregation == Reduce Map / Reduce Map Aggregation
-# using env functions (include in reg test using / for env proc)
+
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     partial_state_update_blocks=partial_state_update_block,
-    # ToDo: subsequent functions should include policy dict for access to each policy (i.e shouldnt be a map)
-    policy_ops=[lambda a, b: a + b, lambda y: y * 2] # Default: lambda a, b: a + b ToDO: reduction function requires high lvl explanation
+    policy_ops=[lambda a, b: a + b, lambda y: y * 2] # Default: lambda a, b: a + b
 )
+
+

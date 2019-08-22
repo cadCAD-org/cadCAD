@@ -1,21 +1,25 @@
+import pandas as pd
+from tabulate import tabulate
+
 from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import config_sim
-
+from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+from cadCAD import configs
 
 # Policies per Mechanism
-def p1m1(_g, step, sL, s):
+def p1m1(_g, step, sH, s):
     return {'policy1': 1}
-def p2m1(_g, step, sL, s):
+def p2m1(_g, step, sH, s):
     return {'policy2': 2}
 
-def p1m2(_g, step, sL, s):
+def p1m2(_g, step, sH, s):
     return {'policy1': 2, 'policy2': 2}
-def p2m2(_g, step, sL, s):
+def p2m2(_g, step, sH, s):
     return {'policy1': 2, 'policy2': 2}
 
-def p1m3(_g, step, sL, s):
+def p1m3(_g, step, sH, s):
     return {'policy1': 1, 'policy2': 2, 'policy3': 3}
-def p2m3(_g, step, sL, s):
+def p2m3(_g, step, sH, s):
     return {'policy1': 1, 'policy2': 2, 'policy3': 3}
 
 
@@ -40,7 +44,7 @@ variables = {
     "policies": policies
 }
 
-partial_state_update_block = {
+psubs = {
     "m1": {
         "policies": {
             "p1": p1m1,
@@ -72,12 +76,23 @@ sim_config = config_sim(
     }
 )
 
-# Aggregation == Reduce Map / Reduce Map Aggregation
-# using env functions (include in reg test using / for env proc)
 append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
-    partial_state_update_blocks=partial_state_update_block,
-    # ToDo: subsequent functions should include policy dict for access to each policy (i.e shouldnt be a map)
-    policy_ops=[lambda a, b: a + b, lambda y: y * 2] # Default: lambda a, b: a + b ToDO: reduction function requires high lvl explanation
+    partial_state_update_blocks=psubs,
+    policy_ops=[lambda a, b: a + b, lambda y: y * 2] # Default: lambda a, b: a + b
 )
+
+exec_mode = ExecutionMode()
+single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
+run = Executor(exec_context=single_proc_ctx, configs=configs)
+
+raw_result, tensor_field = run.execute()
+result = pd.DataFrame(raw_result)
+
+print()
+print("Tensor Field:")
+print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
+print("Output:")
+print(tabulate(result, headers='keys', tablefmt='psql'))
+print()
