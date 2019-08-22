@@ -17,7 +17,7 @@ setup(name='cadCAD',
       long_description=long_description,
       url='https://github.com/BlockScience/DiffyQ-SimCAD',
       author='Joshua E. Jodesty',
-      author_email='joshua@block.science',
+      author_email='joshua@block.science, joshua.jodesty@gmail.com',
       # license='LICENSE',
       packages=find_packages()
 )
