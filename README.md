@@ -47,6 +47,8 @@ and see how it evolves. We can then use these results to inform business decisio
 
 #### 0. Installation:
 
+Python 3.6.5 :: Anaconda, Inc.
+
 **Option A:** Build From Source
 ```bash
 pip3 install -r requirements.txt
@@ -59,6 +61,7 @@ pip3 install dist/*.whl
 ***IMPORTANT NOTE:*** Tokens are issued to those with access to proprietary builds of cadCAD and BlockScience employees **ONLY**. 
 Replace \<TOKEN\> with an issued token in the script below.
 ```bash
+pip3 install pandas pathos fn funcy tabulate 
 pip3 install cadCAD --extra-index-url https://<TOKEN>@repo.fury.io/blockscience/
 ```
 
