@@ -59,7 +59,6 @@ pip3 install dist/*.whl
 ***IMPORTANT NOTE:*** Tokens are issued to those with access to proprietary builds of cadCAD and BlockScience employees **ONLY**. 
 Replace \<TOKEN\> with an issued token in the script below.
 ```bash
-pip3 install pandas pathos fn funcy tabulate 
 pip3 install cadCAD --extra-index-url https://<TOKEN>@repo.fury.io/blockscience/
 ```
 
