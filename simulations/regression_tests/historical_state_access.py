@@ -7,9 +7,15 @@ exclusion_list = ['nonexsistant', 'last_x', '2nd_to_last_x', '3rd_to_last_x', '4
 # Policies per Mechanism
 
 # WARNING: DO NOT delete elements from sH
-
+# state_history, target_field, psu_block_offset, exculsion_list
 def last_update(_g, substep, sH, s):
-    return {"last_x": access_block(sH, "last_x", -1, exclusion_list)}
+    return {"last_x": access_block(
+            state_history=sH,
+            target_field="last_x",
+            psu_block_offset=-1,
+            exculsion_list=exclusion_list
+        )
+    }
 policies["last_x"] = last_update
 
 def second2last_update(_g, substep, sH, s):

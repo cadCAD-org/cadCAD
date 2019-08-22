@@ -1,6 +1,7 @@
+from pprint import pprint
+
 import pandas as pd
 from tabulate import tabulate
-# The following imports NEED to be in the exact order
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from simulations.regression_tests import policy_aggregation
 from cadCAD import configs
@@ -15,6 +16,7 @@ run = Executor(exec_context=single_proc_ctx, configs=first_config)
 
 raw_result, tensor_field = run.execute()
 result = pd.DataFrame(raw_result)
+
 print()
 print("Tensor Field: config1")
 print(tabulate(tensor_field, headers='keys', tablefmt='psql'))

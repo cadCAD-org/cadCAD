@@ -9,7 +9,7 @@ seeds = {
     'z': np.random.RandomState(1),
     'a': np.random.RandomState(2),
     'b': np.random.RandomState(3),
-    'c': np.random.RandomState(3)
+    'c': np.random.RandomState(4)
 }
 
 
@@ -95,14 +95,15 @@ genesis_states = {
 
 # Environment Process
 # ToDo: Depreciation Waring for env_proc_trigger convention
+trigger_timestamps = ['2018-10-01 15:16:25', '2018-10-01 15:16:27', '2018-10-01 15:16:29']
 env_processes = {
     "s3": [lambda _g, x: 5],
-    "s4": env_trigger(3)(trigger_field='timestep', trigger_vals=[1], funct_list=[lambda _g, x: 10])
+    "s4": env_trigger(3)(trigger_field='timestamp', trigger_vals=trigger_timestamps, funct_list=[lambda _g, x: 10])
 }
 
 
-partial_state_update_blocks = {
-    "m1": {
+partial_state_update_block = [
+    {
         "policies": {
             "b1": p1m1,
             "b2": p2m1
@@ -115,7 +116,7 @@ partial_state_update_blocks = {
             "timestamp": update_timestamp
         }
     },
-    "m2": {
+    {
         "policies": {
             "b1": p1m2,
             "b2": p2m2
@@ -127,7 +128,7 @@ partial_state_update_blocks = {
             # "s4": es4p2,
         }
     },
-    "m3": {
+    {
         "policies": {
             "b1": p1m3,
             "b2": p2m3
@@ -139,12 +140,13 @@ partial_state_update_blocks = {
             # "s4": es4p2,
         }
     }
-}
+]
 
 
 sim_config = config_sim(
     {
-        "N": 2,
+        "N": 1,
+        # "N": 5,
         "T": range(5),
     }
 )
@@ -153,6 +155,6 @@ append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_processes,
-    partial_state_update_blocks=partial_state_update_blocks,
+    partial_state_update_blocks=partial_state_update_block,
     policy_ops=[lambda a, b: a + b]
 )
