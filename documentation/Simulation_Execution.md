@@ -134,8 +134,8 @@ for sys_model_AB_raw_result, sys_model_AB_tensor_field in sys_model_AB_simulatio
     i += 1
 ```
 
-* ##### *Parameter Sweep*
-Documentation: [System Model Parameter Sweep](System_Model_Parameter_Sweep.md) 
+* ##### [*System Model Parameter Sweep*](System_Model_Parameter_Sweep.md) 
+
 [Example:](examples/param_sweep.py) `/documentation/examples/param_sweep.py`
 ```python
 import pandas as pd
