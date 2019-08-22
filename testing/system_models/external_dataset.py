@@ -3,7 +3,7 @@ from cadCAD.configuration.utils import config_sim
 import pandas as pd
 from cadCAD.utils import SilentDF
 
-df = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv'))
+df = SilentDF(pd.read_csv('/DiffyQ-SimCAD/simulations/external_data/output.csv'))
 
 
 def query(s, df):
@@ -21,8 +21,7 @@ def p2(_g, substep, sL, s):
     del result_dict["ds1"], result_dict["ds2"]
     return {k: list(v.values()).pop() for k, v in result_dict.items()}
 
-# ToDo: SilentDF(df) wont work
-#integrate_ext_dataset
+# integrate_ext_dataset
 def integrate_ext_dataset(_g, step, sL, s, _input):
     result_dict = query(s, df).to_dict()
     return 'external_data', {k: list(v.values()).pop() for k, v in result_dict.items()}

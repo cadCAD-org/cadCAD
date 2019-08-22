@@ -1,7 +1,6 @@
 import unittest
 import pandas as pd
 
-
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from testing.generic_test import make_generic_test
 from testing.system_models import historical_state_access
@@ -14,7 +13,6 @@ run = Executor(exec_context=single_proc_ctx, configs=configs)
 
 raw_result, tensor_field = run.execute()
 result = pd.DataFrame(raw_result)
-# ToDo: Discrepance not reported fot collection values. Needs custom test for collection values
 expected_results = {
     (1, 0, 0): {'x': 0, 'nonexsistant': [], 'last_x': [], '2nd_to_last_x': [], '3rd_to_last_x': [], '4th_to_last_x': []},
     (1, 1, 1): {'x': 1,

@@ -71,15 +71,3 @@ class GenericTest(make_generic_test(params)):
 
 if __name__ == '__main__':
     unittest.main()
-
-# i = 0
-# # config_names = ['sweep_config_A', 'sweep_config_B']
-# for raw_result, tensor_field in run.execute():
-#     result = pd.DataFrame(raw_result)
-#     print()
-#     # print("Tensor Field: " + config_names[i])
-#     print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
-#     print("Output:")
-#     print(tabulate(result, headers='keys', tablefmt='psql'))
-#     print()
-#     i += 1

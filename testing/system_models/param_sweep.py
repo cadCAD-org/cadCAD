@@ -61,11 +61,6 @@ for m in psu_steps:
     psu_block[m]["variables"]['sweeped'] = var_timestep_trigger(y='sweeped', f=sweeped)
 
 
-# ToDo: The number of values entered in sweep should be the # of config objs created,
-# not dependent on the # of times the sweep is applied
-# sweep exo_state func and point to exo-state in every other funtion
-# param sweep on genesis states
-
 # Genesis States
 genesis_states = {
     'alpha': 0,
@@ -75,11 +70,9 @@ genesis_states = {
 }
 
 # Environment Process
-# ToDo: Validate - make env proc trigger field agnostic
 env_process['sweeped'] = env_timestep_trigger(trigger_field='timestep', trigger_vals=[5], funct_list=[lambda _g, x: _g['beta']])
 
 
-# config_sim Necessary
 sim_config = config_sim(
     {
         "N": 2,
@@ -87,11 +80,6 @@ sim_config = config_sim(
         "M": g, # Optional
     }
 )
-# print()
-# pp.pprint(g)
-# print()
-# pp.pprint(sim_config)
-
 
 # New Convention
 partial_state_update_blocks = psub_list(psu_block, psu_steps)
