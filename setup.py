@@ -15,7 +15,7 @@ setup(name='cadCAD',
       description="cadCAD: a differential games based simulation software package for research, validation, and \
         Computer Aided Design of economic systems",
       long_description=long_description,
-      url='https://github.com/BlockScience/DiffyQ-SimCAD',
+      url='https://github.com/BlockScience/cadCAD',
       author='Joshua E. Jodesty',
       author_email='joshua@block.science, joshua.jodesty@gmail.com',
       license='LICENSE.txt',
