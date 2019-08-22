@@ -80,7 +80,7 @@ append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     partial_state_update_blocks=psubs,
-    policy_ops=[lambda a, b: a + b] # Default: lambda a, b: a + b , lambda y: y * 2
+    policy_ops=[lambda a, b: a + b, lambda y: y * 2] # Default: lambda a, b: a + b
 )
 
 exec_mode = ExecutionMode()

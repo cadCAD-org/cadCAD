@@ -1,6 +1,17 @@
-# cadCAD
-**Warning**:
-**Do not** publish this package / software to **any** software repository **except** one permitted by BlockScience.  
+```
+                    __________   ____ 
+  ________ __ _____/ ____/   |  / __ \
+ / ___/ __` / __  / /   / /| | / / / /
+/ /__/ /_/ / /_/ / /___/ ___ |/ /_/ / 
+\___/\__,_/\__,_/\____/_/  |_/_____/  
+by BlockScience
+```
+
+**Introduction:**
+
+***cadCAD*** is a Python library that assists in the processes of designing, testing and validating complex systems through 
+simulation. At its core, cadCAD is a differential games engine that supports parameter sweeping and Monte Carlo analyses 
+and can be easily integrated with other scientific computing Python modules and data science workflows.  
 
 **Description:**
 
@@ -35,9 +46,9 @@ and see how it evolves. We can then use these results to inform business decisio
 
 #### 0. Installation:
 
-**Option A:** Package Repository Access
+**Option A:** Proprietary Build Access
 
-***IMPORTANT NOTE:*** Tokens are issued to and meant to be used by trial users and BlockScience employees **ONLY**. 
+***IMPORTANT NOTE:*** Tokens are issued to those with access to proprietary builds of cadCAD and BlockScience employees **ONLY**. 
 Replace \<TOKEN\> with an issued token in the script below.
 ```bash
 pip3 install pandas pathos fn funcy tabulate 
@@ -147,3 +158,10 @@ for raw_result, tensor_field in run.execute():
     print()
 ```
 
+### Tests:
+```python
+python -m unittest testing/tests/param_sweep.py
+python -m unittest testing/tests/policy_aggregation.py
+python -m unittest testing/tests/historical_state_access.py
+python -m unittest testing/tests/external_dataset.py
+```

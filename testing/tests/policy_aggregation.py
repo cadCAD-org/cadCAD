@@ -26,13 +26,17 @@ expected_results = {
     (1, 3, 3): {'policies': {'policy1': 4, 'policy2': 8, 'policy3': 12}, 's1': 9}
 }
 
+
 def row(a, b):
     return a == b
+
+
 params = [["policy_aggregation", result, expected_results, ['policies', 's1'], [row]]]
 
 
 class GenericTest(make_generic_test(params)):
     pass
+
 
 if __name__ == '__main__':
     unittest.main()

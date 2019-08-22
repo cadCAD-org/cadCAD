@@ -56,5 +56,22 @@ append_configs(
 )
 ```
 
-#### [Example Configuration](link)
-#### [Example Results](link)
+#### Example
+##### * [System Model Configuration](https://github.com/BlockScience/cadCAD-Tutorials/blob/master/Documentation/examples/policy_aggregation.py)
+##### * Simulation Results:
+```
++----+---------------------------------------------+-------+------+-----------+------------+
+|    | policies                                    |   run |   s1 |   substep |   timestep |
+|----+---------------------------------------------+-------+------+-----------+------------|
+|  0 | {}                                          |     1 |    0 |         0 |          0 |
+|  1 | {'policy1': 2, 'policy2': 4}                |     1 |    1 |         1 |          1 |
+|  2 | {'policy1': 8, 'policy2': 8}                |     1 |    2 |         2 |          1 |
+|  3 | {'policy3': 12, 'policy1': 4, 'policy2': 8} |     1 |    3 |         3 |          1 |
+|  4 | {'policy1': 2, 'policy2': 4}                |     1 |    4 |         1 |          2 |
+|  5 | {'policy1': 8, 'policy2': 8}                |     1 |    5 |         2 |          2 |
+|  6 | {'policy3': 12, 'policy1': 4, 'policy2': 8} |     1 |    6 |         3 |          2 |
+|  7 | {'policy1': 2, 'policy2': 4}                |     1 |    7 |         1 |          3 |
+|  8 | {'policy1': 8, 'policy2': 8}                |     1 |    8 |         2 |          3 |
+|  9 | {'policy3': 12, 'policy1': 4, 'policy2': 8} |     1 |    9 |         3 |          3 |
++----+---------------------------------------------+-------+------+-----------+------------+
+```

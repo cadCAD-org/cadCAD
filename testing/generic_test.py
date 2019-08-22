@@ -1,21 +1,9 @@
 import unittest
 from parameterized import parameterized
 from functools import reduce
-from tabulate import tabulate
-
-# ToDo: Exec Debug mode (*) for which state and policy updates are validated during runtime using `expected_results`
-# EXAMPLE: ('state_test' T/F, 'policy_test' T/F)
-# ToDo: (Sys Model Config) give `expected_results to` `Configuration` for Exec Debug mode (*)
-# ToDo: (expected_results) Function to generate sys metrics keys using system model config
-# ToDo: (expected_results) Function to generate target_vals given user input (apply fancy validation lib later on)
-
-
-# ToDo: Use self.assertRaises(AssertionError)
 
 
 def generate_assertions_df(df, expected_results, target_cols, evaluations):
-    # cols = ['run', 'timestep', 'substep'] + target_cols
-    # print(cols)
     test_names = []
     for eval_f in evaluations:
         def wrapped_eval(a, b):
@@ -53,10 +41,6 @@ def make_generic_test(params):
                         erroneous[key] = None
                         erroneous.at[index, key] = unexpected[key]
                 # etc.
-
-                # print()
-                # print(f"TEST: {test_name}")
-                # print(tabulate(erroneous, headers='keys', tablefmt='psql'))
 
             # ToDo: Condition that will change false to true
             self.assertTrue(reduce(lambda a, b: a and b, tested_df[test_name]))

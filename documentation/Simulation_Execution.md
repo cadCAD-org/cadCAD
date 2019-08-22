@@ -51,7 +51,7 @@ simulation_result = pd.DataFrame(raw_system_events)
 ```
 
 ##### Example Result: System Events DataFrame
-```python
+```
 +----+-------+------------+-----------+------+-----------+
 |    |   run |   timestep |   substep |   s1 | s2        |
 |----+-------+------------+-----------+------+-----------|

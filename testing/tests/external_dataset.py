@@ -1,34 +1,22 @@
 import unittest
-from pprint import pprint
 
 import pandas as pd
-from tabulate import tabulate
-# The following imports NEED to be in the exact order
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from simulations.regression_tests import external_dataset
 from cadCAD import configs
 from testing.generic_test import make_generic_test
-from testing.utils import gen_metric_dict
 
 exec_mode = ExecutionMode()
 
 print("Simulation Execution: Single Configuration")
 print()
-first_config = configs # only contains config1
+first_config = configs
 single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
 run = Executor(exec_context=single_proc_ctx, configs=first_config)
 
 raw_result, tensor_field = run.execute()
 result = pd.DataFrame(raw_result)
 
-# print(tabulate(result, headers='keys', tablefmt='psql'))
-
-# cols = ['run', 'substep', 'timestep', 'increment', 'external_data', 'policies']
-# result = result[cols]
-#
-# metrics = gen_metric_dict(result, ['increment', 'external_data', 'policies'])
-# #
-# pprint(metrics)
 
 def get_expected_results(run):
     return {
@@ -109,6 +97,8 @@ expected_results.update(expected_results_2)
 
 def row(a, b):
     return a == b
+
+
 params = [["external_dataset", result, expected_results, ['increment', 'external_data', 'policies'], [row]]]
 
 
@@ -118,10 +108,3 @@ class GenericTest(make_generic_test(params)):
 
 if __name__ == '__main__':
     unittest.main()
-
-# print()
-# print("Tensor Field: config1")
-# print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
-# print("Output:")
-# print(tabulate(result, headers='keys', tablefmt='psql'))
-# print()
