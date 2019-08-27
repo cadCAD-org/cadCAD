@@ -230,7 +230,5 @@ class Executor:
             )
         )
 
-        # tp.close()
-        # tp.join()
         tp.clear()
         return pipe_run
