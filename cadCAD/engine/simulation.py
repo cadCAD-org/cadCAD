@@ -222,10 +222,13 @@ class Executor:
 
             return first_timestep_per_run
 
+        tp = TPool(runs)
         pipe_run: List[List[Dict[str, Any]]] = flatten(
-            TPool().map(
+            tp.map(
                 lambda run: execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run),
                 list(range(runs))
             )
         )
+
+        tp.clear()
         return pipe_run
