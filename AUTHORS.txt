@@ -16,6 +16,7 @@ Contributors:
 - Matthew V. Barlin
 - Michael Zargham
 - Zixuan Zhang
+- Charles Rice
 
 
 We’d also like to thank:
@@ -26,5 +27,3 @@ We’d also like to thank:
 - Jonathan Gabler
 - Harry Goodnight
 - Charlie Hoppes
-- Charles Rice
-
