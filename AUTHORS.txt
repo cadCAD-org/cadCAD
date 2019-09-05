@@ -23,7 +23,7 @@ We’d also like to thank:
 - Andrew Clark
 - Nikhil Jamdade
 - Nick Hirannet
-- Chris Frazier
 - Jonathan Gabler
+- Chris Frazier
 - Harry Goodnight
 - Charlie Hoppes
