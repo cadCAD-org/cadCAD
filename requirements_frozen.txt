@@ -1,0 +1,12 @@
+appdirs==1.4.3
+dill==0.3.0
+fn==0.4.3
+funcy==1.13
+multiprocess==0.70.8
+packaging==16.8
+pathos==0.2.4
+pox==0.2.6
+ppft==1.6.6.1
+pyparsing==2.2.0
+six==1.12.0
+tabulate==0.8.3
