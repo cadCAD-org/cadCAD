@@ -16,14 +16,14 @@ Contributors:
 - Matthew V. Barlin
 - Michael Zargham
 - Zixuan Zhang
+- Charles Rice
 
 
 We’d also like to thank:
 - Andrew Clark
 - Nikhil Jamdade
 - Nick Hirannet
+- Jonathan Gabler
+- Chris Frazier
 - Harry Goodnight
 - Charlie Hoppes
-- Jonathan Gabler
-- Charles Rice
-
