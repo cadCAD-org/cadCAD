@@ -17,6 +17,14 @@ def append_dict(dict, new_dict):
     return dict
 
 
+def arrange_cols(df, reverse):
+    session_metrics = ['user_id', 'session_id', 'simulation_id', 'run_id']
+    sys_metrics = ['run', 'timestep', 'substep']
+    result_cols = list(set(df.columns) - set(session_metrics) - set(sys_metrics))
+    result_cols.sort(reverse=reverse)
+    return df[session_metrics + sys_metrics + result_cols]
+
+
 class IndexCounter:
     def __init__(self):
         self.i = 0

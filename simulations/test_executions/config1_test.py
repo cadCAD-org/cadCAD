@@ -3,6 +3,7 @@ from typing import List
 from tabulate import tabulate
 # The following imports NEED to be in the exact order
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+from cadCAD.utils import arrange_cols
 from simulations.regression_tests import config1
 from cadCAD import configs
 
@@ -14,8 +15,11 @@ first_config = configs # only contains config1
 single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
 run = Executor(exec_context=single_proc_ctx, configs=first_config)
 
+# print(set(result.columns) - set(['user_id', 'session_id', 'simulation_id', 'run_id']) - set(['run', 'timestep', 'substep']))
+# print(['run', 'timestep', 'substep'])
+
 raw_result, tensor_field = run.execute()
-result = pd.DataFrame(raw_result)
+result = arrange_cols(pd.DataFrame(raw_result), False)
 print()
 print("Tensor Field: config1")
 # print(raw_result)

@@ -202,7 +202,11 @@ class Executor:
             configs: List[Tuple[List[Callable], List[Callable]]],
             env_processes: Dict[str, Callable],
             time_seq: range,
-            runs: int
+            runs: int,
+            user_id,
+            session_id,
+            simulation_id,
+            run_id
         ) -> List[List[Dict[str, Any]]]:
 
         def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
@@ -211,6 +215,7 @@ class Executor:
             def generate_init_sys_metrics(genesis_states_list):
                 for d in genesis_states_list:
                     d['run'], d['substep'], d['timestep'] = run, 0, 0
+                    d['user_id'], d['simulation_id'], d['session_id'], d['run_id'] = user_id, simulation_id, session_id, run_id
                     yield d
 
             states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(deepcopy(states_list)))
@@ -222,6 +227,8 @@ class Executor:
 
             return first_timestep_per_run
 
+        # print(type(run_id))
+        # print(runs)
         tp = TPool(runs)
         pipe_run: List[List[Dict[str, Any]]] = flatten(
             tp.map(

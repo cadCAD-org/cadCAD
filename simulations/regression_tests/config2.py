@@ -140,6 +140,7 @@ sim_config = config_sim(
 )
 
 append_configs(
+    user_id='user_b',
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_processes,

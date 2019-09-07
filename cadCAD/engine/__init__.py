@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ProcessingPool as PPool
 from pandas.core.frame import DataFrame
@@ -25,11 +26,18 @@ def single_proc_exec(
         configs_structs: List[ConfigsType],
         env_processes_list: List[EnvProcessesType],
         Ts: List[range],
-        Ns: List[int]
+        Ns: List[int],
+        userIDs,
+        sessionIDs,
+        simulationIDs,
+        runIDs: List[int],
     ):
-    l = [simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns]
-    simulation_exec, states_list, config, env_processes, T, N = list(map(lambda x: x.pop(), l))
-    result = simulation_exec(var_dict_list, states_list, config, env_processes, T, N)
+    params = [simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns,
+              userIDs, sessionIDs, simulationIDs, runIDs]
+    simulation_exec, states_list, config, env_processes, T, N, user_id, session_id, simulation_id, run_id = \
+        list(map(lambda x: x.pop(), params))
+    result = simulation_exec(var_dict_list, states_list, config, env_processes, T, N,
+                             user_id, session_id, simulation_id, run_id)
     return flatten(result)
 
 
@@ -40,11 +48,16 @@ def parallelize_simulations(
         configs_structs: List[ConfigsType],
         env_processes_list: List[EnvProcessesType],
         Ts: List[range],
-        Ns: List[int]
+        Ns: List[int],
+        userIDs,
+        sessionIDs,
+        simulationIDs,
+        runIDs: List[int],
     ):
-    l = list(zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns))
+    params = list(zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+                      userIDs, sessionIDs, simulationIDs, runIDs))
     with PPool(len(configs_structs)) as p:
-        results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6]), l)
+        results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10]), params)
     return results
 
 
@@ -70,7 +83,6 @@ class Executor:
         config_proc = Processor()
         create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
 
-
         print(r'''
                             __________   ____ 
           ________ __ _____/ ____/   |  / __ \
@@ -82,19 +94,27 @@ class Executor:
         print(f'Execution Mode: {self.exec_context + ": " + str(self.configs)}')
         print(f'Configurations: {self.configs}')
 
-        var_dict_list, states_lists, Ts, Ns, eps, configs_structs, env_processes_list, partial_state_updates, simulation_execs = \
-            [], [], [], [], [], [], [], [], []
+        userIDs, sessionIDs, simulationIDs, runIDs, \
+        var_dict_list, states_lists, \
+        Ts, Ns, \
+        eps, configs_structs, env_processes_list, \
+        partial_state_updates, simulation_execs = \
+            [], [], [], [], [], [], [], [], [], [], [], [], []
         config_idx = 0
 
         for x in self.configs:
+            userIDs.append(x.user_id)
+            sessionIDs.append(x.session_id)
+            simulationIDs.append(x.simulation_id)
+            runIDs.append(x.run_id)
 
             Ts.append(x.sim_config['T'])
             Ns.append(x.sim_config['N'])
+
             var_dict_list.append(x.sim_config['M'])
             states_lists.append([x.initial_state])
             eps.append(list(x.exogenous_states.values()))
             configs_structs.append(config_proc.generate_config(x.initial_state, x.partial_state_updates, eps[config_idx]))
-            # print(env_processes_list)
             env_processes_list.append(x.env_processes)
             partial_state_updates.append(x.partial_state_updates)
             simulation_execs.append(SimExecutor(x.policy_ops).simulation)
@@ -105,11 +125,17 @@ class Executor:
 
         if self.exec_context == ExecutionMode.single_proc:
             tensor_field = create_tensor_field(partial_state_updates.pop(), eps.pop())
-            result = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
+            result = self.exec_method(
+                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+                userIDs, sessionIDs, simulationIDs, runIDs
+            )
             final_result = result, tensor_field
         elif self.exec_context == ExecutionMode.multi_proc:
             # if len(self.configs) > 1:
-            simulations = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
+            simulations = self.exec_method(
+                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+                userIDs, sessionIDs, simulationIDs, runIDs
+            )
             results = []
             for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
                 results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))

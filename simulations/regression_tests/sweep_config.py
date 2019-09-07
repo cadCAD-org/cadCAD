@@ -144,6 +144,7 @@ sim_config = config_sim(
 # New Convention
 partial_state_update_blocks = psub_list(psu_block, psu_steps)
 append_configs(
+    user_id='user_a',
     sim_configs=sim_config,
     initial_state=genesis_states,
     seeds=seeds,
