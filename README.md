@@ -32,7 +32,7 @@ under various conditions. Support for A/B testing policies, Monte Carlo analysis
 provided.
 
 
-In essence, cadCAD tool allows us to represent a company’s or community’s current business model along with a desired 
+For example, cadCAD tool allows us to represent a company’s or community’s current business model along with a desired 
 future state and helps make informed, rigorously tested decisions on how to get from today’s stage to the future state. 
 It allows us to use code to solidify our conceptualized ideas and see if the outcome meets our expectations. We can 
 iteratively refine our work until we have constructed a model that closely reflects reality at the start of the model, 

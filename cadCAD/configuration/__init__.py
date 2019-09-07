@@ -47,6 +47,8 @@ def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_sta
             partial_state_update_blocks=partial_state_update_blocks,
             policy_ops=policy_ops
         )
+        print(sim_configs)
+        #for each sim config create new config
         configs.append(config)
 
 
