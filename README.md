@@ -49,14 +49,19 @@ and see how it evolves. We can then use these results to inform business decisio
 
 **Python 3.6.5** :: Anaconda, Inc.
 
-**Option A:** Build From Source
+**Option A:** [PyPi](https://pypi.org/project/cadCAD/): pip install
+```bash
+pip install cadCAD
+```
+
+**Option B:** Build From Source
 ```bash
 pip3 install -r requirements.txt
 python3 setup.py sdist bdist_wheel
 pip3 install dist/*.whl
 ```
 
-**Option B:** Proprietary Build Access
+**Option C:** Proprietary Build Access
 
 ***IMPORTANT NOTE:*** Tokens are issued to those with access to proprietary builds of cadCAD and BlockScience employees **ONLY**. 
 Replace \<TOKEN\> with an issued token in the script below.
