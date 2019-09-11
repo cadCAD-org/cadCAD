@@ -19,7 +19,7 @@ provided.
 """
 
 setup(name='cadCAD',
-      version='0.3.0',
+      version='0.3.1',
       description="cadCAD: a differential games based simulation software package for research, validation, and \
         Computer Aided Design of economic systems",
       long_description=long_description,
