@@ -27,5 +27,13 @@ setup(name='cadCAD',
       author='Joshua E. Jodesty',
       author_email='joshua@block.science, joshua.jodesty@gmail.com',
       license='LICENSE.txt',
-      packages=find_packages()
+      packages=find_packages(),
+      install_requires=[
+            "pandas",
+            "wheel",
+            "pathos",
+            "fn",
+            "tabulate",
+            "funcy"
+      ]
 )
