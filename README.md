@@ -16,7 +16,7 @@ cadCAD can be installed using Python’s package manager, [pip](https://pypi.org
 pip install cadCAD
 ```
 ## 2. Learn the basics
-Check out our tutorials (available both as [Jupyter Notebooks](tutorials) and [videos](https://www.youtube.com/watch?v=uJEiYHRWA9g&list=PLmWm8ksQq4YKtdRV-SoinhV6LbQMgX1we)) to familiarize yourself with some system modelling concepts and cadCAD terminology. Alternatively, go straight to the [documentation](documentation/Simulation_Configuration.md).
+Check out our tutorials (available both as [Jupyter Notebooks](tutorials) and [videos](https://www.youtube.com/watch?v=uJEiYHRWA9g&list=PLmWm8ksQq4YKtdRV-SoinhV6LbQMgX1we)) to familiarize yourself with some system modelling concepts and cadCAD terminology. Alternatively, go straight to the [documentation](documentation).
 
 ## 3. Connect
 Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
