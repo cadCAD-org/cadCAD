@@ -7,7 +7,6 @@ by BlockScience. It is capable of modeling systems at all levels of abstraction 
 System Dynamics (SD), and enabling smooth integration of computational social science simulations with empirical data 
 science workflows.
 
-
 An economic system is treated as a state-based model and defined through a set of endogenous and exogenous state 
 variables which are updated through mechanisms and environmental processes, respectively. Behavioral models, which may 
 be deterministic or stochastic, provide the evolution of the system within the action space of the mechanisms. 
@@ -19,7 +18,7 @@ provided.
 """
 
 setup(name='cadCAD',
-      version='0.3.0',
+      version='0.3.1',
       description="cadCAD: a differential games based simulation software package for research, validation, and \
         Computer Aided Design of economic systems",
       long_description=long_description,
@@ -27,5 +26,13 @@ setup(name='cadCAD',
       author='Joshua E. Jodesty',
       author_email='joshua@block.science, joshua.jodesty@gmail.com',
       license='LICENSE.txt',
-      packages=find_packages()
+      packages=find_packages(),
+      install_requires=[
+            "pandas",
+            "wheel",
+            "pathos",
+            "fn",
+            "tabulate",
+            "funcy"
+      ]
 )
