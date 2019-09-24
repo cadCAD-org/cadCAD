@@ -4,3 +4,5 @@ pathos
 fn
 tabulate
 funcy
+pyspark
+kafka-python

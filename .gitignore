@@ -28,3 +28,6 @@ testing/udo_test.py
 Simulation.md
 
 monkeytype.sqlite3
+
+distributed_produce/bash/
+distributed_produce/notes.txt
