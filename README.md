@@ -9,14 +9,32 @@ by BlockScience
 ***cadCAD*** is a Python package that assists in the processes of designing, testing and validating complex systems through simulation, with support for Monte Carlo methods, A/B testing and parameter sweeping. 
 
 # Getting Started
-## 1. Install cadCAD
-cadCAD requires [Python 3](https://www.python.org/downloads/)  
-cadCAD can be installed using Python’s package manager, [pip](https://pypi.org/project/cadCAD/)
-```bash
-pip install cadCAD
-```
-## 2. Learn the basics
-Check out our tutorials (available both as [Jupyter Notebooks](tutorials) and [videos](https://www.youtube.com/watch?v=uJEiYHRWA9g&list=PLmWm8ksQq4YKtdRV-SoinhV6LbQMgX1we)) to familiarize yourself with some system modelling concepts and cadCAD terminology. Alternatively, go straight to the [documentation](documentation).
+## 1. Installation: 
+Requires [Python 3](https://www.python.org/downloads/) 
 
-## 3. Connect
+**Option A: Install Using [pip](https://pypi.org/project/cadCAD/)** 
+```bash
+pip3 install cadCAD
+```
+
+**Option B:** Build From Source
+```
+pip3 install -r requirements.txt
+python3 setup.py sdist bdist_wheel
+pip3 install dist/*.whl
+```
+
+ 
+## 2. Learn the basics
+**Tutorials:** available both as [Jupyter Notebooks](tutorials) and [videos](https://www.youtube.com/watch?v=uJEiYHRWA9g&list=PLmWm8ksQq4YKtdRV-SoinhV6LbQMgX1we) 
+
+Familiarize yourself with some system modelling concepts and cadCAD terminology.
+
+## 3. Documentation:
+* [System Model Configuration](documentation/Simulation_Configuration.md)
+* [System Simulation Execution](documentation/Simulation_Execution.md)
+* [Policy Aggregation](documentation/Policy_Aggregation.md)
+* [System Model Parameter Sweep](documentation/System_Model_Parameter_Sweep.md)
+
+## 4. Connect
 Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
