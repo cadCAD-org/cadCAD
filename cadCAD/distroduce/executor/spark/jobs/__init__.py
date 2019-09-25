@@ -12,7 +12,6 @@ ascii_art = r'''
 by Joshua E. Jodesty   
 '''
 
-
 def distributed_produce(
         sc: SparkContext,
         spark_run,

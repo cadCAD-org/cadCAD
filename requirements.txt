@@ -6,3 +6,4 @@ tabulate
 funcy
 pyspark
 kafka-python
+cloudpickle

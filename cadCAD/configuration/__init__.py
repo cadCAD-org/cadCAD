@@ -3,6 +3,7 @@ from typing import Dict, Callable, List, Tuple
 from functools import reduce
 import pandas as pd
 from pandas.core.frame import DataFrame
+# import cloudpickle, pickle
 
 from cadCAD import configs
 from cadCAD.utils import key_filter
@@ -101,7 +102,10 @@ class Identity:
     def state_identity(self, k: str) -> Callable:
         return lambda var_dict, sub_step, sL, s, _input: (k, s[k])
 
+    # state_identity = cloudpickle.dumps(state_identity)
+
     def apply_identity_funcs(self, identity: Callable, df: DataFrame, cols: List[str]) -> List[DataFrame]:
+        # identity = pickle.loads(identity)
         def fillna_with_id_func(identity, df, col):
             return df[[col]].fillna(value=identity(col))
 

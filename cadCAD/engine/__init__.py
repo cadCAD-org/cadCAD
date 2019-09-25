@@ -2,6 +2,7 @@ from pprint import pprint
 from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ProcessingPool as PPool
 from pandas.core.frame import DataFrame
+from pyspark.context import SparkContext
 
 from cadCAD.utils import flatten
 from cadCAD.configuration import Configuration, Processor
@@ -17,6 +18,7 @@ EnvProcessesType = Dict[str, Callable]
 class ExecutionMode:
     single_proc = 'single_proc'
     multi_proc = 'multi_proc'
+    dist_proc = 'dist_proc'
 
 
 def single_proc_exec(
@@ -52,7 +54,7 @@ def parallelize_simulations(
         userIDs,
         sessionIDs,
         simulationIDs,
-        runIDs: List[int],
+        runIDs: List[int]
     ):
     params = list(zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
                       userIDs, sessionIDs, simulationIDs, runIDs))
@@ -60,6 +62,38 @@ def parallelize_simulations(
         results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10]), params)
     return results
 
+def distributed_simulations(
+        sc: SparkContext,
+        simulation_execs: List[Callable],
+        var_dict_list: List[VarDictType],
+        states_lists: List[StatesListsType],
+        configs_structs: List[ConfigsType],
+        env_processes_list: List[EnvProcessesType],
+        Ts: List[range],
+        Ns: List[int],
+        userIDs,
+        sessionIDs,
+        simulationIDs,
+        runIDs: List[int]
+    ):
+    params = list(zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+                      userIDs, sessionIDs, simulationIDs, runIDs))
+    pprint(runIDs)
+    with PPool(len(configs_structs)) as p:
+        results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10]), params)
+    return results
+
+    # _pickle.PicklingError: Can't pickle <function <lambda> at 0x1115149e0>: attribute lookup <lambda> on
+    # simulations.regression_tests.config1 failed
+    # simulation_execs, env_processes_list
+    # Configuration Layer: configs_structs
+    # AttributeError: Can't pickle local object 'Identity.state_identity.<locals>.<lambda>'
+    # pprint(configs_structs)
+    # sc.parallelize([configs_structs])
+    # exit()
+    # result = sc.parallelize(params) \
+    #             .map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10])) \
+    #             .collect()
 
 class ExecutionContext:
     def __init__(self, context: str = ExecutionMode.multi_proc) -> None:
@@ -70,10 +104,13 @@ class ExecutionContext:
             self.method = single_proc_exec
         elif context == 'multi_proc':
             self.method = parallelize_simulations
+        elif context == 'dist_proc':
+            self.method = distributed_simulations
 
 
 class Executor:
-    def __init__(self, exec_context: ExecutionContext, configs: List[Configuration]) -> None:
+    def __init__(self, exec_context: ExecutionContext, configs: List[Configuration], spark_context: SparkContext = None) -> None:
+        self.sc = spark_context
         self.SimExecutor = SimExecutor
         self.exec_method = exec_context.method
         self.exec_context = exec_context.name
@@ -83,14 +120,6 @@ class Executor:
         config_proc = Processor()
         create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
 
-        print(r'''
-                            __________   ____ 
-          ________ __ _____/ ____/   |  / __ \
-         / ___/ __` / __  / /   / /| | / / / /
-        / /__/ /_/ / /_/ / /___/ ___ |/ /_/ / 
-        \___/\__,_/\__,_/\____/_/  |_/_____/  
-        by BlockScience
-        ''')
         print(f'Execution Mode: {self.exec_context + ": " + str(self.configs)}')
         print(f'Configurations: {self.configs}')
 
@@ -141,5 +170,16 @@ class Executor:
                 results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
 
             final_result = results
+        elif self.exec_context == ExecutionMode.dist_proc:
+            # if len(self.configs) > 1:
+            simulations = self.exec_method(
+                self.sc,
+                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+                userIDs, sessionIDs, simulationIDs, runIDs
+            )
+            results = []
+            for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
+                results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
+            final_result = None
 
         return final_result
