@@ -79,28 +79,13 @@ def distributed_simulations(
         runIDs: List[int],
         sc: SparkContext = None
     ):
-    # params = list(zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
-    #                   userIDs, sessionIDs, simulationIDs, runIDs))
-    # lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10])
-    func_params = list(
+
+    func_params_zipped = list(
         zip(userIDs, sessionIDs, simulationIDs, runIDs, simulation_execs, configs_structs, env_processes_list)
     )
-
-    func_params_dict = [
-        # ((t[0], t[1], t[2], t[3]), {'sim_exec': t[4], 'config': t[5], 'env_procs': t[6]}) for t in func_params
-        ((t[0], t[1], t[2], t[3]), (t[4], t[5], t[6])) for t in func_params
-    ]
-
-    val_params = list(zip(userIDs, sessionIDs, simulationIDs, runIDs, var_dict_list, states_lists, Ts, Ns))
-    val_params_list = [
-        (
-            {'user_id': t[0], 'session_id': t[1], 'sim_id': t[2], 'run_id': t[3]},
-            {'var_dict': t[4], 'states_lists': t[5], 'Ts': t[6], 'Ns': t[7]}
-        ) for t in val_params
-    ]
-
+    func_params_kv = [((t[0], t[1], t[2], t[3]), (t[4], t[5], t[6])) for t in func_params_zipped]
     def simulate(k, v):
-        (sim_exec, config, env_procs) = [f[1] for f in func_params_dict if f[0] == k][0]
+        (sim_exec, config, env_procs) = [f[1] for f in func_params_kv if f[0] == k][0]
         print(env_procs)
         results = sim_exec(
             v['var_dict'], v['states_lists'], config, env_procs, v['Ts'], v['Ns'],
@@ -109,60 +94,16 @@ def distributed_simulations(
 
         return results
 
-    # tuple(x[0].values())
-    # x[1]
-    vals_rdd = sc.parallelize(val_params_list).map(lambda x: simulate(tuple(x[0].values()), x[1]))
-    pprint(vals_rdd.take(3))
+    val_params = list(zip(userIDs, sessionIDs, simulationIDs, runIDs, var_dict_list, states_lists, Ts, Ns))
+    val_params_kv = [
+        (
+            (t[0], t[1], t[2], t[3]),
+            {'var_dict': t[4], 'states_lists': t[5], 'Ts': t[6], 'Ns': t[7]}
+        ) for t in val_params
+    ]
+    results_rdd = sc.parallelize(val_params_kv).map(lambda x: simulate(*x))
 
-    exit()
-
-    # Pickle send to worker
-    # atom = params[0]
-    # # pprint(atom)
-    # sim_exec = atom[0]
-    # configs_struct = atom[3]
-    # env_processes = atom[4]
-    # pickled_sim_exec = cloudpickle.dumps(sim_exec)
-    # pickled_configs = cloudpickle.dumps(configs_struct)
-    # pickled_env_procs = cloudpickle.dumps(env_processes)
-    #
-    # def cucumber(pickled):
-    #     unpickled = pickle.loads(pickled)
-    #     return unpickled
-    #
-    # sc.parallelize([pickled_sim_exec]).map(cucumber).collect()
-
-
-
-    # configs_structs, simulation_execs, env_processes_list
-    results = [t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10], sc) for t in params]
-
-    # def pickle_magic(cucumber):
-    #     cucumber[]
-    #     cloudpickle.dump()
-    #     cucumber = pickle.loads(pickled)
-
-
-
-    pickled_params = cloudpickle.dump(params)
-    results = sc.parallelize(pickled_params).map(
-        lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10])
-    ).collect()
-    # with PPool(len(configs_structs)) as p:
-    #     results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10], sc), params)
-    return results
-
-    # _pickle.PicklingError: Can't pickle <function <lambda> at 0x1115149e0>: attribute lookup <lambda> on
-    # simulations.regression_tests.config1 failed
-    # simulation_execs, env_processes_list
-    # Configuration Layer: configs_structs
-    # AttributeError: Can't pickle local object 'Identity.state_identity.<locals>.<lambda>'
-    # pprint(configs_structs)
-    # sc.parallelize([configs_structs])
-    # exit()
-    # result = sc.parallelize(params) \
-    #             .map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10])) \
-    #             .collect()
+    return list(results_rdd.collect())
 
 class ExecutionContext:
     def __init__(self, context: str = ExecutionMode.multi_proc) -> None:

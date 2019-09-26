@@ -1,11 +1,5 @@
 name = "cadCAD"
 configs = []
 
-print(r'''
-                    __________   ____ 
-  ________ __ _____/ ____/   |  / __ \
- / ___/ __` / __  / /   / /| | / / / /
-/ /__/ /_/ / /_/ / /___/ ___ |/ /_/ / 
-\___/\__,_/\__,_/\____/_/  |_/_____/  
-by BlockScience
-''')
+from ascii_art import production
+print(production)
