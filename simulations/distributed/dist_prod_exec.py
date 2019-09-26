@@ -3,7 +3,7 @@ from pprint import pprint
 import pandas as pd
 from tabulate import tabulate
 
-from simulations.test_executions.spark.session import spark_context as sc
+from simulations.distributed.spark.session import spark_context as sc
 from simulations.regression_tests import config1, config2
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor

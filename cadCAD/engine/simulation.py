@@ -1,7 +1,10 @@
+from pprint import pprint
 from typing import Any, Callable, Dict, List, Tuple
 from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
 from functools import reduce
+
+from pyspark import SparkContext
 
 from cadCAD.engine.utils import engine_exception
 from cadCAD.utils import flatten
@@ -206,7 +209,8 @@ class Executor:
             user_id,
             session_id,
             simulation_id,
-            run_id
+            run_id,
+            sc: SparkContext = None
         ) -> List[List[Dict[str, Any]]]:
 
         def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
@@ -226,16 +230,33 @@ class Executor:
             del states_list_copy
 
             return first_timestep_per_run
+        #
+        # pprint()
+        #
+        # exit()
+
+        pipe_run = flatten(
+            [execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run) for run in range(runs)]
+        )
+
+        return pipe_run
+
+        # ******** Only has one run
+        # pipe_run: List[List[Dict[str, Any]]] = flatten(
+        #     sc.parallelize(list(range(runs))).map(
+        #         lambda run: execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run)
+        #     ).collect()
+        # )
 
         # print(type(run_id))
         # print(runs)
-        tp = TPool(runs)
-        pipe_run: List[List[Dict[str, Any]]] = flatten(
-            tp.map(
-                lambda run: execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run),
-                list(range(runs))
-            )
-        )
-
-        tp.clear()
-        return pipe_run
+        # tp = TPool(runs)
+        # pipe_run: List[List[Dict[str, Any]]] = flatten(
+        #     tp.map(
+        #         lambda run: execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run),
+        #         list(range(runs))
+        #     )
+        # )
+        #
+        # tp.clear()
+        r

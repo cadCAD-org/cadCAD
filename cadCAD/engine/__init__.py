@@ -1,8 +1,11 @@
 from pprint import pprint
 from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ProcessingPool as PPool
+from pathos.multiprocessing import ThreadPool as TPool
 from pandas.core.frame import DataFrame
 from pyspark.context import SparkContext
+from pyspark import cloudpickle
+import pickle
 
 from cadCAD.utils import flatten
 from cadCAD.configuration import Configuration, Processor
@@ -63,7 +66,6 @@ def parallelize_simulations(
     return results
 
 def distributed_simulations(
-        sc: SparkContext,
         simulation_execs: List[Callable],
         var_dict_list: List[VarDictType],
         states_lists: List[StatesListsType],
@@ -74,13 +76,99 @@ def distributed_simulations(
         userIDs,
         sessionIDs,
         simulationIDs,
-        runIDs: List[int]
+        runIDs: List[int],
+        sc: SparkContext = None
     ):
-    params = list(zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
-                      userIDs, sessionIDs, simulationIDs, runIDs))
-    pprint(runIDs)
-    with PPool(len(configs_structs)) as p:
-        results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10]), params)
+    # params = list(zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+    #                   userIDs, sessionIDs, simulationIDs, runIDs))
+    # simulation_execs, configs_structs, env_processes_list
+
+    func_params = list(zip(userIDs, sessionIDs, simulationIDs, runIDs, simulation_execs, configs_structs, env_processes_list))
+    # val_params = list(zip(userIDs, sessionIDs, simulationIDs, runIDs, var_dict_list, states_lists, Ts, Ns))
+    # vals_rdd = sc.parallelize(val_params).map(
+    #     lambda t: {'user_id': t[0], 'session_id': t[1], 'simulation_id': t[2], 'run_id': t[3],
+    #                'var_dict': t[4], 'states_lists': t[5], 'Ts': t[6], 'Ns': t[7]}
+    # )
+    # vals_rdd.foreach(print)
+
+    # func_params_dicts = dict(map(
+    #     lambda t: {'user_id': t[0], 'session_id': t[1], 'simulation_id': t[2], 'run_id': t[3],
+    #                'executions': {'sim_exec': t[4], 'configs': t[5], 'env_proc': t[6]}},
+    #     func_params
+    # ))
+
+
+
+    # func_params_dicts = dict(list(map(
+    #     lambda t: {'key': (t[0], t[1], t[2], t[3]),
+    #                'executions': {'sim_exec': t[4], 'configs': t[5], 'env_proc': t[6]}},
+    #     func_params
+    # )))
+
+    func_keys = [(t[0], t[1], t[2], t[3]) for t in func_params]
+    func_values = [(t[4], t[5], t[6], t[7]) for t in func_params]
+
+    d = {}
+    for key in func_keys:
+        d[key] =
+
+    # func_params_dicts = dict([{(t[0], t[1], t[2], t[3]): {'sim_exec': t[4], 'configs': t[5], 'env_proc': t[6]}} for t in func_params])
+
+    pprint(func_params_dicts)
+
+    # val_params = list(zip(userIDs, sessionIDs, simulationIDs, runIDs, var_dict_list, states_lists, Ts, Ns))
+    # vals_rdd = sc.parallelize(val_params).map(
+    #     lambda t: {'key': (t[0], t[1], t[2], t[3]),
+    #                'var_dict': t[4], 'states_lists': t[5], 'Ts': t[6], 'Ns': t[7]}
+    # )
+
+
+    # val_params_dicts = list(map(
+    #     lambda t: {'user_id': t[0], 'session_id': t[1], 'simulation_id': t[2], 'run_id': t[3],
+    #                'var_dict': t[4], 'states_lists': t[5], 'Ts': t[6], 'Ns': t[7]},
+    #     val_params
+    # ))
+    # pprint(val_params_dicts)
+    # print("Execution: simulation_execs")
+    # print("Configuation: configs_structs, env_processes_list")
+    # print()
+
+    exit()
+
+    # Pickle send to worker
+    # atom = params[0]
+    # # pprint(atom)
+    # sim_exec = atom[0]
+    # configs_struct = atom[3]
+    # env_processes = atom[4]
+    # pickled_sim_exec = cloudpickle.dumps(sim_exec)
+    # pickled_configs = cloudpickle.dumps(configs_struct)
+    # pickled_env_procs = cloudpickle.dumps(env_processes)
+    #
+    # def cucumber(pickled):
+    #     unpickled = pickle.loads(pickled)
+    #     return unpickled
+    #
+    # sc.parallelize([pickled_sim_exec]).map(cucumber).collect()
+
+
+
+    # configs_structs, simulation_execs, env_processes_list
+    results = [t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10], sc) for t in params]
+
+    # def pickle_magic(cucumber):
+    #     cucumber[]
+    #     cloudpickle.dump()
+    #     cucumber = pickle.loads(pickled)
+
+
+
+    pickled_params = cloudpickle.dump(params)
+    results = sc.parallelize(pickled_params).map(
+        lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10])
+    ).collect()
+    # with PPool(len(configs_structs)) as p:
+    #     results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10], sc), params)
     return results
 
     # _pickle.PicklingError: Can't pickle <function <lambda> at 0x1115149e0>: attribute lookup <lambda> on
@@ -168,18 +256,16 @@ class Executor:
             results = []
             for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
                 results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
-
             final_result = results
         elif self.exec_context == ExecutionMode.dist_proc:
             # if len(self.configs) > 1:
             simulations = self.exec_method(
-                self.sc,
                 simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
-                userIDs, sessionIDs, simulationIDs, runIDs
+                userIDs, sessionIDs, simulationIDs, runIDs, self.sc
             )
             results = []
             for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
                 results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
-            final_result = None
+            final_result = results
 
         return final_result
