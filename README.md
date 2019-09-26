@@ -26,7 +26,8 @@ pip3 install dist/*.whl
 
  
 ## 2. Learn the basics
-**Tutorials:** available both as [Jupyter Notebooks](tutorials) and [videos](https://www.youtube.com/watch?v=uJEiYHRWA9g&list=PLmWm8ksQq4YKtdRV-SoinhV6LbQMgX1we) 
+**Tutorials:** available both as [Jupyter Notebooks](tutorials) 
+and [videos](https://www.youtube.com/watch?v=uJEiYHRWA9g&list=PLmWm8ksQq4YKtdRV-SoinhV6LbQMgX1we) 
 
 Familiarize yourself with some system modelling concepts and cadCAD terminology.
 
