@@ -1,10 +1,19 @@
 ```
-                    __________   ____ 
+                    __________   ____
   ________ __ _____/ ____/   |  / __ \
  / ___/ __` / __  / /   / /| | / / / /
-/ /__/ /_/ / /_/ / /___/ ___ |/ /_/ / 
-\___/\__,_/\__,_/\____/_/  |_/_____/  
+/ /__/ /_/ / /_/ / /___/ ___ |/ /_/ /
+\___/\__,_/\__,_/\____/_/  |_/_____/
 by BlockScience
+======================================
+       Complex Adaptive Dynamics       
+       o       i        e
+       m       d        s
+       p       e        i
+       u       d        g
+       t                n
+       e
+       r
 ```
 ***cadCAD*** is a Python package that assists in the processes of designing, testing and validating complex systems through simulation, with support for Monte Carlo methods, A/B testing and parameter sweeping. 
 
