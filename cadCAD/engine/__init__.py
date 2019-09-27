@@ -65,6 +65,7 @@ def parallelize_simulations(
         results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10]), params)
     return results
 
+
 def distributed_simulations(
         simulation_execs: List[Callable],
         var_dict_list: List[VarDictType],
@@ -104,6 +105,7 @@ def distributed_simulations(
     results_rdd = sc.parallelize(val_params_kv).map(lambda x: simulate(*x))
 
     return list(results_rdd.collect())
+
 
 class ExecutionContext:
     def __init__(self, context: str = ExecutionMode.multi_proc) -> None:
@@ -160,8 +162,6 @@ class Executor:
 
             config_idx += 1
 
-        final_result = None
-
         if self.exec_context == ExecutionMode.single_proc:
             tensor_field = create_tensor_field(partial_state_updates.pop(), eps.pop())
             result = self.exec_method(
@@ -169,22 +169,20 @@ class Executor:
                 userIDs, sessionIDs, simulationIDs, runIDs
             )
             final_result = result, tensor_field
-        elif self.exec_context == ExecutionMode.multi_proc:
-            # if len(self.configs) > 1:
-            simulations = self.exec_method(
-                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
-                userIDs, sessionIDs, simulationIDs, runIDs
-            )
-            results = []
-            for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
-                results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
-            final_result = results
-        elif self.exec_context == ExecutionMode.dist_proc:
-            # if len(self.configs) > 1:
-            simulations = self.exec_method(
-                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
-                userIDs, sessionIDs, simulationIDs, runIDs, self.sc
-            )
+        else:
+            if self.exec_context == ExecutionMode.multi_proc:
+                # if len(self.configs) > 1:
+                simulations = self.exec_method(
+                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+                    userIDs, sessionIDs, simulationIDs, runIDs
+                )
+
+            elif self.exec_context == ExecutionMode.dist_proc:
+                simulations = self.exec_method(
+                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+                    userIDs, sessionIDs, simulationIDs, runIDs, self.sc
+                )
+
             results = []
             for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
                 results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
