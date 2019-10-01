@@ -112,18 +112,25 @@ def distributed_simulations(
 
 
 class ExecutionContext:
-    def __init__(self,
-                 context=ExecutionMode.multi_proc,
-                 method=None) -> None:
+    def __init__(self, context=ExecutionMode.multi_proc, method=None, kafka_config=None) -> None:
         self.name = context
-        # self.method = method
-
         if context == 'single_proc':
             self.method = single_proc_exec
         elif context == 'multi_proc':
             self.method = parallelize_simulations
         elif context == 'dist_proc':
-            self.method = method
+            def distroduce_proc(
+                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+                    userIDs, sessionIDs, simulationIDs, runIDs,
+                    sc, kafkaConfig=kafka_config
+            ):
+                return method(
+                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+                    userIDs, sessionIDs, simulationIDs, runIDs,
+                    sc, kafkaConfig
+                )
+
+            self.method = distroduce_proc
 
 
 class Executor:
