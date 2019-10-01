@@ -114,21 +114,9 @@ def distributed_simulations(
 class ExecutionContext:
     def __init__(self,
                  context=ExecutionMode.multi_proc,
-                 # spark_context=None,
-                 # kafka_config=None,
-                 # spark_data_transformation=None,
                  method=None) -> None:
         self.name = context
         # self.method = method
-
-        # def dist_proc_closure(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
-        #                      userIDs, sessionIDs, simulationIDs, runIDs,
-        #                      sc=spark_context, kafkaConfig=kafka_config):
-        #     return distributed_simulations(
-        #         simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
-        #         userIDs, sessionIDs, simulationIDs, runIDs,
-        #         spark_context, spark_data_transformation, kafka_config
-        #     )
 
         if context == 'single_proc':
             self.method = single_proc_exec

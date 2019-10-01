@@ -18,19 +18,14 @@ from pyspark.context import SparkContext
 
 from kafka import KafkaProducer
 
+from simulations.distributed.executor.spark.jobs import distributed_simulations
+from simulations.distributed.spark.session import sc
+
+
 def count(start, step):
     while True:
         yield start
         start += step
-
-spark = SparkSession\
-        .builder\
-        .appName("distroduce")\
-        .getOrCreate()
-
-sc: SparkContext = spark.sparkContext
-print(f"Spark UI: {sc.uiWebUrl}")
-print()
 
 # session = enters('room_1', ['A', 'B'])
 intitial_conditions = {
@@ -203,50 +198,7 @@ append_configs(
 exec_mode = ExecutionMode()
 
 print("Simulation Execution: Distributed Execution")
-kafka_config = {'send_topic': 'test', 'producer_config': {'bootstrap_servers': 'localhost:9092', 'acks': 'all'}}
 
-def distributed_simulations(
-        simulation_execs,
-        var_dict_list,
-        states_lists,
-        configs_structs,
-        env_processes_list,
-        Ts,
-        Ns,
-        userIDs,
-        sessionIDs,
-        simulationIDs,
-        runIDs,
-        sc=sc,
-        kafkaConfig=kafka_config
-    ):
-
-    func_params_zipped = list(
-        zip(userIDs, sessionIDs, simulationIDs, runIDs, simulation_execs, configs_structs, env_processes_list)
-    )
-    func_params_kv = [((t[0], t[1], t[2], t[3]), (t[4], t[5], t[6])) for t in func_params_zipped]
-    def simulate(k, v):
-        from kafka import KafkaProducer
-        prod_config = kafkaConfig['producer_config']
-        kafkaConfig['producer'] = KafkaProducer(**prod_config)
-        (sim_exec, config, env_procs) = [f[1] for f in func_params_kv if f[0] == k][0]
-        results = sim_exec(
-            v['var_dict'], v['states_lists'], config, env_procs, v['Ts'], v['Ns'],
-            k[0], k[1], k[2], k[3], kafkaConfig
-        )
-
-        return results
-
-    val_params = list(zip(userIDs, sessionIDs, simulationIDs, runIDs, var_dict_list, states_lists, Ts, Ns))
-    val_params_kv = [
-        (
-            (t[0], t[1], t[2], t[3]),
-            {'var_dict': t[4], 'states_lists': t[5], 'Ts': t[6], 'Ns': t[7]}
-        ) for t in val_params
-    ]
-    results_rdd = sc.parallelize(val_params_kv).coalesce(35)
-
-    return list(results_rdd.map(lambda x: simulate(*x)).collect())
 
 dist_proc_ctx = ExecutionContext(
     context=exec_mode.dist_proc, method=distributed_simulations
@@ -257,7 +209,7 @@ i = 0
 for raw_result, tensor_field in run.execute():
     result = arrange_cols(pd.DataFrame(raw_result), False)[
         [
-            'user_id', 'session_id', 'simulation_id', 'run_id', 'timestep', 'substep',
+            'run_id', 'timestep', 'substep',
             'record_creation', 'total_msg_count', 'total_send_time'
         ]
     ]

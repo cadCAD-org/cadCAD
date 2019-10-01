@@ -11,6 +11,6 @@ spark = SparkSession\
         .appName("distroduce")\
         .getOrCreate()
 
-spark_context: SparkContext = spark.sparkContext
-print(f"Spark UI: {spark_context.uiWebUrl}")
+sc: SparkContext = spark.sparkContext
+print(f"Spark UI: {sc.uiWebUrl}")
 print()
