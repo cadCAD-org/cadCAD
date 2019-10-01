@@ -1,10 +1,7 @@
-from pprint import pprint
 from typing import Any, Callable, Dict, List, Tuple
-from pathos.pools import ThreadPool as TPool
+# from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
 from functools import reduce
-
-from pyspark import SparkContext
 
 from cadCAD.engine.utils import engine_exception
 from cadCAD.utils import flatten
@@ -30,13 +27,14 @@ class Executor:
                 sub_step: int,
                 sL: List[Dict[str, Any]],
                 s: Dict[str, Any],
-                funcs: List[Callable]
+                funcs: List[Callable],
+                kafkaConfig
             ) -> Dict[str, Any]:
 
         ops = self.policy_ops
 
         def get_col_results(sweep_dict, sub_step, sL, s, funcs):
-            return list(map(lambda f: f(sweep_dict, sub_step, sL, s), funcs))
+            return list(map(lambda f: f(sweep_dict, sub_step, sL, s, kafkaConfig), funcs))
 
         def compose(init_reduction_funct, funct_list, val_list):
             result, i = None, 0
@@ -108,18 +106,18 @@ class Executor:
                 policy_funcs: List[Callable],
                 env_processes: Dict[str, Callable],
                 time_step: int,
-                run: int
+                run: int,
+                kafkaConfig
             ) -> List[Dict[str, Any]]:
 
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
         _input: Dict[str, Any] = self.policy_update_exception(
-            self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs)
+            self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs, kafkaConfig)
         )
-
 
         def generate_record(state_funcs):
             for f in state_funcs:
-                yield self.state_update_exception(f(sweep_dict, sub_step, sH, last_in_obj, _input))
+                yield self.state_update_exception(f(sweep_dict, sub_step, sH, last_in_obj, _input, kafkaConfig))
 
         def transfer_missing_fields(source, destination):
             for k in source:
@@ -131,7 +129,6 @@ class Executor:
         last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, dict(generate_record(state_funcs)))
         last_in_copy: Dict[str, Any] = self.apply_env_proc(sweep_dict, env_processes, last_in_copy)
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
-
         sL.append(last_in_copy)
         del last_in_copy
 
@@ -145,7 +142,8 @@ class Executor:
                 configs: List[Tuple[List[Callable], List[Callable]]],
                 env_processes: Dict[str, Callable],
                 time_step: int,
-                run: int
+                run: int,
+                kafkaConfig
             ) -> List[Dict[str, Any]]:
 
         sub_step = 0
@@ -162,11 +160,9 @@ class Executor:
         states_list: List[Dict[str, Any]] = [genesis_states]
 
         sub_step += 1
-
         for [s_conf, p_conf] in configs: # tensor field
-
             states_list: List[Dict[str, Any]] = self.partial_state_update(
-                sweep_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run
+                sweep_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run, kafkaConfig
             )
             sub_step += 1
 
@@ -182,15 +178,15 @@ class Executor:
                 configs: List[Tuple[List[Callable], List[Callable]]],
                 env_processes: Dict[str, Callable],
                 time_seq: range,
-                run: int
+                run: int,
+                kafkaConfig
             ) -> List[List[Dict[str, Any]]]:
-
         time_seq: List[int] = [x + 1 for x in time_seq]
         simulation_list: List[List[Dict[str, Any]]] = [states_list]
 
         for time_step in time_seq:
             pipe_run: List[Dict[str, Any]] = self.state_update_pipeline(
-                sweep_dict, simulation_list, configs, env_processes, time_step, run
+                sweep_dict, simulation_list, configs, env_processes, time_step, run, kafkaConfig
             )
 
             _, *pipe_run = pipe_run
@@ -210,12 +206,11 @@ class Executor:
             session_id,
             simulation_id,
             run_id,
-            sc: SparkContext = None
+            kafkaConfig
         ) -> List[List[Dict[str, Any]]]:
 
         def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
             run += 1
-
             def generate_init_sys_metrics(genesis_states_list):
                 for d in genesis_states_list:
                     d['run'], d['substep'], d['timestep'] = run, 0, 0
@@ -225,15 +220,11 @@ class Executor:
             states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(deepcopy(states_list)))
 
             first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(
-                sweep_dict, states_list_copy, configs, env_processes, time_seq, run
+                sweep_dict, states_list_copy, configs, env_processes, time_seq, run, kafkaConfig
             )
             del states_list_copy
 
             return first_timestep_per_run
-        #
-        # pprint()
-        #
-        # exit()
 
         pipe_run = flatten(
             [execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run) for run in range(runs)]

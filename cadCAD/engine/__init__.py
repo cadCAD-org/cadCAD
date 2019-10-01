@@ -6,7 +6,9 @@ from pandas.core.frame import DataFrame
 from pyspark.context import SparkContext
 from pyspark import cloudpickle
 import pickle
+from fn.func import curried
 
+from cadCAD.distroduce.configuration.kakfa import configure_producer
 from cadCAD.utils import flatten
 from cadCAD.configuration import Configuration, Processor
 from cadCAD.configuration.utils import TensorFieldReport
@@ -65,7 +67,6 @@ def parallelize_simulations(
         results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10]), params)
     return results
 
-
 def distributed_simulations(
         simulation_execs: List[Callable],
         var_dict_list: List[VarDictType],
@@ -78,7 +79,8 @@ def distributed_simulations(
         sessionIDs,
         simulationIDs,
         runIDs: List[int],
-        sc: SparkContext = None
+        sc,
+        kafkaConfig
     ):
 
     func_params_zipped = list(
@@ -86,11 +88,13 @@ def distributed_simulations(
     )
     func_params_kv = [((t[0], t[1], t[2], t[3]), (t[4], t[5], t[6])) for t in func_params_zipped]
     def simulate(k, v):
+        from kafka import KafkaProducer
+        prod_config = kafkaConfig['producer_config']
+        kafkaConfig['producer'] = KafkaProducer(**prod_config)
         (sim_exec, config, env_procs) = [f[1] for f in func_params_kv if f[0] == k][0]
-        print(env_procs)
         results = sim_exec(
             v['var_dict'], v['states_lists'], config, env_procs, v['Ts'], v['Ns'],
-            k[0], k[1], k[2], k[3]
+            k[0], k[1], k[2], k[3], kafkaConfig
         )
 
         return results
@@ -102,22 +106,36 @@ def distributed_simulations(
             {'var_dict': t[4], 'states_lists': t[5], 'Ts': t[6], 'Ns': t[7]}
         ) for t in val_params
     ]
-    results_rdd = sc.parallelize(val_params_kv).map(lambda x: simulate(*x))
+    results_rdd = sc.parallelize(val_params_kv).coalesce(35)
 
-    return list(results_rdd.collect())
+    return list(results_rdd.map(lambda x: simulate(*x)).collect())
 
 
 class ExecutionContext:
-    def __init__(self, context: str = ExecutionMode.multi_proc) -> None:
+    def __init__(self,
+                 context=ExecutionMode.multi_proc,
+                 # spark_context=None,
+                 # kafka_config=None,
+                 # spark_data_transformation=None,
+                 method=None) -> None:
         self.name = context
-        self.method = None
+        # self.method = method
+
+        # def dist_proc_closure(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+        #                      userIDs, sessionIDs, simulationIDs, runIDs,
+        #                      sc=spark_context, kafkaConfig=kafka_config):
+        #     return distributed_simulations(
+        #         simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
+        #         userIDs, sessionIDs, simulationIDs, runIDs,
+        #         spark_context, spark_data_transformation, kafka_config
+        #     )
 
         if context == 'single_proc':
             self.method = single_proc_exec
         elif context == 'multi_proc':
             self.method = parallelize_simulations
         elif context == 'dist_proc':
-            self.method = distributed_simulations
+            self.method = method
 
 
 class Executor:
@@ -176,7 +194,6 @@ class Executor:
                     simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,
                     userIDs, sessionIDs, simulationIDs, runIDs
                 )
-
             elif self.exec_context == ExecutionMode.dist_proc:
                 simulations = self.exec_method(
                     simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns,

@@ -11,7 +11,7 @@ from distributed_produce.examples.event_bench.spark.session import spark_context
 
 def main(sc, spark_runs, rdd_parts, sim_time, sim_runs, parameterized_message):
     publish_times, spark_job_times = [], []
-    prod_config = {'bootstrap_servers': 'localhost:9092', 'acks': 0}
+    prod_config = {'bootstrap_servers': 'localhost:9092', 'acks': 'all'}
     exec_spark_job = lambda run: distributed_produce(
         sc, run, sim_time, sim_runs, rdd_parts, parameterized_message, prod_config
     )

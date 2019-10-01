@@ -19,7 +19,7 @@ provided.
 """
 
 setup(name='cadCAD',
-      version='0.3.0',
+      version='0.0.2',
       description="cadCAD: a differential games based simulation software package for research, validation, and \
         Computer Aided Design of economic systems",
       long_description=long_description,
@@ -27,5 +27,14 @@ setup(name='cadCAD',
       author='Joshua E. Jodesty',
       author_email='joshua@block.science, joshua.jodesty@gmail.com',
       license='LICENSE.txt',
-      packages=find_packages()
+      packages=find_packages(),
+      install_requires=[
+            "pandas",
+            "wheel",
+            "pathos",
+            "fn",
+            "tabulate",
+            "funcy",
+            "kafka-python"
+      ]
 )

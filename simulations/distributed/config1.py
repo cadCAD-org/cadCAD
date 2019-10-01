@@ -1,124 +1,151 @@
-import numpy as np
-from datetime import timedelta
+import random
+from copy import deepcopy
+from datetime import timedelta, datetime
 
 from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import bound_norm_random, config_sim, time_step, env_trigger
+from cadCAD.utils.sys_config import update_timestamp
 
-seeds = {
-    'z': np.random.RandomState(1),
-    'a': np.random.RandomState(2),
-    'b': np.random.RandomState(3),
-    'c': np.random.RandomState(4)
-}
 
+def choose_rnd(x: list, choices):
+    def choose(x, choices):
+        for n in list(range(choices)):
+            elem = random.choice(x)
+            x.remove(elem)
+            yield elem
+
+    copied_list = deepcopy(x)
+    results = list(choose(copied_list, choices))
+    del copied_list
+    return results
+
+
+def message(sender, receiver, _input):
+    return {'sender': sender, 'receiver': receiver, 'input': _input, 'sent_time': datetime.now()}
+
+def enter_room_msgs(room, users):
+    return [message(user, room, f"{user} enters chat-room") for user in users]
+
+def exit_room_msgs(room, users):
+    return [message(user, room, f"{user} exited chat-room") for user in users]
+
+rooms = ['room_1', 'room_2']
+user_group_1 = ['A', 'B', 'C', 'D']
+user_group_2 = ['E', 'F', 'G', 'H']
+room_1_messages = enter_room_msgs('room_1', random.shuffle(user_group_1))
+room_2_messages = enter_room_msgs('room_2', random.shuffle(user_group_2))
+def intitialize_conditions():
+    users = user_group_1 + user_group_2
+    messages = sorted(room_1_messages + room_2_messages, key=lambda i: i['time'])
+    room_1_session = {'room': 'room_1', 'users': user_group_1, 'messages': room_1_messages}
+    return {
+        'client_a': room_1_session,
+        'client_b': room_1_session,
+        'server': {'rooms': rooms, 'users': users, 'messages': messages},
+        'record_creation': datetime.now()
+    }
+
+
+def send_message(room, sender, receiver, _input):
+    return lambda _g, step, sL, s: {
+        'types': ['send'],
+        'events': [
+            {
+                'type': 'send',
+                'room': room,
+                'user': sender,
+                'sent': [message(sender, receiver, _input)]
+            }
+        ]
+    }
+
+
+def exit_room(room, sender):
+    return lambda _g, step, sL, s: {
+        'types': ['exit'],
+        'events': [
+            {
+                'type': 'exit',
+                'room': room,
+                'user': sender,
+                'sent': exit_room_msgs(sender, room)
+            }
+        ]
+    }
 
 # Policies per Mechanism
-def p1m1(_g, step, sL, s):
-    return {'param1': 1}
-def p2m1(_g, step, sL, s):
-    return {'param1': 1, 'param2': 4}
+# ToDo Randomize client choices in runtime
+[alpha, omega] = choose_rnd(user_group_1, 2)
+a_msg1 = send_message('room_1', alpha, omega, f'Hello {omega}')
+b_msg1 = send_message('room_1', omega, alpha, f'Hello {alpha}')
 
-def p1m2(_g, step, sL, s):
-    return {'param1': 'a', 'param2': 2}
-def p2m2(_g, step, sL, s):
-    return {'param1': 'b', 'param2': 4}
+a_msg2 = send_message('room_1', alpha, omega, f'Bye {omega}')
+b_msg2 = send_message('room_1', omega, alpha, f'Bye {alpha}')
 
-def p1m3(_g, step, sL, s):
-    return {'param1': ['c'], 'param2': np.array([10, 100])}
-def p2m3(_g, step, sL, s):
-    return {'param1': ['d'], 'param2': np.array([20, 200])}
+a_msg3 = exit_room('room_1', alpha)
+b_msg3 = exit_room('room_1', omega)
 
+def remove_exited_users(users, actions):
+    users = deepcopy(users)
+    if 'exit' in actions['types']:
+        for event in actions['events']:
+            if event['type'] == 'exit':
+                for user in event['user']:
+                    users.remove(user)
+    return users
 
-def s1m1(_g, step, sL, s, _input):
-    y = 's1'
-    x = s['s1'] + 1
-    return (y, x)
-def s2m1(_g, step, sL, s, _input):
-    y = 's2'
-    x = _input['param2']
-    return (y, x)
+# State Updates
 
-def s1m2(_g, step, sL, s, _input):
-    y = 's1'
-    x = s['s1'] + 1
-    return (y, x)
-def s2m2(_g, step, sL, s, _input):
-    y = 's2'
-    x = _input['param2']
-    return (y, x)
+# {'room': 'room_1', 'users': user_group_1, 'messages': room_1_messages}
+def process_messages(_g, step, sL, s, actions):
 
-def s1m3(_g, step, sL, s, _input):
-    y = 's1'
-    x = s['s1'] + 1
-    return (y, x)
-def s2m3(_g, step, sL, s, _input):
-    y = 's2'
-    x = _input['param2']
-    return (y, x)
+    return 'client', {'room': s['room'], 'users': users, 'messages': actions['sent']}
 
-def policies(_g, step, sL, s, _input):
-    y = 'policies'
-    x = _input
-    return (y, x)
+def process_exits(_g, step, sL, s, actions):
+    users = remove_exited_users(s['users'], actions)
+    return 'server', {'rooms': s['room'], 'users': users, 'messages': actions['sent']}
 
 
-def update_timestamp(_g, step, sL, s, _input):
-    y = 'timestamp'
-    return y, time_step(dt_str=s[y], dt_format='%Y-%m-%d %H:%M:%S', _timedelta=timedelta(days=0, minutes=0, seconds=1))
 
+update_record_creation = update_timestamp(
+    'record_creation',
+    timedelta(days=0, minutes=0, seconds=30),
+    '%Y-%m-%d %H:%M:%S'
+)
 
-# Genesis States
-genesis_states = {
-    's1': 0.0,
-    's2': 0.0,
-    's3': 1.0,
-    's4': 1.0,
-    'timestamp': '2018-10-01 15:16:24'
-}
-
-
-# Environment Process
-# ToDo: Depreciation Waring for env_proc_trigger convention
-trigger_timestamps = ['2018-10-01 15:16:25', '2018-10-01 15:16:27', '2018-10-01 15:16:29']
-env_processes = {
-    "s3": [lambda _g, x: 5],
-    "s4": env_trigger(3)(trigger_field='timestamp', trigger_vals=trigger_timestamps, funct_list=[lambda _g, x: 10])
-}
-
-
-partial_state_update_block = [
-    {
-        "policies": {
-            "b1": p1m1,
-            "b2": p2m1
-        },
-        "variables": {
-            "s1": s1m1,
-            "s2": s2m1,
-            "timestamp": update_timestamp
-        }
-    },
-    {
-        "policies": {
-            "b1": p1m2,
-            "b2": p2m2
-        },
-        "variables": {
-            "s1": s1m2,
-            "s2": s2m2
-        }
-    },
-    {
-        "policies": {
-            "b1": p1m3,
-            "b2": p2m3
-        },
-        "variables": {
-            "s1": s1m3,
-            "s2": s2m3
-        }
-    }
-]
+# partial_state_update_block = [
+#     {
+#         "policies": {
+#             "b1": a_msg1,
+#             "b2": b_msg1
+#         },
+#         "variables": {
+#             "client_a": client_a_m1,
+#             "client_b": client_b_m1,
+#             "received": update_timestamp
+#         }
+#     },
+#     {
+#         "policies": {
+#             "b1": a_msg2,
+#             "b2": b_msg2
+#         },
+#         "variables": {
+#             "s1": s1m2,
+#             "s2": s2m2
+#         }
+#     },
+#     {
+#         "policies": {
+#             "b1": a_msg3,
+#             "b2": b_msg3
+#         },
+#         "variables": {
+#             "s1": s1m3,
+#             "s2": s2m3
+#         }
+#     }
+# ]
 
 
 sim_config = config_sim(
@@ -128,11 +155,11 @@ sim_config = config_sim(
     }
 )
 
-append_configs(
-    user_id='user_a',
-    sim_configs=sim_config,
-    initial_state=genesis_states,
-    env_processes=env_processes,
-    partial_state_update_blocks=partial_state_update_block,
-    policy_ops=[lambda a, b: a + b]
-)
+# append_configs(
+#     user_id='user_a',
+#     sim_configs=sim_config,
+#     initial_state=genesis_states,
+#     env_processes=env_processes,
+#     partial_state_update_blocks=partial_state_update_block,
+#     policy_ops=[lambda a, b: a + b]
+# )
