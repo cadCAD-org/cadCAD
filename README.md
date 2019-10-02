@@ -41,7 +41,7 @@ and [videos](https://www.youtube.com/watch?v=uJEiYHRWA9g&list=PLmWm8ksQq4YKtdRV-
 Familiarize yourself with some system modelling concepts and cadCAD terminology.
 
 ## 3. Documentation:
-* [System Model Configuration](documentation/Simulation_Configuration.md)
+* [System Model Configuration](documentation)
 * [System Simulation Execution](documentation/Simulation_Execution.md)
 * [Policy Aggregation](documentation/Policy_Aggregation.md)
 * [System Model Parameter Sweep](documentation/System_Model_Parameter_Sweep.md)
