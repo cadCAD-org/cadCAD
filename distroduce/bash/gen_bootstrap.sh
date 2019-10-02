@@ -19,7 +19,7 @@ bin/kafka-topics.sh --create --bootstrap-server 10.0.0.9:9092 --replication-fact
 # bin/kafka-topics.sh --list --bootstrap-server 10.0.0.9:9092
 
 # Consume (Window): head node
-kafka_2.12-2.3.0/bin/kafka-console-consumer.sh --bootstrap-server 10.0.0.9:9092 --topic test --from-beginning
+bin/kafka-console-consumer.sh --bootstrap-server 10.0.0.9:9092 --topic test --from-beginning
 # DELETE
 # bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic test
 

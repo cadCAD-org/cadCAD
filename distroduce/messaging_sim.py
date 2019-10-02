@@ -76,8 +76,8 @@ if __name__ == "__main__":
         policy_ops=[lambda a, b: a + b]
     )
 
-    # parmeterize localhost
-    kafkaConfig = {'send_topic': 'test', 'producer_config': {'bootstrap_servers': 'localhost:9092', 'acks': 'all'}}
+    # parmeterize localhost, PRIVATE_IP=`hostname -I | xargs`
+    kafkaConfig = {'send_topic': 'test', 'producer_config': {'bootstrap_servers': '10.0.0.7:9092', 'acks': 'all'}}
     dist_proc_ctx = ExecutionContext(context=exec_mode.dist_proc, method=distributed_produce, kafka_config=kafkaConfig)
     run = Executor(exec_context=dist_proc_ctx, configs=configs, spark_context=sc)
 
