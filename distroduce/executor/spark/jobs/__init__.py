@@ -39,6 +39,6 @@ def distributed_produce(
             {'var_dict': t[4], 'states_lists': t[5], 'Ts': t[6], 'Ns': t[7]}
         ) for t in val_params
     ]
-    results_rdd = spark_context.parallelize(val_params_kv).coalesce(35)
+    results_rdd = spark_context.parallelize(val_params_kv).coalesce(1)
 
     return list(results_rdd.map(lambda x: simulate(*x)).collect())

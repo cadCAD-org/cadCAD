@@ -13,7 +13,7 @@ from distroduce.executor.spark import distributed_produce
 from distroduce.action_policies import enter_action, message_actions, exit_action
 from distroduce.state_updates import send_message, count_messages, add_send_time, current_time
 
-# State Update
+# State Updates
 variables = {
     'client_a': send_message('client_a'),
     'client_b': send_message('client_b'),
@@ -76,6 +76,7 @@ if __name__ == "__main__":
         policy_ops=[lambda a, b: a + b]
     )
 
+    # parmeterize localhost
     kafkaConfig = {'send_topic': 'test', 'producer_config': {'bootstrap_servers': 'localhost:9092', 'acks': 'all'}}
     dist_proc_ctx = ExecutionContext(context=exec_mode.dist_proc, method=distributed_produce, kafka_config=kafkaConfig)
     run = Executor(exec_context=dist_proc_ctx, configs=configs, spark_context=sc)
