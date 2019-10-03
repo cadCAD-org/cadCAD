@@ -1,7 +1,14 @@
 from datetime import datetime
 from kafka import KafkaProducer
 
-# Actions
+
+'''
+Function that produces a single actions taken by a user and its accompanying message.
+
+The results will be combined with a user-defined aggregation function (UDAF) 
+given to the `policy_ops` argument of `cadCAD.configuration.append_configs`.
+Current UDAF: `policy_ops=[lambda a, b: a + b]`
+'''
 def messages(client_id, room, action, _input, sender, receiver=None):
     return {
         'types': [action],
@@ -10,12 +17,15 @@ def messages(client_id, room, action, _input, sender, receiver=None):
                 'client': client_id, 'room': room, 'action': action,
                 'sender': sender, 'receiver': receiver,
                 'input': _input,
-                'creatred': datetime.now()
+                'created': datetime.now()
             }
         ]
     }
 
 
+'''
+Policy representing a user entering a chat room and its accompanying message
+'''
 def enter_action(state, room, user):
     def f(_g, step, sL, s, kafkaConfig):
         msgs = messages(state, room, 'enter', f"{user} enters {room}", user)
@@ -24,8 +34,16 @@ def enter_action(state, room, user):
         return msgs
     return f
 
-def message_actions(state, room, _input, sender, receiver):
-    msgs = messages(state, room, 'send', _input, sender, receiver)
+
+'''
+Policy representing a user sending a message to a receiver within a chat room
+and its accompanying message
+
+A Kafka Producer is used to send messages to a Kafka cluster. 
+The configuration of the Kafka Producer via `cadCAD.engine.ExecutionContext`
+'''
+def message_actions(state, room, message_input, sender, receiver):
+    msgs = messages(state, room, 'send', message_input, sender, receiver)
     msgs_list = msgs['messages']
     def send_action(_g, step, sL, s, kafkaConfig):
         start_time = datetime.now()
@@ -40,6 +58,10 @@ def message_actions(state, room, _input, sender, receiver):
 
     return send_action
 
+
+'''
+Policy representing a user exiting a chat room and its accompanying message
+'''
 def exit_action(state, room, user):
     def f(_g, step, sL, s, kafkaConfig):
         msgs = messages(state, room, 'exit', f"{user} exited {room}", user)

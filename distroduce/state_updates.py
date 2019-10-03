@@ -2,7 +2,12 @@ from copy import deepcopy
 from datetime import datetime
 from functools import reduce
 
-# State Updates
+add = lambda a, b: a + b
+
+
+'''
+Function that maintains the state of users in a chat room
+'''
 def update_users(users, actions, action_types=['send','enter','exit']):
     users = deepcopy(users)
     for action_type in action_types:
@@ -18,13 +23,17 @@ def update_users(users, actions, action_types=['send','enter','exit']):
                         users.remove(user) # remove_exited
     return users
 
-add = lambda a, b: a + b
+
+'''
+State Update used to counts sent messages
+'''
 def count_messages(_g, step, sL, s, actions, kafkaConfig):
     return 'total_msg_count', s['total_msg_count'] + reduce(add, actions['msg_counts'])
 
-def add_send_time(_g, step, sL, s, actions, kafkaConfig):
-    return 'total_send_time', s['total_send_time'] + reduce(add, actions['send_times'])
 
+'''
+State Update used to create to log message events
+'''
 def send_message(state):
     return lambda _g, step, sL, s, actions, kafkaConfig: (
         state,
@@ -36,5 +45,16 @@ def send_message(state):
         }
     )
 
+
+'''
+State Update used to sum the time taken for the Kafka Producer to send messages between users
+'''
+def add_send_time(_g, step, sL, s, actions, kafkaConfig):
+    return 'total_send_time', s['total_send_time'] + reduce(add, actions['send_times'])
+
+
+'''
+State Update used to record the event record creation time
+'''
 def current_time(state):
     return lambda _g, step, sL, s, actions, kafkaConfig: (state, datetime.now())
