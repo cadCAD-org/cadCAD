@@ -5,7 +5,6 @@ yes | sudo python3 -m pip install pathos kafka-python
 wget https://raw.githubusercontent.com/JEJodesty/cadCAD/dev/dist/cadCAD-0.0.2-py3-none-any.whl
 yes | sudo python3 -m pip install cadCAD-0.0.2-py3-none-any.whl
 
-
 # check for master node
 IS_MASTER=false
 if grep -i isMaster /mnt/var/lib/info/instance.json | grep -i true;
