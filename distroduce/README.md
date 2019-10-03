@@ -26,7 +26,7 @@ sent to Kafka topics on a Kafka cluster from a Spark bootstrapped EMR cluster.
 * **IoT Event / Device Simulation:** Competes with *AWS IoT Device Simulator* and *Azure IoT Solution Acceleration: 
 Device Simulation*. Unlike these products, *Distributed Produce* enables a user-defined state updates and agent actions, 
 as well as message publish benchmarking
-* **Development Environment for Real-Time Data Processing / Routing:** 
+* **Development Environment for Real-Time Data Processing / Routing:**
 
 ##Get Started:
 
