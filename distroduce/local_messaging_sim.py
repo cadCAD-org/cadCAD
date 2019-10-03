@@ -17,15 +17,19 @@ if __name__ == "__main__":
         'total_send_time': 0.000000
     }
 
+    # N = 5 = 10000 / (500 x 4)
+    # T = 500
     sim_config = config_sim(
         {
             "N": 1,
-            "T": range(5000),
+            "T": range(10),
+            # "T": range(5000),
         }
     )
 
     exec_mode = ExecutionMode()
-    kafkaConfig = {'send_topic': 'test', 'producer_config': {'bootstrap_servers': f'{sys.argv[1]}:9092', 'acks': 'all'}}
+    kafkaConfig = {'send_topic': 'test', 'producer_config': {'bootstrap_servers': f'localhost:9092', 'acks': 'all'}}
+    # kafkaConfig = {'send_topic': 'test', 'producer_config': {'bootstrap_servers': f'{sys.argv[1]}:9092', 'acks': 'all'}}
     dist_proc_ctx = ExecutionContext(context=exec_mode.dist_proc, method=distributed_produce, kafka_config=kafkaConfig)
     run = Executor(exec_context=dist_proc_ctx, configs=configs, spark_context=sc)
 
