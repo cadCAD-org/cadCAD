@@ -10,8 +10,8 @@ by Joshua E. Jodesty
                                        
 ```
 ## What?: *Description*
-***Distributed Produce*** (**[distroduce](distroduce)**) is a message simulation and throughput benchmarking framework / 
-[cadCAD](https://cadcad.org) execution mode that leverages [Apache Spark](https://spark.apache.org/) and 
+***Distributed Produce*** (**[distroduce](distroduce)**) is a distributed message simulation and throughput benchmarking 
+framework / [cadCAD](https://cadcad.org) execution mode that leverages [Apache Spark](https://spark.apache.org/) and 
 [Apache Kafka Producer](https://kafka.apache.org/documentation/#producerapi) for optimizing Kafka cluster configurations 
 and debugging real-time data transformations. *distroduce* leverages cadCAD's user-defined event simulation template and 
 framework to simulate messages sent to Kafka clusters. This enables rapid and iterative design, debugging, and message 
@@ -20,8 +20,8 @@ Streaming.
 
 ##How?: *A Tail of Two Clusters*
 ***Distributed Produce*** is a Spark Application used as a cadCAD Execution Mode that distributes Kafka Producers, 
-message simulation, and message publishing to worker nodes of an EMR cluster. Messages published from these workers are 
-sent to Kafka topics on a Kafka cluster from a Spark bootstrapped EMR cluster.
+message simulation, and message publishing to worker nodes of an [AWS EMR](https://aws.amazon.com/emr/) cluster. 
+Messages published from these workers are sent to Kafka topics on a Kafka cluster from a Spark bootstrapped EMR cluster.
 
 ##Why?: *Use Case*
 * **IoT Event / Device Simulation:** Competes with *AWS IoT Device Simulator* and *Azure IoT Solution Acceleration: 
@@ -49,9 +49,9 @@ spark-submit --py-files distroduce/dist/distroduce.zip  distroduce/local_messagi
 ### 1. Write cadCAD Simulation:
 * **Simulation Description:**
     To demonstration of *Distributed Produce*, I implemented a simulation of two users interacting over a messaging service.
-* **Resources**
-    * [cadCAD Documentation](https://github.com/BlockScience/cadCAD/tree/master/documentation)
-    * [cadCAD Tutorials](https://github.com/BlockScience/cadCAD/tree/master/tutorials)
+* **cadCAD Resources:**
+    * [Documentation](https://github.com/BlockScience/cadCAD/tree/master/documentation)
+    * [Tutorials](https://github.com/BlockScience/cadCAD/tree/master/tutorials)
 * **Terminology:**
     * ***[Initial Conditions](https://github.com/BlockScience/cadCAD/tree/master/documentation#state-variables)*** - State Variables and their initial values (Start event of Simulation)
         ```python
@@ -133,9 +133,13 @@ cluster_name = 'distibuted_produce'
 launch_cluster(cluster_name, region, ec2_attributes, bootstrap_actions, instance_groups, configurations)
 ```
 
-### 4. Execute Benchmark(s):
+### 4. Execute Benchmark(s) on EMR:
 * **Step 1:** ssh unto master node
-* **Step 2:** Spark Submit
+```bash
+zip -rq distroduce/dist/distroduce.zip distroduce/
+```
+* **Step 2:** ssh unto master node
+* **Step 3:** Spark Submit
     ```
     spark-submit --master yarn --py-files distroduce.zip messaging_sim.py `hostname | xargs`
     ```

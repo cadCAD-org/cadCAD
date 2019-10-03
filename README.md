@@ -53,7 +53,8 @@ spark-submit --py-files distroduce/dist/distroduce.zip  distroduce/local_messagi
     * [cadCAD Documentation](https://github.com/BlockScience/cadCAD/tree/master/documentation)
     * [cadCAD Tutorials](https://github.com/BlockScience/cadCAD/tree/master/tutorials)
 * **Terminology:**
-    * ***[Initial Conditions](https://github.com/BlockScience/cadCAD/tree/master/documentation#state-variables)*** - State Variables and their initial values (Start event of Simulation)
+    * ***[Initial Conditions](https://github.com/BlockScience/cadCAD/tree/master/documentation#state-variables)*** - 
+    State Variables and their initial values (Start event of Simulation)
         ```python
         initial_conditions = {
             'state_variable_1': 0,
