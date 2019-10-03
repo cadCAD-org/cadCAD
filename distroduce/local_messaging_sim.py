@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 
 from cadCAD import configs
@@ -30,8 +31,15 @@ if __name__ == "__main__":
         }
     )
 
+    # Configuration for Kafka Producer
+    kafkaConfig = {
+        'send_topic': 'test',
+        'producer_config': {
+            'bootstrap_servers': f'{sys.argv[1]}:9092',
+            'acks': 'all'
+        }
+    }
     exec_mode = ExecutionMode()
-    kafkaConfig = {'send_topic': 'test', 'producer_config': {'bootstrap_servers': f'localhost:9092', 'acks': 'all'}}
     dist_proc_ctx = ExecutionContext(context=exec_mode.dist_proc, method=distributed_produce, kafka_config=kafkaConfig)
     run = Executor(exec_context=dist_proc_ctx, configs=configs, spark_context=sc)
 

@@ -57,21 +57,31 @@ def main(executor, sim_config, intitial_conditions, sim_composition):
 
     i = 0
     for raw_result, tensor_field in executor.execute():
-        result = arrange_cols(pd.DataFrame(raw_result), False)[
+        result = arrange_cols(pd.DataFrame(raw_result), False)
+        metrics_result = result[
             [
                 'run_id', 'timestep', 'substep',
                 'record_creation', 'total_msg_count', 'total_send_time'
             ]
         ]
+        msgs_result = result[
+            [
+                'run_id', 'timestep', 'substep',
+                'record_creation',
+                'client_a', 'client_b'
+            ]
+        ]
         print()
         if i == 0:
             print(tabulate(tensor_field, headers='keys', tablefmt='psql'))
-        last = result.tail(1)
+        last = metrics_result.tail(1)
         last['msg_per_sec'] = last['total_msg_count'] / last['total_send_time']
-        print("Output: Head")
-        print(tabulate(result.head(5), headers='keys', tablefmt='psql'))
-        print("Output: Tail")
-        print(tabulate(result.tail(5), headers='keys', tablefmt='psql'))
+        print("Messages Output: Head")
+        print(tabulate(msgs_result.head(5), headers='keys', tablefmt='psql'))
+        print("Metrics Output: Head")
+        print(tabulate(metrics_result.head(5), headers='keys', tablefmt='psql'))
+        print("Metrics Output: Tail")
+        print(tabulate(metrics_result.tail(5), headers='keys', tablefmt='psql'))
         print(tabulate(last, headers='keys', tablefmt='psql'))
         print()
         i += 1
