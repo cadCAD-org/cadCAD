@@ -27,8 +27,8 @@ append_configs(
 Parameters:
 * **initial_state** : _dict_ - [State Variables](#State-Variables) and their initial values
 * **partial_state_update_blocks** : List[dict[dict]] - List of [Partial State Update Blocks](#Partial-State-Update-Blocks)
-* **policy_ops** : List[functions] - See [Policy Aggregation](/63k2ncjITuqOPCUHzK7Viw) 
-* **sim_configs** - See [System Model Parameter Sweep](/4oJ_GT6zRWW8AO3yMhFKrg)
+* **policy_ops** : List[functions] - See [Policy Aggregation](Policy_Aggregation.md) 
+* **sim_configs** - See [System Model Parameter Sweep](System_Model_Parameter_Sweep.md)
 
 ## Simulation Properties
 
