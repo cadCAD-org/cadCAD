@@ -241,7 +241,7 @@ def generate_diagram(config: Configuration):
         psub_params = relations[i].get('params', set())
         psub_params = {k: params[k] for k in psub_params}
         psub_vars = relations[i].get('state', set())
-        psub_vars = {k: initial_state[k] for k in psub_vars}
+        psub_vars = {k: initial_state.get(k, None) for k in psub_vars}
         psub_graph.subgraph(generate_params_cluster(psub_params, i))
         psub_graph.subgraph(generate_variables_cluster(psub_vars, i))
         #psub_graph = relate_params(psub_graph, psub_params, i)
@@ -256,7 +256,7 @@ def generate_diagram(config: Configuration):
         if len(list_of_inputs) > 0:
             agg = True
             inputs = set.union(*list_of_inputs)
-            inputs = {k: initial_state[k] for k in inputs}
+            inputs = {k: initial_state.get(k, None) for k in inputs}
             psub_graph.subgraph(generate_policies_cluster(policies, i))
             psub_graph = relate(psub_graph, policy_params, i, 'param', 'policy')
             psub_graph = relate(psub_graph, policy_inputs, i, 'variable', 'policy')
@@ -273,7 +273,7 @@ def generate_diagram(config: Configuration):
         list_of_inputs = list(sufs_inputs.values())
         if len(list_of_inputs) > 0:
             inputs = set.union(*list_of_inputs)
-            inputs = {k: initial_state[k] for k in inputs}
+            inputs = {k: initial_state.get(k, None) for k in inputs}
             psub_graph.subgraph(generate_sufs_cluster(sufs, i, agg=agg))
             psub_graph = relate(psub_graph, sufs_params, i, 'param', 'suf')
             psub_graph = relate(psub_graph, sufs_inputs, i, 'variable', 'suf')
