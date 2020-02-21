@@ -33,6 +33,12 @@ python3 setup.py sdist bdist_wheel
 pip3 install dist/*.whl
 ```
 
+**Option C: Using [Nix](https://nixos.org/nix/)**
+1. Install Nix: `curl https://nixos.org/nix/install | sh` or via system package manager
+2. Run `nix-shell` in project root directory
+
+The above steps will enter you into a Nix development shell, with all package requirements for development of and with cadCAD.
+This works with just about all Unix systems as well as MacOS, for reliable and reproducible builds that don't dirty your local environment.
  
 ## 2. Learn the basics
 **Tutorials:** available both as [Jupyter Notebooks](tutorials) 
