@@ -3,7 +3,7 @@
 with import <nixpkgs> {};
 
 let channels = rec {
-  requirements = import ./requirements.nix {};
+  requirements = import ./nix/requirements.nix {};
 };
 in with channels;
 

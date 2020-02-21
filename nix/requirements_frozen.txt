@@ -1,0 +1,16 @@
+cadCAD==0.3.1
+Cython==0.29.15
+dill==0.3.1.1
+fn==0.4.3
+funcy==1.14
+multiprocess==0.70.9
+numpy==1.14.5
+pandas==1.0.1
+pathos==0.2.5
+pox==0.2.7
+ppft==1.6.6.1
+python-dateutil==2.8.1
+pytz==2019.3
+setuptools-scm==3.5.0
+six==1.14.0
+tabulate==0.8.6
