@@ -1,10 +1,8 @@
-{ nixpkgs ? import <nixpkgs> {} }:
+{ nixpkgs ? import <nixpkgs> { } }:
 
-with import <nixpkgs> {};
+with import <nixpkgs> { };
 
-let channels = rec {
-  requirements = import ./nix/requirements.nix {};
-};
+let channels = rec { requirements = import ./nix/requirements.nix { }; };
 in with channels;
 
 let
@@ -19,8 +17,7 @@ let
 
   deps = builtins.attrValues requirements.packages;
 
-in
-  nixpkgs.stdenv.mkDerivation {
-    name = "env";
-    buildInputs = [ pkgs deps ];
-  }
+in nixpkgs.stdenv.mkDerivation {
+  name = "env";
+  buildInputs = [ pkgs deps ];
+}
