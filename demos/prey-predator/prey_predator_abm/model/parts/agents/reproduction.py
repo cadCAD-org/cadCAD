@@ -2,13 +2,13 @@ import random
 from uuid import uuid4
 from ..location import nearby_agents, get_free_location
 
-def p_reproduce_agents(params, step, sL, s):
+def p_reproduce_agents(params, substep, state_history, prev_state):
   """
   Generates an new agent through an nearby agent pair, subject to rules.
   Not done.
   """
-  agents = s['agents']
-  sites = s['sites']
+  agents = prev_state['agents']
+  sites = prev_state['sites']
   food_threshold = params['reproduction_food_threshold']
   reproduction_food = params['reproduction_food']
   reproduction_probability = params['reproduction_probability']
@@ -48,8 +48,8 @@ def p_reproduce_agents(params, step, sL, s):
   return {'agent_delta_food': agent_delta_food,
           'agent_create': new_agents}
 
-def s_agent_create(params, step, sL, s, policy_input):
-    updated_agents = s['agents'].copy()
+def s_agent_create(params, substep, state_history, prev_state, policy_input):
+    updated_agents = prev_state['agents'].copy()
     for label, food in policy_input['agent_delta_food'].items():
         updated_agents[label]['food'] += food
     for label, properties in policy_input['agent_create'].items():

@@ -1,12 +1,12 @@
 from ..location import nearby_agents
 import random
 
-def p_feed_prey(params, step, sL, s):
+def p_feed_prey(params, substep, state_history, prev_state):
     """
     Feeds the hungry prey with all food located on its site.
     """
-    agents = s['agents']
-    sites = s['sites']
+    agents = prev_state['agents']
+    sites = prev_state['sites']
     preys = {k: v for k, v in agents.items() if v['type'] == 'prey'}
     hungry_preys = {label: properties for label, properties in preys.items()
                     if properties['food'] < params['hunger_threshold']}
@@ -23,25 +23,25 @@ def p_feed_prey(params, step, sL, s):
             'site_delta_food': site_delta_food}
 
 
-def s_agent_food(params, step, sL, s, policy_input):
-    updated_agents = s['agents'].copy()
+def s_agent_food(params, substep, state_history, prev_state, policy_input):
+    updated_agents = prev_state['agents'].copy()
     for label, delta_food in policy_input['agent_delta_food'].items():
         updated_agents[label]['food'] += delta_food
     return ('agents', updated_agents)
 
 
-def s_site_food(params, step, sL, s, policy_input):
-    updated_sites = s['sites'].copy()
+def s_site_food(params, substep, state_history, prev_state, policy_input):
+    updated_sites = prev_state['sites'].copy()
     for label, delta_food in policy_input['site_delta_food'].items():
         updated_sites[label] += delta_food
     return ('sites', updated_sites)
 
-def p_hunt_prey(params, step, sL, s):
+def p_hunt_prey(params, substep, state_history, prev_state):
     """
     Feeds the hungry predators with an random nearby prey.
     """
-    agents = s['agents']
-    sites = s['sites']
+    agents = prev_state['agents']
+    sites = prev_state['sites']
     hungry_threshold = params['hunger_threshold']
     preys = {k: v for k, v in agents.items()
              if v['type'] == 'prey'}

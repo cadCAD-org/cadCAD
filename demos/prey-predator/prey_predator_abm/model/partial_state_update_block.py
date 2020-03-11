@@ -8,9 +8,6 @@ from .parts.agents.natural_death import *
 
 partial_state_update_block = [
     {
-        'label': 'Grow food',
-        'description': 'Grow food at every site',
-        'ignore': False,
         'policies': {
             'grow_food': p_grow_food
         },
@@ -19,9 +16,6 @@ partial_state_update_block = [
         }
     },
     {
-        'label': 'Digest and olden agents',
-        'description': '',
-        'ignore': False,
         'policies': {
             'increase_agent_age': p_digest_and_olden
         },
@@ -31,9 +25,6 @@ partial_state_update_block = [
         }
     },
     {
-        'label': 'Move agents',
-        'description': '',
-        'ignore': False,
         'policies': {
             'move_agent': p_move_agents
         },
@@ -43,9 +34,6 @@ partial_state_update_block = [
         }
     },
     {
-        'label': 'Reproduce agents',
-        'description': '',
-        'ignore': False,
         'policies': {
             'reproduce_agents': p_reproduce_agents
 
@@ -56,9 +44,6 @@ partial_state_update_block = [
         }
     },
     {
-        'label': 'Feed preys',
-        'description': '',
-        'ignore': False,
         'policies': {
             'feed_prey': p_feed_prey
         },
@@ -68,9 +53,6 @@ partial_state_update_block = [
         }
     },
     {
-        'label': 'Feed predators',
-        'description': '',
-        'ignore': False,
         'policies': {
             'hunt_prey': p_hunt_prey
         },
@@ -79,9 +61,6 @@ partial_state_update_block = [
         }
     },
     {
-        'label': 'Natural agent death',
-        'description': '',
-        'ignore': False,
         'policies': {
             'natural_death': p_natural_death
         },
@@ -90,6 +69,3 @@ partial_state_update_block = [
         }
     }
 ]
-
-partial_state_update_block = [block for block in partial_state_update_block
-                              if block.get('ignore', False) is False]
