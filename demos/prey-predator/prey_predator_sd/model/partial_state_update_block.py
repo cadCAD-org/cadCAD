@@ -1,4 +1,4 @@
-from .parts.latka_volterra import *
+from .parts.lotka_volterra import *
 
 
 partial_state_update_block = [
