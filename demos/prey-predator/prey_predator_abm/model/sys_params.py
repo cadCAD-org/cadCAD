@@ -1,3 +1,7 @@
+"""
+Model parameters.
+"""
+
 sys_params = {
     'food_growth_rate': [3],
     'maximum_food_per_site': [10],

@@ -1,3 +1,8 @@
+"""
+Helper functions associated with location
+"""
+
+
 import numpy as np
 import random
 from typing import *
