@@ -7,8 +7,8 @@ M = 20
 sites = np.ones((N, M)) * 5
 locations = [(n, m) for n in range(N) for m in range(M)]
 
-n_predators = 6
-n_preys = 50
+n_predators = 20
+n_preys = 100
 
 initial_agents = {}
 

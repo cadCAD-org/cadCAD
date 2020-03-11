@@ -1,3 +1,0 @@
-#!/bin/bash
-rm markdown_exports/lab_notebook_files/*
-jupyter nbconvert --to markdown --execute src/lab_notebook.ipynb --output-dir markdown_exports --ExecutePreprocessor.timeout=None
