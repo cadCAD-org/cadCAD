@@ -1,3 +1,8 @@
+"""
+Model logic structure.
+"""
+
+
 from .parts.environment.food_regeneration import *
 from .parts.agents.feeding import *
 from .parts.agents.reproduction import *

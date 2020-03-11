@@ -1,4 +1,9 @@
-MONTE_CARLO_RUNS = 5 # N monte carlo runs
+"""
+Simulation configuration object.
+"""
+
+
+MONTE_CARLO_RUNS = 1 # N monte carlo runs
 
 from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import config_sim
@@ -10,7 +15,7 @@ from .sim_params import SIMULATION_TIME_STEPS
 
 sim_config = config_sim (
     {
-        'N': 1,
+        'N': MONTE_CARLO_RUNS,
         'T': range(SIMULATION_TIME_STEPS), # number of timesteps
         'M': sys_params,
     }

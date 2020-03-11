@@ -1,6 +1,5 @@
-# Simulation configuration parameters
-# DAYS_PER_TIMESTEP = 1
-# SIMULATION_TIME_YEARS = 10
-# SIMULATION_TIME_STEPS = int(SIMULATION_TIME_YEARS * 365 / DAYS_PER_TIMESTEP)
+"""
+Simulation parameters.
+"""
 
 SIMULATION_TIME_STEPS = 300
