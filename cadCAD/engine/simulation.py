@@ -1,7 +1,7 @@
 from typing import Any, Callable, Dict, List, Tuple
 from pathos.pools import ThreadPool as TPool
-from copy import deepcopy
 from functools import reduce
+from types import MappingProxyType
 
 from cadCAD.engine.utils import engine_exception
 from cadCAD.utils import flatten
@@ -108,7 +108,7 @@ class Executor:
                 run: int
             ) -> List[Dict[str, Any]]:
 
-        last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
+        last_in_obj: Dict[str, Any] = MappingProxyType(sL[-1])
         _input: Dict[str, Any] = self.policy_update_exception(
             self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs)
         )
@@ -146,7 +146,7 @@ class Executor:
             ) -> List[Dict[str, Any]]:
 
         sub_step = 0
-        states_list_copy: List[Dict[str, Any]] = deepcopy(simulation_list[-1])
+        states_list_copy: List[Dict[str, Any]] = tuple(simulation_list[-1])
         genesis_states: Dict[str, Any] = states_list_copy[-1]
 
         if len(states_list_copy) == 1:
