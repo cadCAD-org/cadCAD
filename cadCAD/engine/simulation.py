@@ -147,7 +147,7 @@ class Executor:
 
         sub_step = 0
         states_list_copy: List[Dict[str, Any]] = tuple(simulation_list[-1])
-        genesis_states: Dict[str, Any] = states_list_copy[-1]
+        genesis_states: Dict[str, Any] = states_list_copy[-1].copy()
 
         if len(states_list_copy) == 1:
             genesis_states['substep'] = sub_step
