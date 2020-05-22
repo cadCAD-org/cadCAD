@@ -213,7 +213,7 @@ class Executor:
                     d['run'], d['substep'], d['timestep'] = run, 0, 0
                     yield d
 
-            states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(deepcopy(states_list)))
+            states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(tuple(states_list)))
 
             first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(
                 sweep_dict, states_list_copy, configs, env_processes, time_seq, run
