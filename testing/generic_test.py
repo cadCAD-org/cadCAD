@@ -8,7 +8,6 @@ from tabulate import tabulate
 
 
 def generate_assertions_df(df, expected_results, target_cols, evaluations):
-    # pprint(expected_results)
     test_names = []
     for eval_f in evaluations:
         def wrapped_eval(a, b):
@@ -48,13 +47,10 @@ def make_generic_test(params):
                         erroneous.at[index, key] = unexpected[key]
                 # etc.
 
-            # ToDo: Condition that will change false to true
             self.assertTrue(reduce(lambda a, b: a and b, tested_df[test_name]))
 
         @parameterized.expand(params)
         def test_validation(self, name, result_df, expected_results, target_cols, evaluations):
-            # alt for (*) Exec Debug mode
-            # pprint("HI_"*100)
             tested_df, test_names = generate_assertions_df(result_df, expected_results, target_cols, evaluations)
 
             for test_name in test_names:
