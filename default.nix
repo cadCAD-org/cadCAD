@@ -1,23 +1,40 @@
-{ nixpkgs ? import <nixpkgs> { } }:
+{ pkgs ? import <nixpkgs> { }, stdenv ? pkgs.stdenv, fetchPypi ? pkgs.fetchPypi
+, pythonPkgs ? pkgs.python37Packages
+, buildPythonPackage ? pythonPkgs.buildPythonPackage }:
 
-with import <nixpkgs> { };
+buildPythonPackage rec {
+  pname = "cadCAD";
+  version = "0.3.1";
 
-let channels = rec { requirements = import ./nix/requirements.nix { }; };
-in with channels;
+  #src = fetchPypi {
+  #  inherit pname version;
+  #  sha256 = "4f2a4d39e4ea601b9ab42b2db08b5918a9538c168cff1c6895ae26646f3d73b1";
+  #};
+  # src = builtins.fetchGit {
+  #   url = "git@github.com:BlockScience/cadCAD.git";
+  #   ref = "master";
+  # };
+  src = ./.;
 
-let
-  pkgs = [
-    python37
-    python37Packages.pip
-    python37Packages.setuptools
-    python37Packages.virtualenvwrapper
-    python37Packages.numpy
-    python37Packages.pandas
+  doCheck = false; # TODO: correct or disclude integration tests
+
+  buildInputs = [ ];
+  checkInputs = [ ];
+  propagatedBuildInputs = with pythonPkgs; [
+    numpy
+    pandas
+    pathos
+    fn
+    tabulate
+    funcy
   ];
 
-  deps = builtins.attrValues requirements.packages;
-
-in nixpkgs.stdenv.mkDerivation {
-  name = "env";
-  buildInputs = [ pkgs deps ];
+  meta = with stdenv.lib; {
+    description =
+      "Design, test and validate complex systems through simulation in Python";
+    homepage = "https://github.com/BlockScience/cadCAD";
+    license = licenses.mit;
+    # maintainers = with maintainers; [ benschza ];
+    platforms = platforms.unix;
+  };
 }
