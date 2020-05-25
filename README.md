@@ -46,3 +46,5 @@ Familiarize yourself with some system modelling concepts and cadCAD terminology.
 
 ### Connect:
 Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
+
+### [Feature Notes](documentation/feature_notes.md)
