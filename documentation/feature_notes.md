@@ -1,10 +1,10 @@
 # Features Notes:
 ### May 18, 2020
 
-#### [Distributed Execution Mode](https://github.com/BlockScience/distroduce/blob/master/documentation/dist_exec_doc.ipynb)
+#### [Distributed Execution Mode](https://github.com/BlockScience/distroduce#documentation)
 * Distributes simulations on horizontally scalable computing cluster to concurrently execute Monte-Carlo runs with 
 Apache Spark on AWS EMR.
-* Runs are executed via a DAG scheduler that parrelizes runs within cluster executors (“virtual threads”) across 
+* Runs are executed via a DAG scheduler that parallel-izes runs within cluster executors (“virtual threads”) across 
     multiple EC2 instances
     
 #### [Local Execution Mode](documentation/Simulation_Execution.md)
@@ -36,6 +36,3 @@ Apache Spark on AWS EMR.
 * Expandable state and policy update parameter space enables changes to the parameter space of updates while 
 supporting backwards compatibility
 * Legacy execution modes supported
-
-#### Bug Fixes:
-* [CTTF-462](https://blockscience.atlassian.net/browse/CTTF-462): single_proc & Multi_proc simulations stalls within the same module
