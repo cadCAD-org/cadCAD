@@ -79,8 +79,8 @@ class Executor:
         \___/\__,_/\__,_/\____/_/  |_/_____/  
         by BlockScience
         ''')
-        print(f'Execution Mode: {self.exec_context + ": " + str(self.configs)}')
-        print(f'Configurations: {self.configs}')
+        print(f'Execution Mode: {self.exec_context + ": " + str(len(self.configs))}')
+        print(f'Configurations: {len(self.configs)}')
 
         var_dict_list, states_lists, Ts, Ns, eps, configs_structs, env_processes_list, partial_state_updates, simulation_execs = \
             [], [], [], [], [], [], [], [], []
@@ -94,7 +94,6 @@ class Executor:
             states_lists.append([x.initial_state])
             eps.append(list(x.exogenous_states.values()))
             configs_structs.append(config_proc.generate_config(x.initial_state, x.partial_state_updates, eps[config_idx]))
-            # print(env_processes_list)
             env_processes_list.append(x.env_processes)
             partial_state_updates.append(x.partial_state_updates)
             simulation_execs.append(SimExecutor(x.policy_ops).simulation)
