@@ -6,10 +6,9 @@ from cadCAD import configs
 
 exec_mode = ExecutionMode()
 
-# # Multiple Processes Execution using Multiple System Model Configurations:
-# # sys_model_A & sys_model_B
-multi_mode_ctx = ExecutionContext(context=exec_mode.multi_mode)
-sys_model_AB_simulation = Executor(exec_context=multi_mode_ctx, configs=configs)
+# Multiple Processes Execution using Multiple System Model Configurations:
+local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
+sys_model_AB_simulation = Executor(exec_context=local_proc_ctx, configs=configs)
 
 i = 0
 config_names = ['sys_model_A', 'sys_model_B']
