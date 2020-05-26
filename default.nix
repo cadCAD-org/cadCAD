@@ -20,14 +20,18 @@ buildPythonPackage rec {
   # In future, when tests are introduced, this can be updated to 'true'
   doCheck = false;
 
-  buildInputs = [ ];
+  buildInputs = with pythonPkgs; [
+    wheel
+    tabulate
+    pytest
+    parameterized
+    tabulate
+  ];
   checkInputs = [ ];
   propagatedBuildInputs = with pythonPkgs; [
-    numpy
     pandas
     pathos
     fn
-    tabulate
     funcy
   ];
 
