@@ -4,7 +4,7 @@ import pandas as pd
 from tabulate import tabulate
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 
-from testing.models import external_dataset
+from testing.models import param_sweep
 from cadCAD import configs
 
 exec_mode = ExecutionMode()

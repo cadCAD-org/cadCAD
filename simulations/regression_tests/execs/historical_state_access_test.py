@@ -8,7 +8,7 @@ from cadCAD import configs
 
 exec_mode = ExecutionMode()
 
-local_proc_ctx = ExecutionContext(context=exec_mode.single_mode)
+local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
 run = Executor(exec_context=local_proc_ctx, configs=configs)
 
 raw_result, tensor_fields, sessions = run.execute()

@@ -69,7 +69,6 @@ def row(a, b):
 
 
 def create_test_params(feature, fields):
-    i = 0
     raw_result, tensor_fields, sessions = run.execute()
     df = pd.DataFrame(raw_result)
     expected = generate_expected(sweep_params)

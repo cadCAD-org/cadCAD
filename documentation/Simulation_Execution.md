@@ -87,9 +87,8 @@ exec_mode = ExecutionMode()
 
 # Single Process Execution using a Single System Model Configuration:
 # sys_model_A
-sys_model_A = [configs[0]] # sys_model_A
-single_mode_ctx = ExecutionContext(context=exec_mode.single_mode)
-sys_model_A_simulation = Executor(exec_context=single_mode_ctx, configs=sys_model_A)
+local_mode_ctx = ExecutionContext(context=exec_mode.local_proc)
+sys_model_A_simulation = Executor(exec_context=local_mode_ctx, configs=configs)
 
 sys_model_A_raw_result, sys_model_A_tensor_field, sessions = sys_model_A_simulation.execute()
 sys_model_A_result = pd.DataFrame(sys_model_A_raw_result)
@@ -112,6 +111,7 @@ Example System Model Configurations:
 ```python
 import pandas as pd
 from tabulate import tabulate
+
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from documentation.examples import sys_model_A, sys_model_B
 from cadCAD import configs
@@ -120,20 +120,17 @@ exec_mode = ExecutionMode()
 
 # # Multiple Processes Execution using Multiple System Model Configurations:
 # # sys_model_A & sys_model_B
-multi_mode_ctx = ExecutionContext(context=exec_mode.multi_mode)
-sys_model_AB_simulation = Executor(exec_context=multi_mode_ctx, configs=configs)
+local_mode_ctx = ExecutionContext(context=exec_mode.local_proc)
+sys_model_AB_simulation = Executor(exec_context=local_mode_ctx, configs=configs)
 
-i = 0
-config_names = ['sys_model_A', 'sys_model_B']
 sys_model_AB_raw_result, sys_model_AB_tensor_field, sessions = sys_model_AB_simulation.execute()
 sys_model_AB_result = pd.DataFrame(sys_model_AB_raw_result)
 print()
-print(f"Tensor Field: {config_names[i]}")
+print(f"Tensor Field:")
 print(tabulate(sys_model_AB_tensor_field, headers='keys', tablefmt='psql'))
 print("Result: System Events DataFrame:")
 print(tabulate(sys_model_AB_result, headers='keys', tablefmt='psql'))
 print()
-i += 1
 ```
 
 * ##### [*System Model Parameter Sweep*](System_Model_Parameter_Sweep.md) 
@@ -142,14 +139,14 @@ i += 1
 ```python
 import pandas as pd
 from tabulate import tabulate
-# The following imports NEED to be in the exact order
+
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from documentation.examples import param_sweep
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
-multi_mode_ctx = ExecutionContext(context=exec_mode.multi_mode)
-run = Executor(exec_context=multi_mode_ctx, configs=configs)
+local_mode_ctx = ExecutionContext(context=exec_mode.local_proc)
+run = Executor(exec_context=local_mode_ctx, configs=configs)
 
 raw_result, tensor_field, sessions = run.execute()
 result = pd.DataFrame(raw_result)

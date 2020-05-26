@@ -9,8 +9,8 @@ from cadCAD import configs
 
 exec_mode = ExecutionMode()
 
-single_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=single_proc_ctx, configs=configs)
+local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
+run = Executor(exec_context=local_proc_ctx, configs=configs)
 
 raw_result, tensor_fields, sessions = run.execute()
 result = pd.DataFrame(raw_result)
