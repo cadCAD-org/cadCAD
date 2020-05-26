@@ -1,31 +1,25 @@
 .idea
-jupyter notebook
 .ipynb_checkpoints
 .DS_Store
 .idea
-.pytest_cache/
-notebooks
+.pytest_cache
+.mypy_cache
+.eggs
 *.egg-info
+*.csv
+simulations/.ipynb_checkpoints
+monkeytype.sqlite3
+
 __pycache__
 Pipfile
 Pipfile.lock
-results
-.mypy_cache
-*.csv
-simulations/.ipynb_checkpoints
-simulations/validation/config3.py
-cadCAD.egg-info
-
+notebooks
 build
-cadCAD.egg-info
+
 result
 
-testing/example.py
-testing/example2.py
-testing/multi_config_test.py
-testing/udo.py
-testing/udo_test.py
+notes.txt
 
-Simulation.md
-
-monkeytype.sqlite3
+simulations/validation/
+testing/models/external_dataset.py
+testing/models/historical_state_access.py
