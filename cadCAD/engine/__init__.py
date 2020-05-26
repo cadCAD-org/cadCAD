@@ -1,5 +1,5 @@
 from typing import Callable, Dict, List, Any, Tuple
-from pyspark.context import SparkContext
+# from pyspark.context import SparkContext
 
 from cadCAD.utils import flatten
 from cadCAD.configuration import Configuration, Processor
@@ -47,7 +47,7 @@ class ExecutionContext:
 
 class Executor:
     def __init__(self,
-             exec_context: ExecutionContext, configs: List[Configuration], spark_context: SparkContext = None
+             exec_context: ExecutionContext, configs: List[Configuration], spark_context
                  ) -> None:
         self.sc = spark_context
         self.SimExecutor = SimExecutor
