@@ -1,8 +1,8 @@
 Authors
 =======
 
-cadCAD was originally implemented by Joshua E. Jodesty and designed by Michael Zargham, Markus B. Koch, and
-Matthew V. Barlin from 2018 to 2019.
+cadCAD was implemented by Joshua E. Jodesty and designed by Michael Zargham, Markus B. Koch, and
+Matthew V. Barlin from 2018 to 2020.
 
 
 Project Maintainers:

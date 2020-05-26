@@ -27,28 +27,28 @@ env_process = {}
 
 # ['s1', 's2', 's3', 's4']
 # Policies per Mechanism
-def gamma(_g, step, sL, s):
+def gamma(_g, step, sL, s, **kwargs):
     return {'gamma': _g['gamma']}
 
 
-def omega(_g, step, sL, s):
+def omega(_g, step, sL, s, **kwargs):
     return {'omega': _g['omega']}
 
 
 # Internal States per Mechanism
-def alpha(_g, step, sL, s, _input):
+def alpha(_g, step, sL, s, _input, **kwargs):
     return 'alpha', _g['alpha']
 
 
-def beta(_g, step, sL, s, _input):
+def beta(_g, step, sL, s, _input, **kwargs):
     return 'beta', _g['beta']
 
 
-def policies(_g, step, sL, s, _input):
+def policies(_g, step, sL, s, _input, **kwargs):
     return 'policies', _input
 
 
-def sweeped(_g, step, sL, s, _input):
+def sweeped(_g, step, sL, s, _input, **kwargs):
     return 'sweeped', {'beta': _g['beta'], 'gamma': _g['gamma']}
 
 psu_block = {k: {"policies": {}, "variables": {}} for k in psu_steps}

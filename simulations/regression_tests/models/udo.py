@@ -1,7 +1,5 @@
-from copy import deepcopy
-
 import pandas as pd
-from fn.func import curried
+# from fn.func import curried
 from datetime import timedelta
 import pprint as pp
 
@@ -57,7 +55,7 @@ policy_udoB = UDO(udo=udoExample(0, DF), masked_members=['obj', 'perception'])
 
 
 sim_config = config_sim({
-    "N": 2,
+    "N": 3,
     "T": range(4)
 })
 
@@ -77,14 +75,14 @@ var_timestep_trigger = var_substep_trigger([0, system_substeps])
 env_timestep_trigger = env_trigger(system_substeps)
 psu_block = {k: {"policies": {}, "variables": {}} for k in psu_steps}
 
-def udo_policyA(_g, step, sL, s):
+def udo_policyA(_g, step, sL, s, **kwargs):
     s['udo_policies']['udo_A'].updateX()
     return {'udo_A': udoPipe(s['udo_policies']['udo_A'])}
 # policies['a'] = udo_policyA
 for m in psu_steps:
     psu_block[m]['policies']['a'] = udo_policyA
 
-def udo_policyB(_g, step, sL, s):
+def udo_policyB(_g, step, sL, s, **kwargs):
     s['udo_policies']['udo_B'].updateX()
     return {'udo_B': udoPipe(s['udo_policies']['udo_B'])}
 # policies['b'] = udo_policyB
@@ -96,13 +94,13 @@ for m in psu_steps:
 # policies = {"A": udo_policyA, "B": udo_policyB}
 
 def add(y: str, added_val):
-    return lambda _g, step, sL, s, _input: (y, s[y] + added_val)
+    return lambda _g, step, sL, s, _input, **kwargs: (y, s[y] + added_val)
 # state_updates['increment'] = add('increment', 1)
 for m in psu_steps:
     psu_block[m]["variables"]['increment'] = add('increment', 1)
 
 
-@curried
+# @curried
 def perceive(s, self):
     self.perception = self.ds[
         (self.ds['run'] == s['run']) & (self.ds['substep'] == s['substep']) & (self.ds['timestep'] == s['timestep'])
@@ -110,7 +108,7 @@ def perceive(s, self):
     return self
 
 
-def state_udo_update(_g, step, sL, s, _input):
+def state_udo_update(_g, step, sL, s, _input, **kwargs):
     y = 'state_udo'
     # s['hydra_state'].updateX().anon(perceive(s))
     s['state_udo'].updateX().perceive(s).updateDS()
@@ -121,7 +119,7 @@ for m in psu_steps:
 
 
 def track(destination, source):
-    return lambda _g, step, sL, s, _input: (destination, s[source].x)
+    return lambda _g, step, sL, s, _input, **kwargs: (destination, s[source].x)
 state_udo_tracker = track('state_udo_tracker', 'state_udo')
 for m in psu_steps:
     psu_block[m]["variables"]['state_udo_tracker'] = state_udo_tracker
@@ -133,13 +131,13 @@ def track_state_udo_perception(destination, source):
             return state_dict['state_udo_perception_tracker']
         else:
             return past_perception
-    return lambda _g, step, sL, s, _input: (destination, id(s[source].perception))
+    return lambda _g, step, sL, s, _input, **kwargs: (destination, id(s[source].perception))
 state_udo_perception_tracker = track_state_udo_perception('state_udo_perception_tracker', 'state_udo')
 for m in psu_steps:
     psu_block[m]["variables"]['state_udo_perception_tracker'] = state_udo_perception_tracker
 
 
-def view_udo_policy(_g, step, sL, s, _input):
+def view_udo_policy(_g, step, sL, s, _input, **kwargs):
     return 'udo_policies', _input
 for m in psu_steps:
     psu_block[m]["variables"]['udo_policies'] = view_udo_policy
@@ -151,13 +149,13 @@ def track_udo_policy(destination, source):
             return SilentDF(v)
         else:
             return v.x
-    return lambda _g, step, sL, s, _input: (destination, tuple(val_switch(v) for _, v in s[source].items()))
+    return lambda _g, step, sL, s, _input, **kwargs: (destination, tuple(val_switch(v) for _, v in s[source].items()))
 udo_policy_tracker = track_udo_policy('udo_policy_tracker', 'udo_policies')
 for m in psu_steps:
     psu_block[m]["variables"]['udo_policy_tracker'] = udo_policy_tracker
 
 
-def update_timestamp(_g, step, sL, s, _input):
+def update_timestamp(_g, step, sL, s, _input, **kwargs):
     y = 'timestamp'
     return y, time_step(dt_str=s[y], dt_format='%Y-%m-%d %H:%M:%S', _timedelta=timedelta(days=0, minutes=0, seconds=1))
 for m in psu_steps:

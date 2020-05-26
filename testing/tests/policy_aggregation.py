@@ -3,27 +3,27 @@ import pandas as pd
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from testing.generic_test import make_generic_test
-from testing.system_models import policy_aggregation
+from testing.models import policy_aggregation
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
-single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
+single_proc_ctx = ExecutionContext(context=exec_mode.single_mode)
 run = Executor(exec_context=single_proc_ctx, configs=configs)
 
-raw_result, tensor_field = run.execute()
+raw_result, tensor_field, _ = run.execute()
 result = pd.DataFrame(raw_result)
 
 expected_results = {
-    (1, 0, 0): {'policies': {}, 's1': 0},
-    (1, 1, 1): {'policies': {'policy1': 1, 'policy2': 4}, 's1': 1}, # 'policy1': 2
-    (1, 1, 2): {'policies': {'policy1': 8, 'policy2': 8}, 's1': 2},
-    (1, 1, 3): {'policies': {'policy1': 4, 'policy2': 8, 'policy3': 12}, 's1': 3},
-    (1, 2, 1): {'policies': {'policy1': 2, 'policy2': 4}, 's1': 4},
-    (1, 2, 2): {'policies': {'policy1': 8, 'policy2': 8}, 's1': 5},
-    (1, 2, 3): {'policies': {'policy1': 4, 'policy2': 8, 'policy3': 12}, 's1': 6},
-    (1, 3, 1): {'policies': {'policy1': 2, 'policy2': 4}, 's1': 7},
-    (1, 3, 2): {'policies': {'policy1': 8, 'policy2': 8}, 's1': 8},
-    (1, 3, 3): {'policies': {'policy1': 4, 'policy2': 8, 'policy3': 12}, 's1': 9}
+    (0, 1, 0, 0): {'policies': {}, 's1': 0},
+    (0, 1, 1, 1): {'policies': {'policy1': 2, 'policy2': 4}, 's1': 1}, # 'policy1': 2
+    (0, 1, 1, 2): {'policies': {'policy1': 8, 'policy2': 8}, 's1': 2},
+    (0, 1, 1, 3): {'policies': {'policy1': 4, 'policy2': 8, 'policy3': 12}, 's1': 3},
+    (0, 1, 2, 1): {'policies': {'policy1': 2, 'policy2': 4}, 's1': 4},
+    (0, 1, 2, 2): {'policies': {'policy1': 8, 'policy2': 8}, 's1': 5},
+    (0, 1, 2, 3): {'policies': {'policy1': 4, 'policy2': 8, 'policy3': 12}, 's1': 6},
+    (0, 1, 3, 1): {'policies': {'policy1': 2, 'policy2': 4}, 's1': 7},
+    (0, 1, 3, 2): {'policies': {'policy1': 8, 'policy2': 8}, 's1': 8},
+    (0, 1, 3, 3): {'policies': {'policy1': 4, 'policy2': 8, 'policy3': 12}, 's1': 9}
 }
 
 
@@ -40,4 +40,3 @@ class GenericTest(make_generic_test(params)):
 
 if __name__ == '__main__':
     unittest.main()
-
