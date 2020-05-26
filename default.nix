@@ -4,7 +4,7 @@
 
 buildPythonPackage rec {
   pname = "cadCAD";
-  version = "0.4.15";
+  version = "0.3.1";
 
   #src = fetchPypi {
   #  inherit pname version;
