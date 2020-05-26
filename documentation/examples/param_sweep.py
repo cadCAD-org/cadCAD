@@ -59,9 +59,6 @@ def sweeped(_params, step, sH, s, _input):
     return 'sweeped', {'beta': _params['beta'], 'gamma': _params['gamma']}
 
 
-
-
-
 genesis_states = {
     'alpha_plus_gamma': 0,
     'alpha': 0,
@@ -103,8 +100,8 @@ append_configs(
 )
 
 exec_mode = ExecutionMode()
-multi_proc_ctx = ExecutionContext(context=exec_mode.multi_proc)
-run = Executor(exec_context=multi_proc_ctx, configs=configs)
+local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
+run = Executor(exec_context=local_proc_ctx, configs=configs)
 
 raw_result, tensor_field, sessions = run.execute()
 result = pd.DataFrame(raw_result)
