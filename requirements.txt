@@ -3,4 +3,4 @@ tabulate
 pytest
 parameterized
 tabulate
-pyspark
+pyspark==2.4.4
