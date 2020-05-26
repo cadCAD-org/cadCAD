@@ -15,9 +15,9 @@ policy_ops=[add, mult_by_2]
 
 ##### Example Policy Updates per Partial State Update (PSU)
 ```python
-def p1_psu1(_params, step, sH, s):
+def p1_psu1(_params, step, sH, s, **kwargs):
     return {'policy1': 1}
-def p2_psu1(_params, step, sH, s):
+def p2_psu1(_params, step, sH, s, **kwargs):
     return {'policy2': 2}
 ```
 * `add` not applicable due to lack of redundant policies
@@ -25,9 +25,9 @@ def p2_psu1(_params, step, sH, s):
 * Result: `{'policy1': 2, 'policy2': 4}`
 
 ```python
-def p1_psu2(_params, step, sH, s):
+def p1_psu2(_params, step, sH, s, **kwargs):
     return {'policy1': 2, 'policy2': 2}
-def p2_psu2(_params, step, sH, s):
+def p2_psu2(_params, step, sH, s, **kwargs):
     return {'policy1': 2, 'policy2': 2}
 ```
 * `add` applicable due to redundant policies
@@ -35,9 +35,9 @@ def p2_psu2(_params, step, sH, s):
 * Result: `{'policy1': 8, 'policy2': 8}`
 
 ```python
-def p1_psu3(_params, step, sH, s):
+def p1_psu3(_params, step, sH, s, **kwargs):
     return {'policy1': 1, 'policy2': 2, 'policy3': 3}
-def p2_psu3(_params, step, sH, s):
+def p2_psu3(_params, step, sH, s, **kwargs):
     return {'policy1': 1, 'policy2': 2, 'policy3': 3}
 ```
 * `add` applicable due to redundant policies
