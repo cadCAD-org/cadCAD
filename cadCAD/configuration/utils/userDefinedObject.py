@@ -35,7 +35,6 @@ class udcBroker(object):
         funcs = dict(getmembers(obj, ismethod))
         filtered_functions = {k: v for k, v in funcs.items() if k not in function_filter}
         d['obj'] = obj
-        # d.update(deepcopy(vars(obj)))  # somehow is enough
         d.update(vars(obj))  # somehow is enough
         d.update(filtered_functions)
 
