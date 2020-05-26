@@ -1,6 +1,6 @@
 import pandas as pd
 import pprint as pp
-from fn.func import curried
+# from fn.func import curried
 from datetime import timedelta
 
 from cadCAD.utils import SilentDF #, val_switch
@@ -48,11 +48,11 @@ state_udo = UDO(udo=udoExample(0, DF), masked_members=['obj', 'perception'])
 policy_udoA = UDO(udo=udoExample(0, DF), masked_members=['obj', 'perception'])
 policy_udoB = UDO(udo=udoExample(0, DF), masked_members=['obj', 'perception'])
 
-def udo_policyA(_g, step, sL, s):
+def udo_policyA(_g, step, sL, s, **kwargs):
     s['udo_policies']['udo_A'].updateX()
     return {'udo_A': udoPipe(s['udo_policies']['udo_A'])}
 
-def udo_policyB(_g, step, sL, s):
+def udo_policyB(_g, step, sL, s, **kwargs):
     s['udo_policies']['udo_B'].updateX()
     return {'udo_B': udoPipe(s['udo_policies']['udo_B'])}
 
@@ -69,17 +69,17 @@ state_dict = {
     'timestamp': '2019-01-01 00:00:00'
 }
 
-@curried
+# @curried
 def perceive(s, self):
     self.perception = self.ds[
         (self.ds['run'] == s['run']) & (self.ds['substep'] == s['substep']) & (self.ds['timestep'] == s['timestep'])
     ].drop(columns=['run', 'substep']).to_dict()
     return self
 
-def view_udo_policy(_g, step, sL, s, _input):
+def view_udo_policy(_g, step, sL, s, _input, **kwargs):
     return 'udo_policies', _input
 
-def state_udo_update(_g, step, sL, s, _input):
+def state_udo_update(_g, step, sL, s, _input, **kwargs):
     y = 'state_udo'
     # s['hydra_state'].updateX().anon(perceive(s))
     s['state_udo'].updateX().perceive(s)
@@ -87,10 +87,10 @@ def state_udo_update(_g, step, sL, s, _input):
     return y, x
 
 def increment(y, incr_by):
-    return lambda _g, step, sL, s, _input: (y, s[y] + incr_by)
+    return lambda _g, step, sL, s, _input, **kwargs: (y, s[y] + incr_by)
 
 def track(destination, source):
-    return lambda _g, step, sL, s, _input: (destination, s[source].x)
+    return lambda _g, step, sL, s, _input, **kwargs: (destination, s[source].x)
 
 def track_udo_policy(destination, source):
     def val_switch(v):
@@ -98,7 +98,7 @@ def track_udo_policy(destination, source):
             return SilentDF(v)
         else:
             return v.x
-    return lambda _g, step, sL, s, _input: (destination, tuple(val_switch(v) for _, v in s[source].items()))
+    return lambda _g, step, sL, s, _input, **kwargs: (destination, tuple(val_switch(v) for _, v in s[source].items()))
 
 def track_state_udo_perception(destination, source):
     def id(past_perception):
@@ -106,7 +106,7 @@ def track_state_udo_perception(destination, source):
             return state_dict['state_udo_perception_tracker']
         else:
             return past_perception
-    return lambda _g, step, sL, s, _input: (destination, id(s[source].perception))
+    return lambda _g, step, sL, s, _input, **kwargs: (destination, id(s[source].perception))
 
 
 def time_model(y, substeps, time_delta, ts_format='%Y-%m-%d %H:%M:%S'):
@@ -115,7 +115,7 @@ def time_model(y, substeps, time_delta, ts_format='%Y-%m-%d %H:%M:%S'):
             return y, time_step(dt_str=s[y], dt_format=ts_format, _timedelta=time_delta)
         else:
             return y, s[y]
-    return lambda _g, step, sL, s, _input: apply_incriment_condition(s)
+    return lambda _g, step, sL, s, _input, **kwargs: apply_incriment_condition(s)
 
 
 states = {

@@ -3,12 +3,11 @@ import unittest
 import pandas as pd
 # from tabulate import tabulate
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.regression_tests import policy_aggregation
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
 first_config = configs # only contains config1
-single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
+single_proc_ctx = ExecutionContext(context=exec_mode.single_mode)
 run = Executor(exec_context=single_proc_ctx, configs=first_config)
 raw_result, tensor_field = run.execute()
 result = pd.DataFrame(raw_result)

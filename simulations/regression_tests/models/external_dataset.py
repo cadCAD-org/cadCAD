@@ -11,27 +11,27 @@ def query(s, df):
             (df['run'] == s['run']) & (df['substep'] == s['substep']) & (df['timestep'] == s['timestep'])
         ].drop(columns=['run', 'substep', "timestep"])
 
-def p1(_g, substep, sL, s):
+def p1(_g, substep, sL, s, **kwargs):
     result_dict = query(s, df).to_dict()
     del result_dict["ds3"]
     return {k: list(v.values()).pop() for k, v in result_dict.items()}
 
-def p2(_g, substep, sL, s):
+def p2(_g, substep, sL, s, **kwargs):
     result_dict = query(s, df).to_dict()
     del result_dict["ds1"], result_dict["ds2"]
     return {k: list(v.values()).pop() for k, v in result_dict.items()}
 
 # ToDo: SilentDF(df) wont work
 #integrate_ext_dataset
-def integrate_ext_dataset(_g, step, sL, s, _input):
+def integrate_ext_dataset(_g, step, sL, s, _input, **kwargs):
     result_dict = query(s, df).to_dict()
     return 'external_data', {k: list(v.values()).pop() for k, v in result_dict.items()}
 
 def increment(y, incr_by):
-    return lambda _g, step, sL, s, _input: (y, s[y] + incr_by)
+    return lambda _g, step, sL, s, _input, **kwargs: (y, s[y] + incr_by)
 increment = increment('increment', 1)
 
-def view_policies(_g, step, sL, s, _input):
+def view_policies(_g, step, sL, s, _input, **kwargs):
     return 'policies', _input
 
 

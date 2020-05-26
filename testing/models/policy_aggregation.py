@@ -3,27 +3,27 @@ from cadCAD.configuration.utils import config_sim
 
 
 # Policies per Mechanism
-def p1m1(_g, step, sL, s):
+def p1m1(_g, step, sL, s, **kwargs):
     return {'policy1': 1}
-def p2m1(_g, step, sL, s):
+def p2m1(_g, step, sL, s, **kwargs):
     return {'policy2': 2}
 
-def p1m2(_g, step, sL, s):
+def p1m2(_g, step, sL, s, **kwargs):
     return {'policy1': 2, 'policy2': 2}
-def p2m2(_g, step, sL, s):
+def p2m2(_g, step, sL, s, **kwargs):
     return {'policy1': 2, 'policy2': 2}
 
-def p1m3(_g, step, sL, s):
+def p1m3(_g, step, sL, s, **kwargs):
     return {'policy1': 1, 'policy2': 2, 'policy3': 3}
-def p2m3(_g, step, sL, s):
+def p2m3(_g, step, sL, s, **kwargs):
     return {'policy1': 1, 'policy2': 2, 'policy3': 3}
 
 
 # Internal States per Mechanism
 def add(y, x):
-    return lambda _g, step, sH, s, _input: (y, s[y] + x)
+    return lambda _g, step, sH, s, _input, **kwargs: (y, s[y] + x)
 
-def policies(_g, step, sH, s, _input):
+def policies(_g, step, sH, s, _input, **kwargs):
     y = 'policies'
     x = _input
     return (y, x)
@@ -79,5 +79,3 @@ append_configs(
     partial_state_update_blocks=partial_state_update_block,
     policy_ops=[lambda a, b: a + b, lambda y: y * 2] # Default: lambda a, b: a + b
 )
-
-

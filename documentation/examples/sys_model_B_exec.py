@@ -10,10 +10,10 @@ exec_mode = ExecutionMode()
 print("Simulation Execution: Single Configuration")
 print()
 first_config = configs # only contains sys_model_B
-single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
-run = Executor(exec_context=single_proc_ctx, configs=first_config)
+single_mode_ctx = ExecutionContext(context=exec_mode.single_mode)
+run = Executor(exec_context=single_mode_ctx, configs=first_config)
 
-raw_result, tensor_field = run.execute()
+raw_result, tensor_field, sessions = run.execute()
 result = pd.DataFrame(raw_result)
 print()
 print("Tensor Field: sys_model_B")
