@@ -18,6 +18,7 @@ cadCAD.egg-info
 
 build
 cadCAD.egg-info
+result
 
 testing/example.py
 testing/example2.py
