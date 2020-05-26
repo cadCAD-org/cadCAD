@@ -27,7 +27,7 @@ Requires [Python 3.6.8](https://www.python.org/downloads/release/python-368/)
 ```shell script
 pip3 install -r requirements.txt
 python3 setup.py sdist bdist_wheel
-pip3 install dist/*.whl
+pip3 install dist/*.whl --force
 ```
 
 ### 2. Learn the basics:
