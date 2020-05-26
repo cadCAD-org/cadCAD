@@ -47,7 +47,7 @@ class ExecutionContext:
 
 class Executor:
     def __init__(self,
-             exec_context: ExecutionContext, configs: List[Configuration], spark_context
+             exec_context: ExecutionContext, configs: List[Configuration], spark_context=None # : SparkContext
                  ) -> None:
         self.sc = spark_context
         self.SimExecutor = SimExecutor
