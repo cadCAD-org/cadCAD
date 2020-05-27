@@ -23,8 +23,8 @@ user/feature -> BlockScience/feature
 2. `git checkout -b feature` (new feature)
 3. Apply your awesomeness (Commit Often)
 4. `git push fork feature`
-5. Apply a merge strategy you're comfortable with. I suggest a merge path to `master` is similar to whats stated above.
-6. Submit PR into `BlockScience:staging` from `user:master` (the `master` branch from `fork` remote `user/cadCAD`)
+5. Apply a merge strategy you're comfortable with. I suggest a merge path to `master` similar to what's stated above.
+6. Submit PR from `user:master` into `BlockScience:staging`
 7. PR is queued for review
 8. PR Reviewed (Update necessary if rejected)
 9. PR Approved (There may be circumstances delaying the merge.)
