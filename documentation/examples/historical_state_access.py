@@ -94,10 +94,10 @@ append_configs(
 )
 
 exec_mode = ExecutionMode()
-single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
-run = Executor(exec_context=single_proc_ctx, configs=configs)
+local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
+run = Executor(exec_context=local_proc_ctx, configs=configs)
 
-raw_result, tensor_field = run.execute()
+raw_result, tensor_field, sessions = run.execute()
 result = pd.DataFrame(raw_result)
 cols = ['run','substep','timestep','x','nonexsistant','last_x','2nd_to_last_x','3rd_to_last_x','4th_to_last_x']
 result = result[cols]
