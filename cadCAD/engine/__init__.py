@@ -83,8 +83,14 @@ class Executor:
         \___/\__,_/\__,_/\____/_/  |_/_____/  
         by BlockScience
         ''')
-        print(f'Execution Mode: {self.exec_context + ": " + str(len(self.configs))}')
-        print(f'Configurations: {len(self.configs)}')
+        print(f'Execution Mode: {self.exec_context}')
+        print(f'Configuration count: {len(self.configs)}')
+        first_sim = self.configs[0].sim_config
+        n_t = len(first_sim['T'])
+        n_m = len(first_sim['M'])
+        n_n = first_sim['N']
+        n_s = len(self.configs[0].initial_state)
+        print(f'Dimensions of the first simulation: (Timesteps, Params, Runs, Vars) = ({n_t}, {n_m}, {n_n}, {n_s})')
         t1 = time()
 
         var_dict_list, states_lists, Ts, Ns, eps, configs_structs, env_processes_list, partial_state_updates, simulation_execs = \
@@ -119,7 +125,7 @@ class Executor:
             zipped_results = zip(simulations, partial_state_updates, eps)
             for result, partial_state_updates, ep in tqdm(zipped_results,
                                                           total=len(simulations),
-                                                          desc='Flatening results'):
+                                                          desc='Flattening results'):
                 results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
 
             final_result = results
