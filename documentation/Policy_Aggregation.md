@@ -1,7 +1,7 @@
 Policy Aggregation
 ==
 
-For each Partial State Update, multiple policy dictionaries are aggregated into a single dictionary to be imputted into 
+For each Partial State Update, multiple policy dictionaries are aggregated into a single dictionary to be inputted into 
 all state functions using an initial reduction function and optional subsequent map functions. 
 
 #### Aggregate Function Composition:
