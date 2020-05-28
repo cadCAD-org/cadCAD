@@ -10,6 +10,17 @@ from cadCAD.configuration.utils.policyAggregation import dict_elemwise_sum
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates, sanitize_config
 
 
+from time import time
+def timing_val(func):
+    def wrapper(*arg, **kw):
+        '''source: http://www.daniweb.com/code/snippet368.html'''
+        t1 = time()
+        res = func(*arg, **kw)
+        t2 = time()
+        print(f"{func.__name__}: {t2-t1 :.5f}")
+        return res
+    return wrapper
+
 class Configuration(object):
     def __init__(self, sim_config={}, initial_state={}, seeds={}, env_processes={},
                  exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
@@ -66,12 +77,10 @@ class Identity:
     def state_identity(self, k: str) -> Callable:
         return lambda var_dict, sub_step, sL, s, _input: (k, s[k])
 
-    def apply_identity_funcs(self, identity: Callable, df: DataFrame, cols: List[str]) -> List[DataFrame]:
-        def fillna_with_id_func(identity, df, col):
-            return df[[col]].fillna(value=identity(col))
-
-        return list(map(lambda col: fillna_with_id_func(identity, df, col), cols))
-
+    def apply_identity_funcs(self, identity: Callable, df: DataFrame, cols: List[str]) -> DataFrame:
+        fill_values = {col: identity(col) for col in cols}
+        filled_df = df.fillna(fill_values)
+        return filled_df
 
 class Processor:
     def __init__(self, id: Identity = Identity()) -> None:
@@ -89,9 +98,9 @@ class Processor:
             identity = self.policy_identity
 
         df = pd.DataFrame(key_filter(partial_state_updates, key))
-        col_list = self.apply_identity_funcs(identity, df, list(df.columns))
-        if len(col_list) != 0:
-            return reduce((lambda x, y: pd.concat([x, y], axis=1)), col_list)
+        filled_df = self.apply_identity_funcs(identity, df, list(df.columns))
+        if len(filled_df) > 0:
+            return filled_df
         else:
             return pd.DataFrame({'empty': []})
 
