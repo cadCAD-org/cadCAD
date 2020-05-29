@@ -15,6 +15,7 @@ Pipfile
 Pipfile.lock
 notebooks
 build
+
 result
 
 notes.txt
