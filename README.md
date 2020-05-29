@@ -65,6 +65,13 @@ pip3 install pandas pathos fn funcy tabulate
 pip3 install cadCAD --extra-index-url https://<TOKEN>@repo.fury.io/blockscience/
 ```
 
+**Option C: Using [Nix](https://nixos.org/nix/)**
+1. Run `curl -L https://nixos.org/nix/install | sh` or install Nix via system package manager
+2. Run `nix-shell` to enter into a development environment, `nix-build` to build project from source, and `nix-env -if default.nix` to install
+
+The above steps will enter you into a Nix development environment, with all package requirements for development of and with cadCAD.
+
+This works with just about all Unix systems as well as MacOS, for pure reproducible builds that don't dirty your local environment.
 
 #### 1. [Configure System Model](documentation/Simulation_Configuration.md)
 
