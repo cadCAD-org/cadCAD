@@ -68,11 +68,17 @@ class Identity:
     def state_identity(self, k: str) -> Callable:
         return lambda var_dict, sub_step, sL, s, _input: (k, s[k])
 
-    def apply_identity_funcs(self, identity: Callable, df: DataFrame, cols: List[str]) -> List[DataFrame]:
-        def fillna_with_id_func(identity, df, col):
-            return df[[col]].fillna(value=identity(col))
-
-        return list(map(lambda col: fillna_with_id_func(identity, df, col), cols))
+    def apply_identity_funcs(self,
+                             identity: Callable,
+                             df: DataFrame,
+                             cols: List[str]) -> DataFrame:
+        """
+        Apply the identity on each df column, using its self value as the
+        argument.
+        """
+        fill_values = {col: identity(col) for col in cols}
+        filled_df = df.fillna(fill_values)
+        return filled_df
 
 
 class Processor:
@@ -91,9 +97,9 @@ class Processor:
             identity = self.policy_identity
 
         df = pd.DataFrame(key_filter(partial_state_updates, key))
-        col_list = self.apply_identity_funcs(identity, df, list(df.columns))
-        if len(col_list) != 0:
-            return reduce((lambda x, y: pd.concat([x, y], axis=1)), col_list)
+        filled_df = self.apply_identity_funcs(identity, df, list(df.columns))
+        if len(filled_df) > 0:
+            return filled_df
         else:
             return pd.DataFrame({'empty': []})
 
