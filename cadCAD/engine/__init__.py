@@ -1,6 +1,7 @@
 from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ProcessingPool as PPool
 from pandas.core.frame import DataFrame
+from tqdm import tqdm
 
 from cadCAD.utils import flatten
 from cadCAD.configuration import Configuration, Processor
@@ -44,7 +45,9 @@ def parallelize_simulations(
     ):
     l = list(zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns))
     with PPool(len(configs_structs)) as p:
-        results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6]), l)
+        results = tqdm(p.imap(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6]), l),
+                       total=len(l),
+                       desc='Executing PSUBs')
     return results
 
 
@@ -86,8 +89,8 @@ class Executor:
             [], [], [], [], [], [], [], [], []
         config_idx = 0
 
-        for x in self.configs:
-
+        for x in tqdm(self.configs,
+                desc='Initializing configurations'):
             Ts.append(x.sim_config['T'])
             Ns.append(x.sim_config['N'])
             var_dict_list.append(x.sim_config['M'])
@@ -108,10 +111,11 @@ class Executor:
             result = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
             final_result = result, tensor_field
         elif self.exec_context == ExecutionMode.multi_proc:
-            # if len(self.configs) > 1:
             simulations = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
-            results = []
-            for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
+            zipped_results = zip(simulations, partial_state_updates, eps)
+            for result, partial_state_updates, ep in tqdm(zipped_results,
+                                                          total=len(simulations),
+                                                          desc='Flattening results'):
                 results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
 
             final_result = results
