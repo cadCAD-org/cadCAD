@@ -53,5 +53,7 @@ Familiarize yourself with some system modelling concepts and cadCAD terminology.
 * [Policy Aggregation](documentation/Policy_Aggregation.md)
 * [System Model Parameter Sweep](documentation/System_Model_Parameter_Sweep.md)
 
-## 4. Connect
+## 4. [Contribution](CONTRIBUTING.md)
+
+## 5. Connect
 Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
