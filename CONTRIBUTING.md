@@ -2,7 +2,7 @@
 
 :+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
 
-The following is a set of guidelines for contributing to cadCAD. These are mostly guidelines, not rules. 
+The following is a set of guidelines for contributing to cadCAD. 
 Use your best judgment, and feel free to propose changes to this document in a pull request.
 
 ### Pull Requests:
@@ -10,12 +10,24 @@ Use your best judgment, and feel free to propose changes to this document in a p
 Pull Request (PR) presented as "->".
 
 General Template:
-fork/branch -> BlockScience/staging
+user/branch -> BlockScience/staging
 
 Contributing a new feature:
-fork/feature -> BlockScience/staging
+user/feature -> BlockScience/staging
 
 Contributing to an existing feature:
-fork/feature -> BlockScience/feature
+user/feature -> BlockScience/feature
+
+### General Advise for Forked Repositories: 
+1. `git pull fork master`
+2. `git checkout -b feature` (new feature)
+3. Apply your awesomeness! (Commit Often)
+4. `git push fork feature`
+5. Apply a merge strategy you're comfortable with. I suggest a merge path to `master` similar to what's above.
+6. Submit PR from `user:master` into `BlockScience:staging`
+7. PR is queued for review
+8. PR Reviewed (Update necessary if rejected)
+9. PR Approved (There may be circumstances delaying the merge.)
+10. Your contribution merged into next feature release on `BlockScience:master`
 
 Thanks! :heart:
