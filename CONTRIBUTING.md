@@ -10,13 +10,16 @@ Use your best judgment, and feel free to propose changes to this document in a p
 Pull Request (PR) presented as "->".
 
 General Template:
-user/branch -> BlockScience/staging
+
+`user/branch -> BlockScience/staging`
 
 Contributing a new feature:
-user/feature -> BlockScience/staging
+
+`user/feature -> BlockScience/staging`
 
 Contributing to an existing feature:
-user/feature -> BlockScience/feature
+
+`user/feature -> BlockScience/feature`
 
 ### General Advise for Forked Repositories: 
 1. `git pull fork master`
