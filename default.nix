@@ -22,10 +22,8 @@ buildPythonPackage rec {
 
   buildInputs = with pythonPkgs; [
     wheel
-    tabulate
     pytest
     parameterized
-    tabulate
   ];
   checkInputs = [ ];
   propagatedBuildInputs = with pythonPkgs; [
@@ -33,6 +31,7 @@ buildPythonPackage rec {
     pathos
     fn
     funcy
+    tabulate
   ];
 
   meta = with stdenv.lib; {
