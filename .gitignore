@@ -2,7 +2,8 @@
 .ipynb_checkpoints
 .DS_Store
 .idea
-.pytest_cache/
+.eggs
+.pytest_cache
 notebooks
 *.egg-info
 __pycache__
