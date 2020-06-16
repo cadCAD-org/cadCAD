@@ -1,11 +1,11 @@
 from typing import Callable, Dict, List, Any, Tuple
-from pathos.multiprocessing import ProcessingPool as PPool
-from pandas.core.frame import DataFrame
+# from pyspark.context import SparkContext
 
 from cadCAD.utils import flatten
 from cadCAD.configuration import Configuration, Processor
 from cadCAD.configuration.utils import TensorFieldReport
 from cadCAD.engine.simulation import Executor as SimExecutor
+from cadCAD.engine.execution import single_proc_exec, parallelize_simulations, local_simulations
 
 VarDictType = Dict[str, List[Any]]
 StatesListsType = List[Dict[str, Any]]
@@ -14,106 +14,126 @@ EnvProcessesType = Dict[str, Callable]
 
 
 class ExecutionMode:
+    local_mode = 'local_proc'
+    multi_mode = 'multi_proc'
+    distributed = 'dist_proc'
+    single_mode = 'single_proc'
+    # Backwards compatible modes below
     single_proc = 'single_proc'
     multi_proc = 'multi_proc'
 
 
-def single_proc_exec(
-        simulation_execs: List[Callable],
-        var_dict_list: List[VarDictType],
-        states_lists: List[StatesListsType],
-        configs_structs: List[ConfigsType],
-        env_processes_list: List[EnvProcessesType],
-        Ts: List[range],
-        Ns: List[int]
-    ):
-    l = [simulation_execs, states_lists, configs_structs, env_processes_list, Ts, Ns]
-    simulation_exec, states_list, config, env_processes, T, N = list(map(lambda x: x.pop(), l))
-    result = simulation_exec(var_dict_list, states_list, config, env_processes, T, N)
-    return flatten(result)
-
-
-def parallelize_simulations(
-        simulation_execs: List[Callable],
-        var_dict_list: List[VarDictType],
-        states_lists: List[StatesListsType],
-        configs_structs: List[ConfigsType],
-        env_processes_list: List[EnvProcessesType],
-        Ts: List[range],
-        Ns: List[int]
-    ):
-    l = list(zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns))
-    with PPool(len(configs_structs)) as p:
-        results = p.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6]), l)
-    return results
-
-
 class ExecutionContext:
-    def __init__(self, context: str = ExecutionMode.multi_proc) -> None:
+    def __init__(self, context=ExecutionMode.local_mode, method=None, additional_objs=None) -> None:
         self.name = context
-        self.method = None
-
-        if context == 'single_proc':
+        if context == 'local_proc':
+            self.method = local_simulations
+        elif context == 'single_proc':
             self.method = single_proc_exec
         elif context == 'multi_proc':
             self.method = parallelize_simulations
+        elif context == 'dist_proc':
+            def distroduce_proc(
+                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, RunIDs,
+                    sc, additional_objs=additional_objs
+            ):
+                return method(
+                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, RunIDs,
+                    sc, additional_objs
+                )
+
+            self.method = distroduce_proc
 
 
 class Executor:
-    def __init__(self, exec_context: ExecutionContext, configs: List[Configuration]) -> None:
+    def __init__(self,
+             exec_context: ExecutionContext, configs: List[Configuration], spark_context=None # : SparkContext
+                 ) -> None:
+        self.sc = spark_context
         self.SimExecutor = SimExecutor
         self.exec_method = exec_context.method
         self.exec_context = exec_context.name
         self.configs = configs
 
-    def execute(self) -> Tuple[List[Dict[str, Any]], DataFrame]:
+    def execute(self) -> Tuple[Any, Any, Dict[str, Any]]:
         config_proc = Processor()
         create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
 
+        print(f'Configurations Length: {len(self.configs)}')
 
-        print(r'''
-                            __________   ____ 
-          ________ __ _____/ ____/   |  / __ \
-         / ___/ __` / __  / /   / /| | / / / /
-        / /__/ /_/ / /_/ / /___/ ___ |/ /_/ / 
-        \___/\__,_/\__,_/\____/_/  |_/_____/  
-        by BlockScience
-        ''')
-        print(f'Execution Mode: {self.exec_context + ": " + str(self.configs)}')
-        print(f'Configurations: {self.configs}')
-
-        var_dict_list, states_lists, Ts, Ns, eps, configs_structs, env_processes_list, partial_state_updates, simulation_execs = \
-            [], [], [], [], [], [], [], [], []
+        sessions = []
+        var_dict_list, states_lists = [], []
+        Ts, Ns, SimIDs, RunIDs = [], [], [], []
+        eps, configs_structs, env_processes_list = [], [], []
+        partial_state_updates, sim_executors = [], []
         config_idx = 0
 
         for x in self.configs:
-
+            sessions.append(
+                {'user_id': x.user_id, 'session_id': x.session_id, 'simulation_id': x.simulation_id, 'run_id': x.run_id}
+            )
             Ts.append(x.sim_config['T'])
             Ns.append(x.sim_config['N'])
+
+            SimIDs.append(x.simulation_id)
+            RunIDs.append(x.run_id)
+
             var_dict_list.append(x.sim_config['M'])
             states_lists.append([x.initial_state])
             eps.append(list(x.exogenous_states.values()))
             configs_structs.append(config_proc.generate_config(x.initial_state, x.partial_state_updates, eps[config_idx]))
-            # print(env_processes_list)
             env_processes_list.append(x.env_processes)
             partial_state_updates.append(x.partial_state_updates)
-            simulation_execs.append(SimExecutor(x.policy_ops).simulation)
+            sim_executors.append(SimExecutor(x.policy_ops).simulation)
 
             config_idx += 1
 
-        final_result = None
+        def get_final_dist_results(simulations, psus, eps, sessions):
+            tensor_fields = [create_tensor_field(psu, ep) for psu, ep in list(zip(psus, eps))]
+            return simulations, tensor_fields, sessions
 
-        if self.exec_context == ExecutionMode.single_proc:
-            tensor_field = create_tensor_field(partial_state_updates.pop(), eps.pop())
-            result = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
-            final_result = result, tensor_field
-        elif self.exec_context == ExecutionMode.multi_proc:
-            # if len(self.configs) > 1:
-            simulations = self.exec_method(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, Ns)
-            results = []
-            for result, partial_state_updates, ep in list(zip(simulations, partial_state_updates, eps)):
-                results.append((flatten(result), create_tensor_field(partial_state_updates, ep)))
+        def get_final_results(simulations, psus, eps, sessions, remote_threshold):
+            flat_timesteps, tensor_fields = [], []
+            for sim_result, psu, ep in list(zip(simulations, psus, eps)):
+                flat_timesteps.append(flatten(sim_result))
+                tensor_fields.append(create_tensor_field(psu, ep))
 
-            final_result = results
+            flat_simulations = flatten(flat_timesteps)
+            if config_amt == 1:
+                return simulations, tensor_fields, sessions
+            elif (config_amt > 1) and (config_amt < remote_threshold):
+                return flat_simulations, tensor_fields, sessions
 
-        return final_result
+        remote_threshold = 100
+        config_amt = len(self.configs)
+
+        def auto_mode_switcher(config_amt):
+            try:
+                if config_amt == 1:
+                    return ExecutionMode.single_mode, single_proc_exec
+                elif (config_amt > 1) and (config_amt < remote_threshold):
+                    return ExecutionMode.multi_mode, parallelize_simulations
+            except AttributeError:
+                if config_amt < 1:
+                    print('N must be > 1!')
+                elif config_amt > remote_threshold:
+                    print('Remote Threshold is N=100. Use ExecutionMode.dist_proc if N >= 100')
+
+        original_context = self.exec_context
+        if self.exec_context != ExecutionMode.distributed:
+            # Consider Legacy Support
+            if self.exec_context != ExecutionMode.local_mode:
+                self.exec_context, self.exec_method = auto_mode_switcher(config_amt)
+
+            print("Execution Method: " + self.exec_method.__name__)
+            simulations_results = self.exec_method(
+                sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs #Ns
+            )
+            return get_final_results(simulations_results, partial_state_updates, eps, sessions, remote_threshold)
+        elif self.exec_context == ExecutionMode.distributed:
+            print("Execution Method: " + self.exec_method.__name__)
+            simulations_results = self.exec_method(
+                sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts,
+                SimIDs, RunIDs, self.sc
+            )
+            return get_final_dist_results(simulations_results, partial_state_updates, eps, sessions)
