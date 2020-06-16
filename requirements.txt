@@ -1,6 +1,5 @@
-pandas
 wheel
-pathos
-fn
 tabulate
-funcy
+pytest
+parameterized
+tabulate

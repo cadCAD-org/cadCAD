@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict, Callable, List, Tuple
 from functools import reduce
 import pandas as pd
@@ -6,14 +7,13 @@ from pandas.core.frame import DataFrame
 from cadCAD import configs
 from cadCAD.utils import key_filter
 from cadCAD.configuration.utils import exo_update_per_ts
-from cadCAD.configuration.utils.policyAggregation import dict_elemwise_sum
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates, sanitize_config
 
 
 class Configuration(object):
-    def __init__(self, sim_config={}, initial_state={}, seeds={}, env_processes={},
+    def __init__(self, user_id, sim_config={}, initial_state={}, seeds={}, env_processes={},
                  exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
-                 **kwargs) -> None:
+                 session_id=0, simulation_id=0, run_id=1, **kwargs) -> None:
         # print(exogenous_states)
         self.sim_config = sim_config
         self.initial_state = initial_state
@@ -24,11 +24,21 @@ class Configuration(object):
         self.policy_ops = policy_ops
         self.kwargs = kwargs
 
+        self.user_id = user_id
+        self.session_id = session_id
+        self.simulation_id = simulation_id
+        self.run_id = run_id
+
         sanitize_config(self)
 
 
-def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
-                   partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True) -> None:
+def append_configs(
+    user_id='cadCAD_user',
+    session_id=0, #ToDo: change to string
+    sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
+    partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
+    config_list=configs
+                  ) -> None:
     if _exo_update_per_ts is True:
         exogenous_states = exo_update_per_ts(raw_exogenous_states)
     else:
@@ -37,7 +47,34 @@ def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_sta
     if isinstance(sim_configs, dict):
         sim_configs = [sim_configs]
 
-    for sim_config in sim_configs:
+    simulation_id = 0
+    if len(config_list) > 0:
+        last_config = config_list[-1]
+        simulation_id = last_config.simulation_id + 1
+
+    sim_cnt = 0
+    new_sim_configs = []
+    for t in list(zip(sim_configs, list(range(len(sim_configs))))):
+        sim_config = t[0]
+        N = sim_config['N']
+
+        if N > 1:
+            for n in range(N):
+                sim_config['simulation_id'] = simulation_id + sim_cnt
+                sim_config['run_id'] = n
+                sim_config['N'] = 1
+                # sim_config['N'] = n + 1
+                new_sim_configs.append(deepcopy(sim_config))
+            del sim_config
+        else:
+            sim_config['simulation_id'] = simulation_id
+            sim_config['run_id'] = 0
+            new_sim_configs.append(deepcopy(sim_config))
+
+        sim_cnt += 1
+
+    # for sim_config in sim_configs:
+    for sim_config in new_sim_configs:
         config = Configuration(
             sim_config=sim_config,
             initial_state=initial_state,
@@ -45,10 +82,14 @@ def append_configs(sim_configs={}, initial_state={}, seeds={}, raw_exogenous_sta
             exogenous_states=exogenous_states,
             env_processes=env_processes,
             partial_state_update_blocks=partial_state_update_blocks,
-            policy_ops=policy_ops
+            policy_ops=policy_ops,
+
+            # session_id=session_id,
+            user_id=user_id,
+            session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
+            simulation_id=sim_config['simulation_id'],
+            run_id=sim_config['run_id']
         )
-        print(sim_configs)
-        #for each sim config create new config
         configs.append(config)
 
 
@@ -56,19 +97,22 @@ class Identity:
     def __init__(self, policy_id: Dict[str, int] = {'identity': 0}) -> None:
         self.beh_id_return_val = policy_id
 
-    def p_identity(self, var_dict, sub_step, sL, s):
+    def p_identity(self, var_dict, sub_step, sL, s, **kwargs):
         return self.beh_id_return_val
 
     def policy_identity(self, k: str) -> Callable:
         return self.p_identity
 
-    def no_state_identity(self, var_dict, sub_step, sL, s, _input):
+    def no_state_identity(self, var_dict, sub_step, sL, s, _input, **kwargs):
         return None
 
     def state_identity(self, k: str) -> Callable:
-        return lambda var_dict, sub_step, sL, s, _input: (k, s[k])
+        return lambda var_dict, sub_step, sL, s, _input, **kwargs: (k, s[k])
+
+    # state_identity = cloudpickle.dumps(state_identity)
 
     def apply_identity_funcs(self, identity: Callable, df: DataFrame, cols: List[str]) -> List[DataFrame]:
+        # identity = pickle.loads(identity)
         def fillna_with_id_func(identity, df, col):
             return df[[col]].fillna(value=identity(col))
 
@@ -116,14 +160,14 @@ class Processor:
 
         def only_ep_handler(state_dict):
             sdf_functions = [
-                lambda var_dict, sub_step, sL, s, _input: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
+                lambda var_dict, sub_step, sL, s, _input, **kwargs: (k, v) for k, v in zip(state_dict.keys(), state_dict.values())
             ]
             sdf_values = [sdf_functions]
             bdf_values = [[self.p_identity] * len(sdf_values)]
             return sdf_values, bdf_values
 
         if len(partial_state_updates) != 0:
-            # backwards compatibility # ToDo: Move this
+            # backwards compatibility #
             partial_state_updates = sanitize_partial_state_updates(partial_state_updates)
 
             bdf = self.create_matrix_field(partial_state_updates, 'policies')
