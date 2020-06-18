@@ -1,18 +1,18 @@
 from typing import Any, Callable, Dict, List, Tuple
-from pathos.pools import ThreadPool as TPool
 from copy import deepcopy
 from functools import reduce
+from funcy import curry
 
 from cadCAD.engine.utils import engine_exception
 from cadCAD.utils import flatten
 
-id_exception: Callable = engine_exception(KeyError, KeyError, None)
+id_exception: Callable = curry(engine_exception)(KeyError)(KeyError)(None)
 
 
 class Executor:
     def __init__(
         self,
-        policy_ops: List[Callable],
+        policy_ops,
         policy_update_exception: Callable = id_exception,
         state_update_exception: Callable = id_exception
     ) -> None:
@@ -27,13 +27,19 @@ class Executor:
                 sub_step: int,
                 sL: List[Dict[str, Any]],
                 s: Dict[str, Any],
-                funcs: List[Callable]
+                funcs: List[Callable],
+                additional_objs
             ) -> Dict[str, Any]:
 
         ops = self.policy_ops
 
         def get_col_results(sweep_dict, sub_step, sL, s, funcs):
-            return list(map(lambda f: f(sweep_dict, sub_step, sL, s), funcs))
+            def policy_scope_tuner(additional_objs, f):
+                if additional_objs is None:
+                    return f(sweep_dict, sub_step, sL, s)
+                else:
+                    return f(sweep_dict, sub_step, sL, s, additional_objs)
+            return list(map(lambda f: policy_scope_tuner(additional_objs, f), funcs))
 
         def compose(init_reduction_funct, funct_list, val_list):
             result, i = None, 0
@@ -56,18 +62,17 @@ class Executor:
         ops_head, *ops_tail = ops
         return {
             k: compose(
-                init_reduction_funct=ops_head, # func executed on value list
+                init_reduction_funct=ops_head,
                 funct_list=ops_tail,
                 val_list=val_list
             ) for k, val_list in new_dict.items()
         }
 
-
     def apply_env_proc(
                 self,
                 sweep_dict,
                 env_processes: Dict[str, Callable],
-                state_dict: Dict[str, Any],
+                state_dict: Dict[str, Any]
             ) -> Dict[str, Any]:
 
         def env_composition(target_field, state_dict, target_value):
@@ -99,30 +104,36 @@ class Executor:
                 self,
                 sweep_dict: Dict[str, List[Any]],
                 sub_step: int,
-                sL: Any,
-                sH: Any,
+                sL,
+                sH,
                 state_funcs: List[Callable],
                 policy_funcs: List[Callable],
                 env_processes: Dict[str, Callable],
                 time_step: int,
-                run: int
+                run: int,
+                additional_objs
             ) -> List[Dict[str, Any]]:
 
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
         _input: Dict[str, Any] = self.policy_update_exception(
-            self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs)
+            self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs, additional_objs)
         )
 
-
         def generate_record(state_funcs):
+            def state_scope_tuner(f):
+                lenf = f.__code__.co_argcount
+                if lenf == 5:
+                    return self.state_update_exception(f(sweep_dict, sub_step, sH, last_in_obj, _input))
+                elif lenf == 6:
+                    return self.state_update_exception(f(sweep_dict, sub_step, sH, last_in_obj, _input, additional_objs))
             for f in state_funcs:
-                yield self.state_update_exception(f(sweep_dict, sub_step, sH, last_in_obj, _input))
+                yield state_scope_tuner(f)
 
         def transfer_missing_fields(source, destination):
             for k in source:
                 if k not in destination:
                     destination[k] = source[k]
-            del source # last_in_obj
+            del source
             return destination
 
         last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, dict(generate_record(state_funcs)))
@@ -138,32 +149,28 @@ class Executor:
     def state_update_pipeline(
                 self,
                 sweep_dict: Dict[str, List[Any]],
-                simulation_list, #states_list: List[Dict[str, Any]],
+                simulation_list,
                 configs: List[Tuple[List[Callable], List[Callable]]],
                 env_processes: Dict[str, Callable],
                 time_step: int,
-                run: int
+                run: int,
+                additional_objs
             ) -> List[Dict[str, Any]]:
 
         sub_step = 0
-        states_list_copy: List[Dict[str, Any]] = deepcopy(simulation_list[-1])
+        states_list_copy: List[Dict[str, Any]] = tuple(simulation_list[-1])
         genesis_states: Dict[str, Any] = states_list_copy[-1]
 
         if len(states_list_copy) == 1:
             genesis_states['substep'] = sub_step
-        #     genesis_states['timestep'] = 0
-        # else:
-        #     genesis_states['timestep'] = time_step
 
         del states_list_copy
         states_list: List[Dict[str, Any]] = [genesis_states]
 
         sub_step += 1
-
-        for [s_conf, p_conf] in configs: # tensor field
-
+        for [s_conf, p_conf] in configs:
             states_list: List[Dict[str, Any]] = self.partial_state_update(
-                sweep_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run
+                sweep_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run, additional_objs
             )
             sub_step += 1
 
@@ -179,15 +186,15 @@ class Executor:
                 configs: List[Tuple[List[Callable], List[Callable]]],
                 env_processes: Dict[str, Callable],
                 time_seq: range,
-                run: int
+                run: int,
+                additional_objs
             ) -> List[List[Dict[str, Any]]]:
-
         time_seq: List[int] = [x + 1 for x in time_seq]
         simulation_list: List[List[Dict[str, Any]]] = [states_list]
 
         for time_step in time_seq:
             pipe_run: List[Dict[str, Any]] = self.state_update_pipeline(
-                sweep_dict, simulation_list, configs, env_processes, time_step, run
+                sweep_dict, simulation_list, configs, env_processes, time_step, run, additional_objs
             )
 
             _, *pipe_run = pipe_run
@@ -199,36 +206,34 @@ class Executor:
             self,
             sweep_dict: Dict[str, List[Any]],
             states_list: List[Dict[str, Any]],
-            configs: List[Tuple[List[Callable], List[Callable]]],
+            configs,
             env_processes: Dict[str, Callable],
             time_seq: range,
-            runs: int
-        ) -> List[List[Dict[str, Any]]]:
+            simulation_id: int,
+            run: int,
+            additional_objs=None
+    ):
 
         def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
             run += 1
 
             def generate_init_sys_metrics(genesis_states_list):
+                # for d in genesis_states_list.asDict():
                 for d in genesis_states_list:
-                    d['run'], d['substep'], d['timestep'] = run, 0, 0
+                    d['simulation'], d['run'], d['substep'], d['timestep'] = simulation_id, run, 0, 0
                     yield d
 
             states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(deepcopy(states_list)))
 
             first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(
-                sweep_dict, states_list_copy, configs, env_processes, time_seq, run
+                sweep_dict, states_list_copy, configs, env_processes, time_seq, run, additional_objs
             )
             del states_list_copy
 
             return first_timestep_per_run
 
-        tp = TPool(runs)
-        pipe_run: List[List[Dict[str, Any]]] = flatten(
-            tp.map(
-                lambda run: execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run),
-                list(range(runs))
-            )
+        pipe_run = flatten(
+            [execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run)]
         )
 
-        tp.clear()
         return pipe_run
