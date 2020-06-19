@@ -6,7 +6,7 @@ Matthew V. Barlin from 2018 to 2020.
 
 
 Project Maintainers:
-- Joshua E. Jodesty <joshua@block.science, joshua.jodesty@gmail.com>
+- Joshua E. Jodesty <joshua@block.science>
 - Markus B. Koch <markus@block.science>
 - Michael Zargham <zargham@block.science>
 
