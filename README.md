@@ -15,9 +15,13 @@ by BlockScience
        e
        r
 ```
-***cadCAD*** is a Python package that assists in the processes of designing, testing and validating complex systems through simulation, with support for Monte Carlo methods, A/B testing and parameter sweeping. 
+***cadCAD*** is a Python package that assists in the processes of designing, testing and validating complex systems 
+through simulation, with support for Monte Carlo methods, A/B testing and parameter sweeping. 
 
 # Getting Started
+
+#### Release Notes: [ver. 0.4.15](documentation/release_notes.md)
+
 ## 1. Installation: 
 Requires [Python 3](https://www.python.org/downloads/) 
 
