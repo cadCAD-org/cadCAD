@@ -10,7 +10,7 @@ Configurations. There are multiple simulation Execution Modes and Execution Cont
     ##### Class: `cadCAD.engine.ExecutionMode`
     ##### Attributes:
     * **Local Mode (Default):** Automatically selects Single Threaded or Multi-Process/Threaded Modes (Example: 
-    `cadCAD.engine.ExecutionMode().local_proc`).
+    `cadCAD.engine.ExecutionMode().local_mode`).
     * **Single Threaded Mode:** A single threaded Execution Mode for a single System Model Configuration (Example: 
     `cadCAD.engine.ExecutionMode().single_mode`).
     * **Multi-Process/Threaded Mode:** Execution Mode for System Model Simulations which executes Multiple threads within 
@@ -19,7 +19,7 @@ Configurations. There are multiple simulation Execution Modes and Execution Cont
 ```python
 from cadCAD.engine import ExecutionMode, ExecutionContext
 exec_mode = ExecutionMode()
-local_mode_ctx = ExecutionContext(context=exec_mode.local_proc)
+local_mode_ctx = ExecutionContext(context=exec_mode.local_mode)
 ```
 3. #### *Create Simulation Executor*
 ```python
@@ -87,7 +87,7 @@ exec_mode = ExecutionMode()
 
 # Single Process Execution using a Single System Model Configuration:
 # sys_model_A
-local_mode_ctx = ExecutionContext(context=exec_mode.local_proc)
+local_mode_ctx = ExecutionContext(context=exec_mode.local_mode)
 sys_model_A_simulation = Executor(exec_context=local_mode_ctx, configs=configs)
 
 sys_model_A_raw_result, sys_model_A_tensor_field, sessions = sys_model_A_simulation.execute()
@@ -120,7 +120,7 @@ exec_mode = ExecutionMode()
 
 # # Multiple Processes Execution using Multiple System Model Configurations:
 # # sys_model_A & sys_model_B
-local_mode_ctx = ExecutionContext(context=exec_mode.local_proc)
+local_mode_ctx = ExecutionContext(context=exec_mode.local_mode)
 sys_model_AB_simulation = Executor(exec_context=local_mode_ctx, configs=configs)
 
 sys_model_AB_raw_result, sys_model_AB_tensor_field, sessions = sys_model_AB_simulation.execute()
@@ -145,7 +145,7 @@ from documentation.examples import param_sweep
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
-local_mode_ctx = ExecutionContext(context=exec_mode.local_proc)
+local_mode_ctx = ExecutionContext(context=exec_mode.local_mode)
 run = Executor(exec_context=local_mode_ctx, configs=configs)
 
 raw_result, tensor_field, sessions = run.execute()

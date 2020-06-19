@@ -1,8 +1,8 @@
 import unittest
-
 import pandas as pd
-from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+
 from cadCAD import configs
+from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from testing.generic_test import make_generic_test
 
 exec_mode = ExecutionMode()

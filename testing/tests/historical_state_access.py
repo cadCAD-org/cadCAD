@@ -1,11 +1,9 @@
 import unittest
 import pandas as pd
 
+from cadCAD import configs
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from testing.generic_test import make_generic_test
-from testing.models import historical_state_access
-from cadCAD import configs
-
 
 exec_mode = ExecutionMode()
 single_proc_ctx = ExecutionContext(context=exec_mode.single_mode)
