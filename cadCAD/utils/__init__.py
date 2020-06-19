@@ -1,20 +1,32 @@
 from functools import reduce
 from typing import Dict, List
-from collections import defaultdict, Counter
+from collections import defaultdict
 from itertools import product
 import warnings
+
+import functools
+import operator
 
 from pandas import DataFrame
 
 
 class SilentDF(DataFrame):
     def __repr__(self):
-        return str(hex(id(DataFrame))) #"pandas.core.frame.DataFrame"
+        return str(hex(id(DataFrame)))
+        #"pandas.core.frame.DataFrame"
 
 
 def append_dict(dict, new_dict):
     dict.update(new_dict)
     return dict
+
+
+def arrange_cols(df, reverse=False):
+    session_metrics = ['session_id', 'user_id', 'simulation_id', 'run_id']
+    sys_metrics = ['run', 'timestep', 'substep']
+    result_cols = list(set(df.columns) - set(session_metrics) - set(sys_metrics))
+    result_cols.sort(reverse=reverse)
+    return df[session_metrics + sys_metrics + result_cols]
 
 
 class IndexCounter:
@@ -28,6 +40,7 @@ class IndexCounter:
 
 def compose(*functions):
     return reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
+
 
 def pipe(x):
     return x
@@ -55,7 +68,7 @@ def flattenDict(l):
 
 def flatten(l):
     if isinstance(l, list):
-        return [item for sublist in l for item in sublist]
+        return functools.reduce(operator.iconcat, l, [])
     elif isinstance(l, dict):
         return flattenDict(l)
 

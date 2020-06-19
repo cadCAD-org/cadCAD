@@ -1,7 +1,7 @@
+from collections import Counter
 from datetime import datetime, timedelta
 from copy import deepcopy
 from functools import reduce
-from fn.func import curried
 from funcy import curry
 import pandas as pd
 
@@ -13,8 +13,7 @@ class TensorFieldReport:
     def __init__(self, config_proc):
         self.config_proc = config_proc
 
-    # ToDo: backwards compatibility
-    def create_tensor_field(self, partial_state_updates, exo_proc, keys = ['policies', 'variables']):
+    def create_tensor_field(self, partial_state_updates, exo_proc, keys=['policies', 'variables']):
 
         partial_state_updates = sanitize_partial_state_updates(partial_state_updates) # Temporary
 
@@ -26,8 +25,48 @@ class TensorFieldReport:
         return df
 
 
+def configs_as_spec(configs):
+    sim_ids = list(map(lambda x: x.simulation_id, configs))
+    sim_id_counts = list(Counter(sim_ids).values())
+    IDed_configs = list(zip(sim_ids, configs))
+    del sim_ids
+    selected_IDed_configs = dict(IDed_configs)
+    del IDed_configs
+    counted_IDs_configs = list(zip(sim_id_counts, selected_IDed_configs.values()))
+    del sim_id_counts, selected_IDed_configs
+    for runs, config in counted_IDs_configs:
+        config.sim_config['N'] = runs
+    return counted_IDs_configs
+
+
+def configs_as_objs(configs):
+    counted_IDs_configs = configs_as_spec(configs)
+    new_config = list(map(lambda x: x[1], counted_IDs_configs))
+    del counted_IDs_configs
+    return new_config
+
+
+def configs_as_dicts(configs):
+    counted_IDs_configs = configs_as_spec(configs)
+    new_configs = list(map(lambda x: x[1].__dict__, counted_IDs_configs))
+    del counted_IDs_configs
+    return new_configs
+
+
+def configs_as_dataframe(configs):
+    new_configs = configs_as_dicts(configs)
+    configs_df = pd.DataFrame(new_configs)
+    del new_configs
+    configs_df_columns = list(configs_df.columns)
+    header_cols = ['session_id', 'user_id', 'simulation_id', 'run_id']
+    for col in header_cols:
+        configs_df_columns.remove(col)
+    return configs_df[header_cols + configs_df_columns]
+
+## System Model
+
 def state_update(y, x):
-    return lambda var_dict, sub_step, sL, s, _input: (y, x)
+    return lambda var_dict, sub_step, sL, s, _input, **kwargs: (y, x)
 
 
 def bound_norm_random(rng, low, high):
@@ -36,14 +75,6 @@ def bound_norm_random(rng, low, high):
         res = bound_norm_random(rng, low, high)
     # return Decimal(res)
     return float(res)
-
-
-@curried
-def env_proc_trigger(timestep, f, time):
-    if time == timestep:
-        return f
-    else:
-        return lambda x: x
 
 
 tstep_delta = timedelta(days=0, minutes=0, seconds=30)
@@ -63,64 +94,11 @@ def ep_time_step(s_condition, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta
         return dt_str
 
 
-def partial_state_sweep_filter(state_field, partial_state_updates):
-    partial_state_dict = dict([(k, v[state_field]) for k, v in partial_state_updates.items()])
-    return dict([
-        (k, dict_filter(v, lambda v: isinstance(v, list))) for k, v in partial_state_dict.items()
-            if contains_type(list(v.values()), list)
-    ])
-
-
-def state_sweep_filter(raw_exogenous_states):
-    return dict([(k, v) for k, v in raw_exogenous_states.items() if isinstance(v, list)])
-
-
-@curried
-def sweep_partial_states(_type, in_config):
-    configs = []
-    # filtered_mech_states
-    filtered_partial_states = partial_state_sweep_filter(_type, in_config.partial_state_updates)
-    if len(filtered_partial_states) > 0:
-        for partial_state, state_dict in filtered_partial_states.items():
-            for state, state_funcs in state_dict.items():
-                for f in state_funcs:
-                    config = deepcopy(in_config)
-                    config.partial_state_updates[partial_state][_type][state] = f
-                    configs.append(config)
-                    del config
-    else:
-        configs = [in_config]
-
-    return configs
-
-
-@curried
-def sweep_states(state_type, states, in_config):
-    configs = []
-    filtered_states = state_sweep_filter(states)
-    if len(filtered_states) > 0:
-        for state, state_funcs in filtered_states.items():
-            for f in state_funcs:
-                config = deepcopy(in_config)
-                exploded_states = deepcopy(states)
-                exploded_states[state] = f
-                if state_type == 'exogenous':
-                    config.exogenous_states = exploded_states
-                elif state_type == 'environmental':
-                    config.env_processes = exploded_states
-                configs.append(config)
-                del config, exploded_states
-    else:
-        configs = [in_config]
-
-    return configs
-
-
 def exo_update_per_ts(ep):
-    @curried
-    def ep_decorator(f, y, var_dict, sub_step, sL, s, _input):
+    # @curried
+    def ep_decorator(f, y, var_dict, sub_step, sL, s, _input,  **kwargs):
         if s['substep'] + 1 == 1:
-            return f(var_dict, sub_step, sL, s, _input)
+            return f(var_dict, sub_step, sL, s, _input,  **kwargs)
         else:
             return y, s[y]
 
@@ -132,15 +110,23 @@ def trigger_condition(s, pre_conditions, cond_opp):
     return reduce(cond_opp, condition_bools)
 
 
-def apply_state_condition(pre_conditions, cond_opp, y, f, _g, step, sL, s, _input):
+def apply_state_condition(pre_conditions, cond_opp, y, f, _g, step, sL, s, _input, **kwargs):
+    def state_scope_tuner(f):
+        lenf = f.__code__.co_argcount
+        if lenf == 5:
+            return f(_g, step, sL, s, _input)
+        elif lenf == 6:
+            return f(_g, step, sL, s, _input, **kwargs)
+
     if trigger_condition(s, pre_conditions, cond_opp):
-        return f(_g, step, sL, s, _input)
+        return state_scope_tuner(f)
     else:
         return y, s[y]
 
 
 def var_trigger(y, f, pre_conditions, cond_op):
-    return lambda _g, step, sL, s, _input: apply_state_condition(pre_conditions, cond_op, y, f, _g, step, sL, s, _input)
+    return lambda _g, step, sL, s, _input, **kwargs: \
+        apply_state_condition(pre_conditions, cond_op, y, f, _g, step, sL, s, _input, **kwargs)
 
 
 def var_substep_trigger(substeps):
@@ -207,10 +193,11 @@ def genereate_psubs(policy_grid, states_grid, policies, state_updates):
 
 def access_block(state_history, target_field, psu_block_offset, exculsion_list=[]):
     exculsion_list += [target_field]
-    def filter_history(key_list, sH):
+
+    def filter_history(key_list, block):
         filter = lambda key_list: \
             lambda d: {k: v for k, v in d.items() if k not in key_list}
-        return list(map(filter(key_list), sH))
+        return list(map(filter(key_list), block))
 
     if psu_block_offset < -1:
         if len(state_history) >= abs(psu_block_offset):
@@ -221,3 +208,62 @@ def access_block(state_history, target_field, psu_block_offset, exculsion_list=[
         return filter_history(exculsion_list, state_history[psu_block_offset])
     else:
         return []
+
+## Parameter Sweep
+def partial_state_sweep_filter(state_field, partial_state_updates):
+    partial_state_dict = dict([(k, v[state_field]) for k, v in partial_state_updates.items()])
+    return dict([
+        (k, dict_filter(v, lambda v: isinstance(v, list))) for k, v in partial_state_dict.items()
+            if contains_type(list(v.values()), list)
+    ])
+
+
+def state_sweep_filter(raw_exogenous_states):
+    return dict([(k, v) for k, v in raw_exogenous_states.items() if isinstance(v, list)])
+
+
+# @curried
+def sweep_partial_states(_type, in_config):
+    configs = []
+    # filtered_mech_states
+    filtered_partial_states = partial_state_sweep_filter(_type, in_config.partial_state_updates)
+    if len(filtered_partial_states) > 0:
+        for partial_state, state_dict in filtered_partial_states.items():
+            for state, state_funcs in state_dict.items():
+                for f in state_funcs:
+                    config = deepcopy(in_config)
+                    config.partial_state_updates[partial_state][_type][state] = f
+                    configs.append(config)
+                    del config
+    else:
+        configs = [in_config]
+
+    return configs
+
+# @curried
+def sweep_states(state_type, states, in_config):
+    configs = []
+    filtered_states = state_sweep_filter(states)
+    if len(filtered_states) > 0:
+        for state, state_funcs in filtered_states.items():
+            for f in state_funcs:
+                config = deepcopy(in_config)
+                exploded_states = deepcopy(states)
+                exploded_states[state] = f
+                if state_type == 'exogenous':
+                    config.exogenous_states = exploded_states
+                elif state_type == 'environmental':
+                    config.env_processes = exploded_states
+                configs.append(config)
+                del config, exploded_states
+    else:
+        configs = [in_config]
+
+    return configs
+
+# @curried
+# def env_proc_trigger(timestep, f, time):
+#     if time == timestep:
+#         return f
+#     else:
+#         return lambda x: x
