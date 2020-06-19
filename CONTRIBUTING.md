@@ -26,7 +26,7 @@ Contributing to an existing feature:
 2. `git checkout -b feature` (new feature)
 3. Apply your awesomeness! (Commit Often)
 4. `git push fork feature`
-5. Apply a merge strategy you're comfortable with. I suggest a merge path to `master` similar to what's above.
+5. Apply a merge strategy you're comfortable with.
 6. Submit PR from `user:staging` into `BlockScience:staging`
 7. PR is queued for review
 8. PR Reviewed (Update necessary if rejected)
