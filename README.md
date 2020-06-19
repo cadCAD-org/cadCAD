@@ -20,7 +20,7 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 
 # Getting Started
 
-#### Release Notes: [ver. 0.4.15](documentation/release_notes.md)
+#### Release Notes: [ver. 0.4.15 (Beta)](documentation/release_notes.md)
 
 ## 1. Installation: 
 Requires [Python 3](https://www.python.org/downloads/) 
@@ -54,4 +54,4 @@ This works with just about all Unix systems as well as MacOS, for pure reproduci
 ## 3. Connect:
 Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
 
-## 4. [Contribution](CONTRIBUTING.md)
+## 4. [Contribute](CONTRIBUTING.md)
