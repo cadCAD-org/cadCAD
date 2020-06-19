@@ -21,13 +21,13 @@ Contributing to an existing feature:
 
 `user/feature -> BlockScience/feature`
 
-### General Advise for Forked Repositories: 
-1. `git pull fork master`
+### General Advise for Forked Repositories:
+1. `git pull fork staging`
 2. `git checkout -b feature` (new feature)
 3. Apply your awesomeness! (Commit Often)
 4. `git push fork feature`
-5. Apply a merge strategy you're comfortable with. I suggest a merge path to `master` similar to what's above.
-6. Submit PR from `user:master` into `BlockScience:staging`
+5. Apply a merge strategy you're comfortable with.
+6. Submit PR from `user:staging` into `BlockScience:staging`
 7. PR is queued for review
 8. PR Reviewed (Update necessary if rejected)
 9. PR Approved (There may be circumstances delaying the merge.)

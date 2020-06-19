@@ -15,9 +15,13 @@ by BlockScience
        e
        r
 ```
-***cadCAD*** is a Python package that assists in the processes of designing, testing and validating complex systems through simulation, with support for Monte Carlo methods, A/B testing and parameter sweeping. 
+***cadCAD*** is a Python package that assists in the processes of designing, testing and validating complex systems 
+through simulation, with support for Monte Carlo methods, A/B testing and parameter sweeping. 
 
 # Getting Started
+
+#### Release Notes: [ver. 0.4.15](documentation/release_notes.md)
+
 ## 1. Installation: 
 Requires [Python 3](https://www.python.org/downloads/) 
 
@@ -40,20 +44,14 @@ pip3 install dist/*.whl
 The above steps will enter you into a Nix development environment, with all package requirements for development of and with cadCAD.
 
 This works with just about all Unix systems as well as MacOS, for pure reproducible builds that don't dirty your local environment.
- 
-## 2. Learn the basics
-**Tutorials:** available both as [Jupyter Notebooks](tutorials) 
-and [videos](https://www.youtube.com/watch?v=uJEiYHRWA9g&list=PLmWm8ksQq4YKtdRV-SoinhV6LbQMgX1we) 
 
-Familiarize yourself with some system modelling concepts and cadCAD terminology.
-
-## 3. Documentation:
-* [System Model Configuration](documentation)
+## 2. Documentation:
+* [System Model Configuration](documentation/System_Configuration.md)
 * [System Simulation Execution](documentation/Simulation_Execution.md)
 * [Policy Aggregation](documentation/Policy_Aggregation.md)
 * [System Model Parameter Sweep](documentation/System_Model_Parameter_Sweep.md)
 
-## 4. [Contribution](CONTRIBUTING.md)
-
-## 5. Connect
+## 3. Connect:
 Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
+
+## 4. [Contribution](CONTRIBUTING.md)

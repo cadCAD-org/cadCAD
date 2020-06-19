@@ -1,4 +1,4 @@
-Historical State Access (Beta)
+Historical State Access (Alpha)
 ==
 #### Motivation
 The current state (values of state variables) is accessed through the `s` list. When the user requires previous state variable values, they may be accessed through the state history list, `sH`. Accessing the state history should be implemented without creating unintended feedback loops on the current state.

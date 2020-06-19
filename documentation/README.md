@@ -10,7 +10,7 @@ system is described by a set of [State Variables](#State-Variables). The dynamic
 cadCAD according to the definitions set by the user in [Partial State Update Blocks](#Partial-State-Update-Blocks).
 
 A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of 
-[Simulation Properties](#Simulation-Properties)
+[Simulation Properties](#Simulation-Properties).
 
 `append_configs`, stores a **Simulation Configuration** to be [Executed](/JS4Q9oayQASihxHBJzz4Ug) by cadCAD
 
@@ -84,7 +84,7 @@ defined here. See [System Model Parameter Sweep](/4oJ_GT6zRWW8AO3yMhFKrg) for mo
 
 ## System Model
 The System Model describes the system that will be simulated in cadCAD. It is comprised of a set of 
-[State Variables](###Sate-Variables) and the [State Update Functions](#State-Update-Functions) that determine the 
+[State Variables](##State-Variables) and the [State Update Functions](#State-Update-Functions) that determine the 
 evolution of the state of the system over time. [Policy Functions](#Policy-Functions) (representations of user policies 
 or internal system control policies) may also be part of a System Model.
 
