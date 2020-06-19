@@ -1,4 +1,4 @@
-# Features Notes:
+# Release Notes:
 ### June 19, 2020
     
 #### [Local Execution Mode](documentation/Simulation_Execution.md)
