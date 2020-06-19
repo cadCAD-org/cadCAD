@@ -1,10 +1,10 @@
-# [System Configurations:](https://github.com/BlockScience/distroduce/blob/master/documentation/dist_exec_doc.ipynb) 
+# [System Configuration:](https://github.com/BlockScience/distroduce/blob/master/documentation/dist_exec_doc.ipynb) 
 
 
-## System Configuration Conversions
+## Conversions
 ##### Note: The following applies as a result of simulation execution
 
-#### System Configuration as List of Configuration Objects
+#### System Configurations as List of Configuration Objects
 ```python
 fmt_configs = configs_as_objs(configs)
 pprint(fmt_configs)
@@ -23,13 +23,13 @@ Return:
  'simulation_id': 0}
 ```
 
-#### System Configuration as a Pandas DataFrame
+#### System Configurations as a Pandas DataFrame
 ```python
 configs_df = configs_as_dataframe(configs)
 configs_df
 ```
 
-#### System Configuration as List of Dictionaries
+#### System Configurations as List of Dictionaries
 ```python
 configs_dicts: list = configs_as_dicts(configs)
 pprint(configs_dicts[0]['sim_config'])
