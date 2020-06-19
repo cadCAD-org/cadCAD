@@ -1,65 +1,78 @@
 import unittest
 import pandas as pd
 
-
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from testing.system_models import param_sweep
+from testing.models import param_sweep
 from cadCAD import configs
 
 from testing.generic_test import make_generic_test
-from testing.system_models.param_sweep import some_function
+from testing.models.param_sweep import some_function, g as sweep_params
 
 
 exec_mode = ExecutionMode()
-multi_proc_ctx = ExecutionContext(context=exec_mode.multi_proc)
+multi_proc_ctx = ExecutionContext(context=exec_mode.multi_mode)
 run = Executor(exec_context=multi_proc_ctx, configs=configs)
 
-
-def get_expected_results(run, beta, gamma):
+# sim, run, substep, timestep
+def get_expected_results(sim, run, beta, gamma):
     return {
-        (run, 0, 0): {'policies': {}, 'sweeped': {}, 'alpha': 0, 'beta': 0},
-        (run, 1, 1): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 1, 2): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 1, 3): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 2, 1): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 2, 2): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 2, 3): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 3, 1): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 3, 2): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 3, 3): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 4, 1): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 4, 2): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 4, 3): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
-        (run, 5, 1): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': beta, 'alpha': 1, 'beta': beta},
-        (run, 5, 2): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': beta, 'alpha': 1, 'beta': beta},
-        (run, 5, 3): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': beta, 'alpha': 1, 'beta': beta}
+        (sim, run, 0, 0): {'policies': {}, 'sweeped': {}, 'alpha': 0, 'beta': 0},
+        (sim, run, 1, 1): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 1, 2): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 1, 3): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 2, 1): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 2, 2): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 2, 3): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 3, 1): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 3, 2): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 3, 3): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 4, 1): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 4, 2): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 4, 3): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': {'beta': beta, 'gamma': gamma}, 'alpha': 1, 'beta': beta},
+        (sim, run, 5, 1): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': beta, 'alpha': 1, 'beta': beta},
+        (sim, run, 5, 2): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': beta, 'alpha': 1, 'beta': beta},
+        (sim, run, 5, 3): {'policies': {'gamma': gamma, 'omega': 7}, 'sweeped': beta, 'alpha': 1, 'beta': beta}
     }
 
 
-expected_results_1 = {}
-expected_results_1a = get_expected_results(1, 2, 3)
-expected_results_1b = get_expected_results(2, 2, 3)
-expected_results_1.update(expected_results_1a)
-expected_results_1.update(expected_results_1b)
+def generate_expected(sweep_params):
+    def template(sweep_params):
+        sim_count = max(len(x) for x in list(sweep_params.values()))
+        expected_results, expected_results_1, expected_results_2 = {}, {}, {}
+        for sim in range(sim_count):
+            expected_results_1a = get_expected_results(sim, 1, 2, 3)
+            expected_results_1b = get_expected_results(sim, 2, 2, 3)
+            expected_results_1.update(expected_results_1a)
+            expected_results_1.update(expected_results_1b)
 
-expected_results_2 = {}
-expected_results_2a = get_expected_results(1, some_function, 4)
-expected_results_2b = get_expected_results(2, some_function, 4)
-expected_results_2.update(expected_results_2a)
-expected_results_2.update(expected_results_2b)
+            expected_results_2 = {}
+            expected_results_2a = get_expected_results(sim, 1, some_function, 4)
+            expected_results_2b = get_expected_results(sim, 2, some_function, 4)
+            expected_results_2.update(expected_results_2a)
+            expected_results_2.update(expected_results_2b)
 
+            expected_results.update(expected_results_1)
+            expected_results.update(expected_results_2)
 
-i = 0
-expected_results = [expected_results_1, expected_results_2]
-config_names = ['sweep_config_A', 'sweep_config_B']
+            yield expected_results
+
+    merged_expected = list(template(sweep_params))
+    result = {}
+    for d in merged_expected:
+        result.update(d)
+
+    return result
+
 
 def row(a, b):
     return a == b
+
+
 def create_test_params(feature, fields):
-    i = 0
-    for raw_result, _ in run.execute():
-        yield [feature, pd.DataFrame(raw_result), expected_results[i], fields, [row]]
-        i += 1
+    raw_result, tensor_fields, sessions = run.execute()
+    df = pd.DataFrame(raw_result)
+    expected = generate_expected(sweep_params)
+    return [[feature, df, expected, fields, [row]]]
 
 
 params = list(create_test_params("param_sweep", ['alpha', 'beta', 'policies', 'sweeped']))
