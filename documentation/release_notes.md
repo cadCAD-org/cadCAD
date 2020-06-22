@@ -5,7 +5,7 @@
 * Default parallelization of Monte-Carlo / Stochastic simulations
 * **Backwards Compatible** with given legacy modes names
 
-#### [cadCAD Post-Processing Enhancements](https://github.com/BlockScience/distroduce/blob/master/documentation/dist_exec_doc.ipynb)
+#### [cadCAD Post-Processing Enhancements](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/Simulation_Execution.md#execute-simulation-produce-system-event-dataset)
 * Returns single dataset as three types depending on execution mode:
     * Local Mode: 
         * 2d List
