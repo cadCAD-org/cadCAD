@@ -31,6 +31,11 @@ class ExecutionContext:
         elif context == 'single_proc':
             self.method = single_proc_exec
         elif context == 'multi_proc':
+            import os
+            if os.name == 'nt': # == windows
+                #For windows: to serialize global varibales in multi-processes
+                import dill
+                dill.settings['recurse'] = True 
             self.method = parallelize_simulations
         elif context == 'dist_proc':
             def distroduce_proc(
