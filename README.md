@@ -20,7 +20,7 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 
 # Getting Started
 
-#### Release Notes: [ver. 0.4.15](documentation/release_notes.md)
+#### Change Log: [ver. 0.4.15](CHANGELOG.md)
 [Previous Release (No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
 
 ## 1. Installation: 
@@ -55,4 +55,4 @@ This works with just about all Unix systems as well as MacOS, for pure reproduci
 ## 3. Connect:
 Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
 
-## 4. [Contribute](CONTRIBUTING.md)
+## 4. [Contribute!](CONTRIBUTING.md)
