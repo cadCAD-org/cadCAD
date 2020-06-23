@@ -9,7 +9,7 @@ from cadCAD.configuration.utils import time_step, config_sim
 from cadCAD.configuration.utils.userDefinedObject import udoPipe, UDO
 
 
-DF = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv'))
+DF = SilentDF(pd.read_csv('simulations/external_data/output.csv'))
 
 class udoExample(object):
     def __init__(self, x, dataset=None):
@@ -38,7 +38,7 @@ class udoExample(object):
     def write(self, ds_uri):
         pd.to_csv(ds_uri)
 
-    # ToDo: Generic update function
+    # Generic update function
 
     pass
 
