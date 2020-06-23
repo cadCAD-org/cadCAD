@@ -9,15 +9,13 @@ from cadCAD import configs
 
 exec_mode = ExecutionMode()
 
-print("Simulation Execution: Single Configuration")
-print()
 first_config = configs # only contains config1
 single_proc_ctx = ExecutionContext(context=exec_mode.single_proc)
 run = Executor(exec_context=single_proc_ctx, configs=first_config)
 
 raw_result, _ = run.main()
 result = pd.DataFrame(raw_result)
-result.to_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv', index=False)
+result.to_csv('simulations/external_data/output.csv', index=False)
 
 print("Output:")
 print(tabulate(result, headers='keys', tablefmt='psql'))

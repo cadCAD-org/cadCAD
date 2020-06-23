@@ -9,7 +9,7 @@ from cadCAD.configuration.utils import time_step, config_sim, var_trigger, var_s
 from cadCAD.configuration.utils.userDefinedObject import udoPipe, UDO
 
 
-DF = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv'))
+DF = SilentDF(pd.read_csv('simulations/external_data/output.csv'))
 
 
 class udoExample(object):
