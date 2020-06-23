@@ -3,7 +3,7 @@ from cadCAD.configuration.utils import config_sim
 import pandas as pd
 from cadCAD.utils import SilentDF
 
-df = SilentDF(pd.read_csv('/Users/jjodesty/Projects/DiffyQ-SimCAD/simulations/external_data/output.csv'))
+df = SilentDF(pd.read_csv('simulations/external_data/output.csv'))
 
 
 def query(s, df):
