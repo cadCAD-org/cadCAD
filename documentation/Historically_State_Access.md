@@ -1,4 +1,4 @@
-Historical State Access
+Historical State Access (Alpha)
 ==
 #### Motivation
 The current state (values of state variables) is accessed through the `s` list. When the user requires previous state variable values, they may be accessed through the state history list, `sH`. Accessing the state history should be implemented without creating unintended feedback loops on the current state.
@@ -15,7 +15,7 @@ exclusion_list = [
 ##### Example Policy Updates
 ###### Last partial state update
 ```python
-def last_update(_params, substep, sH, s):
+def last_update(_params, substep, sH, s, **kwargs):
     return {"last_x": access_block(
             state_history=sH,
             target_field="last_x", # Add a field to the exclusion list
@@ -28,25 +28,25 @@ def last_update(_params, substep, sH, s):
 ##### Define State Updates
 ###### 2nd to last partial state update
 ```python
-def second2last_update(_params, substep, sH, s):
+def second2last_update(_params, substep, sH, s, **kwargs):
     return {"2nd_to_last_x": access_block(sH, "2nd_to_last_x", -2, exclusion_list)}
 ```
 
 
 ###### 3rd to last partial state update
 ```python
-def third_to_last_x(_params, substep, sH, s, _input):
+def third_to_last_x(_params, substep, sH, s, _input, **kwargs):
     return '3rd_to_last_x', access_block(sH, "3rd_to_last_x", -3, exclusion_list)
 ```
 ###### 4rd to last partial state update
 ```python
-def fourth_to_last_x(_params, substep, sH, s, _input):
+def fourth_to_last_x(_params, substep, sH, s, _input, **kwargs):
     return '4th_to_last_x', access_block(sH, "4th_to_last_x", -4, exclusion_list)
 ```
 ###### Non-exsistent partial state update
 * `psu_block_offset >= 0` doesn't exist
 ```python
-def nonexistent(_params, substep, sH, s, _input):
+def nonexistent(_params, substep, sH, s, _input, **kwargs):
     return 'nonexistent', access_block(sH, "nonexistent", 0, exclusion_list)
 ```
 
