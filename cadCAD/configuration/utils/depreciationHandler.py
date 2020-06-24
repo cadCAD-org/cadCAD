@@ -23,7 +23,6 @@ def sanitize_partial_state_updates(partial_state_updates):
         if 'states' in d:
             d['variables'] = d.pop('states')
 
-
     if isinstance(new_partial_state_updates, list):
         for v in new_partial_state_updates:
             rename_keys(v)

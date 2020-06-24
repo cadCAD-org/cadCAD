@@ -10,7 +10,7 @@ system is described by a set of [State Variables](#State-Variables). The dynamic
 cadCAD according to the definitions set by the user in [Partial State Update Blocks](#Partial-State-Update-Blocks).
 
 A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of 
-[Simulation Properties](#Simulation-Properties)
+[Simulation Properties](#Simulation-Properties).
 
 `append_configs`, stores a **Simulation Configuration** to be [Executed](/JS4Q9oayQASihxHBJzz4Ug) by cadCAD
 
@@ -18,13 +18,15 @@ A Simulation Configuration is comprised of a [System Model](#System-Model) and a
 from cadCAD.configuration import append_configs
 
 append_configs(
+    user_id = ..., # OPTIONAL: cadCAD Session User ID
     initial_state = ..., # System Model
-    partial_state_update_blocks = .., # System Model
+    partial_state_update_blocks = ..., # System Model
     policy_ops = ..., # System Model
     sim_configs = ... # Simulation Properties
 )
 ```
 Parameters:
+* **user_id** : str - OPTIONAL: cadCAD Session User ID
 * **initial_state** : _dict_ - [State Variables](#State-Variables) and their initial values
 * **partial_state_update_blocks** : List[dict[dict]] - List of [Partial State Update Blocks](#Partial-State-Update-Blocks)
 * **policy_ops** : List[functions] - See [Policy Aggregation](Policy_Aggregation.md) 
@@ -36,13 +38,16 @@ Simulation properties are passed to `append_configs` in the `sim_configs` parame
 use the `config_sim` function in `cadCAD.configuration.utils`
 
 ```python
+from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import config_sim
 
-c = config_sim({
+sim_config_dict = {
     "N": ...,
     "T": range(...),
     "M": ...
-})
+}
+
+c = config_sim(sim_config_dict)
 
 append_configs(
     ...
@@ -79,7 +84,7 @@ defined here. See [System Model Parameter Sweep](/4oJ_GT6zRWW8AO3yMhFKrg) for mo
 
 ## System Model
 The System Model describes the system that will be simulated in cadCAD. It is comprised of a set of 
-[State Variables](###Sate-Variables) and the [State Update Functions](#State-Update-Functions) that determine the 
+[State Variables](##State-Variables) and the [State Update Functions](#State-Update-Functions) that determine the 
 evolution of the state of the system over time. [Policy Functions](#Policy-Functions) (representations of user policies 
 or internal system control policies) may also be part of a System Model.
 
@@ -114,7 +119,7 @@ State Update Functions represent equations according to which the state variable
 function must return a tuple containing a string with the name of the state variable being updated and its new value. 
 Each state update function can only modify a single state variable. The general structure of a state update function is:
 ```python
-def state_update_function_A(_params, substep, sH, s, _input):
+def state_update_function_A(_params, substep, sH, s, _input, **kwargs):
     ...
     return 'state_variable_name', new_value
 ```
@@ -127,6 +132,7 @@ Parameters:
 `dict_values` are their current values.
 * **_input** : _dict_ - Aggregation of the signals of all policy functions in the current 
 [Partial State Update Block](#Partial-State-Update-Block)
+* **\*\*kwargs** - State Update feature extensions 
 
 Return:
 * _tuple_ containing a string with the name of the state variable being updated and its new value.
@@ -156,7 +162,7 @@ The action taken, as well as the potential to act, through a mechanism is a beha
 
 The general structure of a policy function is:
 ```python
-def policy_function_1(_params, substep, sH, s):
+def policy_function_1(_params, substep, sH, s, **kwargs):
     ...
     return {'signal_1': value_1, ..., 'signal_N': value_N}
 ```
@@ -167,6 +173,7 @@ Parameters:
 [Historical State Access](/smiyQTnATtC9xPwvF8KbBQ) for details
 * **s** : _dict_ - Current state of the system, where the `dict_keys` are the names of the state variables and the 
 `dict_values` are their current values.
+* **\*\*kwargs** - Policy Update feature extensions 
     
 Return:
 * _dict_ of signals to be passed to the state update functions in the same 
