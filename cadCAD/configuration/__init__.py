@@ -10,11 +10,21 @@ from cadCAD.configuration.utils import exo_update_per_ts
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates, sanitize_config
 
 
+from time import time
+def timing_val(func):
+    def wrapper(*arg, **kw):
+        '''source: http://www.daniweb.com/code/snippet368.html'''
+        t1 = time()
+        res = func(*arg, **kw)
+        t2 = time()
+        print(f"{func.__name__}: {t2-t1 :.5f}")
+        return res
+    return wrapper
+
 class Configuration(object):
     def __init__(self, user_id, sim_config={}, initial_state={}, seeds={}, env_processes={},
                  exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
                  session_id=0, simulation_id=0, run_id=1, **kwargs) -> None:
-        # print(exogenous_states)
         self.sim_config = sim_config
         self.initial_state = initial_state
         self.seeds = seeds
@@ -90,6 +100,7 @@ def append_configs(
             simulation_id=sim_config['simulation_id'],
             run_id=sim_config['run_id']
         )
+
         configs.append(config)
 
 
@@ -118,7 +129,7 @@ class Identity:
 
         return list(map(lambda col: fillna_with_id_func(identity, df, col), cols))
 
-
+      
 class Processor:
     def __init__(self, id: Identity = Identity()) -> None:
         self.id = id
@@ -135,9 +146,9 @@ class Processor:
             identity = self.policy_identity
 
         df = pd.DataFrame(key_filter(partial_state_updates, key))
-        col_list = self.apply_identity_funcs(identity, df, list(df.columns))
-        if len(col_list) != 0:
-            return reduce((lambda x, y: pd.concat([x, y], axis=1)), col_list)
+        filled_df = self.apply_identity_funcs(identity, df, list(df.columns))
+        if len(filled_df) > 0:
+            return filled_df
         else:
             return pd.DataFrame({'empty': []})
 
