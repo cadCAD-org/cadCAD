@@ -1,6 +1,6 @@
 from typing import Callable, Dict, List, Any, Tuple
-from time import time
-from tqdm import tqdm
+# from time import time
+# from tqdm import tqdm
 
 from cadCAD.utils import flatten
 from cadCAD.configuration import Configuration, Processor
@@ -48,7 +48,7 @@ class ExecutionContext:
 
 class Executor:
     def __init__(self,
-             exec_context: ExecutionContext, configs: List[Configuration], spark_context=None # : SparkContext
+             exec_context: ExecutionContext, configs: List[Configuration], spark_context=None
                  ) -> None:
         self.sc = spark_context
         self.SimExecutor = SimExecutor
