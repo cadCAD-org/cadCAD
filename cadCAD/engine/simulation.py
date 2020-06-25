@@ -117,8 +117,8 @@ class Executor:
                 additional_objs
             ) -> List[Dict[str, Any]]:
 
-        last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
         # last_in_obj: Dict[str, Any] = MappingProxyType(sL[-1])
+        last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
         _input: Dict[str, Any] = self.policy_update_exception(
             self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs, additional_objs)
         )
