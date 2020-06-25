@@ -24,3 +24,6 @@
 * Expandable state and policy update parameter space enables changes to the parameter space of updates while 
 supporting backwards compatibility
 * Legacy execution modes supported
+
+### May 29, 2020
+* Packaging: Add [Nix](https://nixos.org/) derivation and shell for local development and distribution of cadCAD package using Nix. Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible, allowing you to share your development and build environments across different machines.
