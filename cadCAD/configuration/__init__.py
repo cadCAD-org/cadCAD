@@ -1,8 +1,9 @@
-from copy import deepcopy
 from typing import Dict, Callable, List, Tuple
-from functools import reduce
-import pandas as pd
 from pandas.core.frame import DataFrame
+from functools import reduce
+from copy import deepcopy
+import pandas as pd
+# from time import time
 
 from cadCAD import configs
 from cadCAD.utils import key_filter
@@ -180,7 +181,6 @@ class Processor:
 
         return list(map(lambda x: (x[0] + exo_proc, x[1]), zipped_list))
 
-# from time import time
 # def timing_val(func):
 #     def wrapper(*arg, **kw):
 #         '''source: http://www.daniweb.com/code/snippet368.html'''
