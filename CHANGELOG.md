@@ -4,11 +4,12 @@
 
 ### June 19, 2020
     
-#### [Local Execution Mode](documentation/Simulation_Execution.md)
+### New Features:
+##### [Local Execution Mode](documentation/Simulation_Execution.md)
 * Default parallelization of Monte-Carlo / Stochastic simulations
 * **Backwards Compatible** with given legacy modes names
 
-#### [cadCAD Post-Processing Enhancements](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/Simulation_Execution.md#execute-simulation-produce-system-event-dataset)
+##### [cadCAD Post-Processing Enhancements](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/Simulation_Execution.md#execute-simulation-produce-system-event-dataset)
 * Returns single dataset as three types depending on execution mode:
     * Local Mode:
         * 2d List
@@ -19,7 +20,7 @@
     * System Configuration as a Pandas DataFrame
     * System Configuration as List of Dictionaries
 
-#### Backwards compatibility:
+**Backwards compatibility:**
 * Expandable state and policy update parameter space enables changes to the parameter space of updates while 
 supporting backwards compatibility
 * Legacy execution modes supported

@@ -1,4 +1,7 @@
 from typing import Any, Callable, Dict, List, Tuple
+from pathos.pools import ThreadPool as TPool
+from functools import reduce
+from types import MappingProxyType
 from copy import deepcopy
 from functools import reduce
 from funcy import curry
@@ -114,6 +117,7 @@ class Executor:
                 additional_objs
             ) -> List[Dict[str, Any]]:
 
+        # last_in_obj: Dict[str, Any] = MappingProxyType(sL[-1])
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
         _input: Dict[str, Any] = self.policy_update_exception(
             self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs, additional_objs)
@@ -159,7 +163,8 @@ class Executor:
 
         sub_step = 0
         states_list_copy: List[Dict[str, Any]] = tuple(simulation_list[-1])
-        genesis_states: Dict[str, Any] = states_list_copy[-1]
+        genesis_states: Dict[str, Any] = states_list_copy[-1].copy()
+#         genesis_states: Dict[str, Any] = states_list_copy[-1]
 
         if len(states_list_copy) == 1:
             genesis_states['substep'] = sub_step
@@ -223,7 +228,7 @@ class Executor:
                     d['simulation'], d['run'], d['substep'], d['timestep'] = simulation_id, run, 0, 0
                     yield d
 
-            states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(deepcopy(states_list)))
+            states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(tuple(states_list)))
 
             first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(
                 sweep_dict, states_list_copy, configs, env_processes, time_seq, run, additional_objs
