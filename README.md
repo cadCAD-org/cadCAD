@@ -47,6 +47,7 @@ The above steps will enter you into a Nix development environment, with all pack
 This works with just about all Unix systems as well as MacOS, for pure reproducible builds that don't dirty your local environment.
 
 ## 2. Documentation:
+* [Simulation Configuration](documentation/README.md)
 * [System Model Configuration](documentation/System_Configuration.md)
 * [System Simulation Execution](documentation/Simulation_Execution.md)
 * [Policy Aggregation](documentation/Policy_Aggregation.md)
