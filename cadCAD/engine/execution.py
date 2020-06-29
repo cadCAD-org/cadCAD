@@ -77,8 +77,9 @@ def parallelize_simulations(
         tp.close()
         return results
 
-    len_new_configs_structs = len(new_configs_structs)
-    pp = PPool(len_new_configs_structs)
+    # len_new_configs_structs = len(new_configs_structs)
+    # pp = PPool(len_new_configs_structs)
+    pp = PPool()
     results = flatten(pp.map(lambda params: threaded_executor(params), new_params))
     pp.close()
     return results
