@@ -1,8 +1,10 @@
+from time import time
 from typing import Callable, Dict, List, Any, Tuple
 # from time import time
 # from tqdm import tqdm
-
+from cadCAD import logo
 from cadCAD.utils import flatten
+from cadCAD.utils.execution import print_exec_info
 from cadCAD.configuration import Configuration, Processor
 from cadCAD.configuration.utils import TensorFieldReport
 from cadCAD.engine.simulation import Executor as SimExecutor
@@ -60,19 +62,6 @@ class Executor:
         config_proc = Processor()
         create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
 
-        print(f'Configurations Length: {len(self.configs)}')
-
-# danlessa_experiments
-#         print(f'Execution Mode: {self.exec_context}')
-#         print(f'Configuration count: {len(self.configs)}')
-#         first_sim = self.configs[0].sim_config
-#         n_t = len(first_sim['T'])
-#         n_m = len(first_sim['M'])
-#         n_n = first_sim['N']
-#         n_s = len(self.configs[0].initial_state)
-#         print(f'Dimensions of the first simulation: (Timesteps, Params, Runs, Vars) = ({n_t}, {n_m}, {n_n}, {n_s})')
-#         t1 = time()
-
         sessions = []
         var_dict_list, states_lists = [], []
         Ts, Ns, SimIDs, RunIDs = [], [], [], []
@@ -80,9 +69,12 @@ class Executor:
         partial_state_updates, sim_executors = [], []
         config_idx = 0
 
+        print_exec_info(self.exec_context, self.configs)
+
 # danlessa_experiments
 #         for x in tqdm(self.configs,
 #                       desc='Initializing configurations'):
+        t1 = time()
         for x in self.configs:
             sessions.append(
                 {'user_id': x.user_id, 'session_id': x.session_id, 'simulation_id': x.simulation_id, 'run_id': x.run_id}
@@ -102,7 +94,6 @@ class Executor:
             sim_executors.append(SimExecutor(x.policy_ops).simulation)
 
             config_idx += 1
-
 
         def get_final_dist_results(simulations, psus, eps, sessions):
             tensor_fields = [create_tensor_field(psu, ep) for psu, ep in list(zip(psus, eps))]
@@ -135,6 +126,7 @@ class Executor:
                 elif config_amt > remote_threshold:
                     print('Remote Threshold is N=100. Use ExecutionMode.dist_proc if N >= 100')
 
+        final_result = None
         original_context = self.exec_context
         if self.exec_context != ExecutionMode.distributed:
             # Consider Legacy Support
@@ -145,14 +137,19 @@ class Executor:
             simulations_results = self.exec_method(
                 sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs #Ns
             )
-            return get_final_results(simulations_results, partial_state_updates, eps, sessions, remote_threshold)
+            final_result = get_final_results(simulations_results, partial_state_updates, eps, sessions, remote_threshold)
         elif self.exec_context == ExecutionMode.distributed:
             print("Execution Method: " + self.exec_method.__name__)
             simulations_results = self.exec_method(
                 sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts,
                 SimIDs, RunIDs, self.sc
             )
-            return get_final_dist_results(simulations_results, partial_state_updates, eps, sessions)
+            final_result = get_final_dist_results(simulations_results, partial_state_updates, eps, sessions)
+
+        t2 = time()
+        print(f"Total execution time: {t2 - t1 :.2f}s")
+
+        return final_result
           
 # danlessa_experiments: -> get_final_dist_results          
 #          results = []
