@@ -4,6 +4,11 @@
 ## Conversions
 ##### Note: The following applies as a result of simulation execution
 
+#### Imports:
+```python
+from cadCAD.configuration.utils import configs_as_objs, configs_as_dataframe, configs_as_dicts
+```
+
 #### System Configurations as List of Configuration Objects
 ```python
 fmt_configs = configs_as_objs(configs)

@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Dict, Callable, List, Tuple
 from pandas.core.frame import DataFrame
 from functools import reduce
@@ -40,6 +41,8 @@ def append_configs(
     partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
     config_list=configs
                   ) -> None:
+    # pprint(sim_configs)
+    max_runs = sim_configs[0]['N']
     if _exo_update_per_ts is True:
         exogenous_states = exo_update_per_ts(raw_exogenous_states)
     else:
@@ -59,6 +62,7 @@ def append_configs(
         sim_config = t[0]
         N = sim_config['N']
 
+        # print(N)
         if N > 1:
             for n in range(N):
                 sim_config['simulation_id'] = simulation_id + sim_cnt
@@ -71,11 +75,36 @@ def append_configs(
             sim_config['simulation_id'] = simulation_id
             sim_config['run_id'] = 0
             new_sim_configs.append(deepcopy(sim_config))
+            # del sim_config
 
         sim_cnt += 1
 
     # for sim_config in sim_configs:
+    run_id_set = list(set([sim_config['run_id'] for sim_config in new_sim_configs]))
+    # pprint(run_id_set)
+    # print(type(new_sim_configs))
+
+    run_id = 0
+    print(max_runs)
     for sim_config in new_sim_configs:
+        print(run_id_set)
+        sim_config['N'] = run_id + 1
+        if max_runs == 1: #len(run_id_set) == 1 and
+            sim_config['run_id'] = run_id
+            print(run_id)
+        elif max_runs >= 1:
+            if run_id >= max_runs:
+                sim_config['N'] = run_id - (max_runs - 1)
+                print(run_id)
+                print(run_id - max_runs)
+
+
+        # print(run_id_set)
+        # else:
+        #     if
+        # run_id_config = sim_config['run_id']
+        # sim_config['N'] = run_id
+        # print(sim_config['run_id'])
         config = Configuration(
             sim_config=sim_config,
             initial_state=initial_state,
@@ -89,9 +118,11 @@ def append_configs(
             user_id=user_id,
             session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
             simulation_id=sim_config['simulation_id'],
+            # run_id=run_id_config
             run_id=sim_config['run_id']
         )
         configs.append(config)
+        run_id += 1
 
 
 class Identity:

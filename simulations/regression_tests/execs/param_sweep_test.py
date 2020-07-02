@@ -3,7 +3,6 @@ from pprint import pprint
 import pandas as pd
 from tabulate import tabulate
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-
 from simulations.regression_tests.models import sweep_config
 from cadCAD import configs
 
@@ -16,4 +15,4 @@ raw_result, tensor_fields, sessions = run.execute()
 result = pd.DataFrame(raw_result)
 print(tabulate(tensor_fields[0], headers='keys', tablefmt='psql'))
 pprint(sessions)
-print(tabulate(result, headers='keys', tablefmt='psql'))
+print(tabulate(result.head(), headers='keys', tablefmt='psql'))

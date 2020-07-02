@@ -225,7 +225,8 @@ class Executor:
             def generate_init_sys_metrics(genesis_states_list):
                 # for d in genesis_states_list.asDict():
                 for d in genesis_states_list:
-                    d['simulation'], d['run'], d['substep'], d['timestep'] = simulation_id, run, 0, 0
+                    # d['simulation'], d['run'], d['substep'], d['timestep'] = simulation_id, run, 0, 0
+                    d['simulation'], d['run'], d['substep'], d['timestep'] = simulation_id, 1, 0, 0
                     yield d
 
             states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(tuple(states_list)))
