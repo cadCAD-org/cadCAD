@@ -84,27 +84,17 @@ def append_configs(
     # pprint(run_id_set)
     # print(type(new_sim_configs))
 
+
+    # print(max_runs)
     run_id = 0
-    print(max_runs)
     for sim_config in new_sim_configs:
-        print(run_id_set)
         sim_config['N'] = run_id + 1
         if max_runs == 1: #len(run_id_set) == 1 and
             sim_config['run_id'] = run_id
-            print(run_id)
         elif max_runs >= 1:
             if run_id >= max_runs:
                 sim_config['N'] = run_id - (max_runs - 1)
-                print(run_id)
-                print(run_id - max_runs)
 
-
-        # print(run_id_set)
-        # else:
-        #     if
-        # run_id_config = sim_config['run_id']
-        # sim_config['N'] = run_id
-        # print(sim_config['run_id'])
         config = Configuration(
             sim_config=sim_config,
             initial_state=initial_state,
