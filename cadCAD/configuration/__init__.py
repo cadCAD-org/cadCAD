@@ -41,8 +41,12 @@ def append_configs(
     partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
     config_list=configs
                   ) -> None:
-    # pprint(sim_configs)
-    max_runs = sim_configs[0]['N']
+
+    try:
+        max_runs = sim_configs[0]['N']
+    except KeyError:
+        max_runs = sim_configs['N']
+
     if _exo_update_per_ts is True:
         exogenous_states = exo_update_per_ts(raw_exogenous_states)
     else:
