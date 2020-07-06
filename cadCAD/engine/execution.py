@@ -39,8 +39,6 @@ def parallelize_simulations(
         Ns: List[int]
     ):
     print(f'Execution Mode: parallelized')
-    print(SimIDs)
-    print(Ns)
     params = list(
         zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, Ns)
     )

@@ -66,7 +66,6 @@ def append_configs(
         sim_config = t[0]
         N = sim_config['N']
 
-        # print(N)
         if N > 1:
             for n in range(N):
                 sim_config['simulation_id'] = simulation_id + sim_cnt
@@ -83,17 +82,10 @@ def append_configs(
 
         sim_cnt += 1
 
-    # for sim_config in sim_configs:
-    run_id_set = list(set([sim_config['run_id'] for sim_config in new_sim_configs]))
-    # pprint(run_id_set)
-    # print(type(new_sim_configs))
-
-
-    # print(max_runs)
     run_id = 0
     for sim_config in new_sim_configs:
         sim_config['N'] = run_id + 1
-        if max_runs == 1: #len(run_id_set) == 1 and
+        if max_runs == 1:
             sim_config['run_id'] = run_id
         elif max_runs >= 1:
             if run_id >= max_runs:
