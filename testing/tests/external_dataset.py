@@ -8,8 +8,8 @@ from testing.generic_test import make_generic_test
 exec_mode = ExecutionMode()
 
 first_config = configs
-single_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=single_proc_ctx, configs=first_config)
+exec_ctx = ExecutionContext(context=exec_mode.local_mode)
+run = Executor(exec_context=exec_ctx, configs=first_config)
 
 raw_result, tensor_field, sessions = run.execute()
 result = pd.DataFrame(raw_result)

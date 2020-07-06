@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Dict, Callable, List, Tuple
 from pandas.core.frame import DataFrame
 from functools import reduce
@@ -40,6 +41,12 @@ def append_configs(
     partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
     config_list=configs
                   ) -> None:
+
+    try:
+        max_runs = sim_configs[0]['N']
+    except KeyError:
+        max_runs = sim_configs['N']
+
     if _exo_update_per_ts is True:
         exogenous_states = exo_update_per_ts(raw_exogenous_states)
     else:
@@ -71,11 +78,19 @@ def append_configs(
             sim_config['simulation_id'] = simulation_id
             sim_config['run_id'] = 0
             new_sim_configs.append(deepcopy(sim_config))
+            # del sim_config
 
         sim_cnt += 1
 
-    # for sim_config in sim_configs:
+    run_id = 0
     for sim_config in new_sim_configs:
+        sim_config['N'] = run_id + 1
+        if max_runs == 1:
+            sim_config['run_id'] = run_id
+        elif max_runs >= 1:
+            if run_id >= max_runs:
+                sim_config['N'] = run_id - (max_runs - 1)
+
         config = Configuration(
             sim_config=sim_config,
             initial_state=initial_state,
@@ -89,9 +104,11 @@ def append_configs(
             user_id=user_id,
             session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
             simulation_id=sim_config['simulation_id'],
+            # run_id=run_id_config
             run_id=sim_config['run_id']
         )
         configs.append(config)
+        run_id += 1
 
 
 class Identity:
@@ -112,12 +129,17 @@ class Identity:
 
     # state_identity = cloudpickle.dumps(state_identity)
 
-    def apply_identity_funcs(self, identity: Callable, df: DataFrame, cols: List[str]) -> List[DataFrame]:
-        # identity = pickle.loads(identity)
-        def fillna_with_id_func(identity, df, col):
-            return df[[col]].fillna(value=identity(col))
-
-        return list(map(lambda col: fillna_with_id_func(identity, df, col), cols))
+    def apply_identity_funcs(self,
+                             identity: Callable,
+                             df: DataFrame,
+                             cols: List[str]) -> DataFrame:
+        """
+        Apply the identity on each df column, using its self value as the
+        argument.
+        """
+        fill_values = {col: identity(col) for col in cols}
+        filled_df = df.fillna(fill_values)
+        return filled_df
 
 
 class Processor:
@@ -136,9 +158,9 @@ class Processor:
             identity = self.policy_identity
 
         df = pd.DataFrame(key_filter(partial_state_updates, key))
-        col_list = self.apply_identity_funcs(identity, df, list(df.columns))
-        if len(col_list) != 0:
-            return reduce((lambda x, y: pd.concat([x, y], axis=1)), col_list)
+        filled_df = self.apply_identity_funcs(identity, df, list(df.columns))
+        if len(filled_df) > 0:
+            return filled_df
         else:
             return pd.DataFrame({'empty': []})
 
