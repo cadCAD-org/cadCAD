@@ -10,8 +10,8 @@ from testing.models.param_sweep import some_function, g as sweep_params
 
 
 exec_mode = ExecutionMode()
-multi_proc_ctx = ExecutionContext(context=exec_mode.multi_mode)
-run = Executor(exec_context=multi_proc_ctx, configs=configs)
+exec_ctx = ExecutionContext(context=exec_mode.multi_mode)
+run = Executor(exec_context=exec_ctx, configs=configs)
 
 # sim, run, substep, timestep
 def get_expected_results(sim, run, beta, gamma):
