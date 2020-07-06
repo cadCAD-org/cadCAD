@@ -20,7 +20,7 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 
 # Getting Started
 
-#### Change Log: [ver. 0.4.15](CHANGELOG.md)
+#### Change Log: [ver. 0.4.16](CHANGELOG.md)
 [Previous Release (No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
 
 ## 1. Installation: 
@@ -48,10 +48,10 @@ This works with just about all Unix systems as well as MacOS, for pure reproduci
 
 ## 2. Documentation:
 * [Simulation Configuration](documentation/README.md)
-* [System Model Configuration](documentation/System_Configuration.md)
 * [System Simulation Execution](documentation/Simulation_Execution.md)
 * [Policy Aggregation](documentation/Policy_Aggregation.md)
 * [System Model Parameter Sweep](documentation/System_Model_Parameter_Sweep.md)
+* [System Model Configuration](documentation/System_Configuration.md)
 
 ## 3. Connect:
 Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
