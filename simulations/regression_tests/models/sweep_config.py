@@ -135,8 +135,8 @@ env_process["s4"] = env_timestep_trigger(trigger_field='timestep', trigger_vals=
 # config_sim Necessary
 sim_config = config_sim(
     {
-        "N": 1,
-        "T": range(5),
+        "N": 3,
+        "T": range(2),
         "M": g, # Optional
     }
 )

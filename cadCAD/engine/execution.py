@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ThreadPool as TPool
 from pathos.multiprocessing import ProcessPool as PPool
@@ -38,6 +39,13 @@ def parallelize_simulations(
         SimIDs,
         Ns: List[int]
     ):
+    # indexed sim_ids
+    # SimIDs = list(range(len(SimIDs)))
+    # print(SimIDs)
+    # print(list(range(len(Ns))))
+    print(Ns)
+    # exit()
+
     print(f'Execution Mode: parallelized')
     params = list(
         zip(simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, Ns)
@@ -50,6 +58,7 @@ def parallelize_simulations(
     highest_divisor = int(len_configs_structs / sim_count)
 
     new_configs_structs, new_params = [], []
+    print()
     for count in range(sim_count):
         if count == 0:
             new_params.append(
@@ -59,6 +68,7 @@ def parallelize_simulations(
                 configs_structs[count: highest_divisor]
             )
         elif count > 0:
+            # print(params)
             new_params.append(
                 params[count * highest_divisor: (count + 1) * highest_divisor]
             )
@@ -67,7 +77,8 @@ def parallelize_simulations(
             )
 
     def threaded_executor(params):
-        tp = TPool(len_configs_structs)
+        # tp = TPool(len_configs_structs)
+        tp = TPool()
         if len_configs_structs > 1:
             results = tp.map(lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7]), params)
         else:
@@ -79,9 +90,15 @@ def parallelize_simulations(
 
     # len_new_configs_structs = len(new_configs_structs)
     # pp = PPool(len_new_configs_structs)
-    pp = PPool()
-    results = flatten(pp.map(lambda params: threaded_executor(params), new_params))
-    pp.close()
+    # len(new_params)
+    # print('params len: '+ str(len(new_params)))
+
+    # pprint(params)
+    # print()
+
+    # pp = PPool()
+    results = flatten(list(map(lambda params: threaded_executor(params), new_params)))
+    # pp.close()
     return results
 
 
