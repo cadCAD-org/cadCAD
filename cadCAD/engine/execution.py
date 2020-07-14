@@ -20,7 +20,8 @@ def single_proc_exec(
         env_processes_list: List[EnvProcessesType],
         Ts: List[range],
         SimIDs,
-        Ns: List[int]
+        Ns: List[int],
+        ExpIDs: List[int]
     ):
     print(f'Execution Mode: single_threaded')
     params = [simulation_execs, states_lists, configs_structs, env_processes_list, Ts, SimIDs, Ns]
@@ -37,13 +38,14 @@ def parallelize_simulations(
         env_processes_list: List[EnvProcessesType],
         Ts: List[range],
         SimIDs,
-        Ns: List[int]
+        Ns: List[int],
+        ExpIDs: List[int]
     ):
     # indexed sim_ids
     # SimIDs = list(range(len(SimIDs)))
     # print(SimIDs)
     # print(list(range(len(Ns))))
-    print(Ns)
+    # print(Ns)
     # exit()
 
     print(f'Execution Mode: parallelized')
@@ -76,6 +78,12 @@ def parallelize_simulations(
                 configs_structs[count * highest_divisor: (count + 1) * highest_divisor]
             )
 
+    print(SimIDs)
+    print(Ns)
+    print(ExpIDs)
+    # pprint(new_configs_structs)
+    # exit()
+
     def threaded_executor(params):
         # tp = TPool(len_configs_structs)
         tp = TPool()
@@ -96,9 +104,9 @@ def parallelize_simulations(
     # pprint(params)
     # print()
 
-    # pp = PPool()
-    results = flatten(list(map(lambda params: threaded_executor(params), new_params)))
-    # pp.close()
+    pp = PPool()
+    results = flatten(list(pp.map(lambda params: threaded_executor(params), new_params)))
+    pp.close()
     return results
 
 
@@ -111,17 +119,20 @@ def local_simulations(
         env_processes_list: List[EnvProcessesType],
         Ts: List[range],
         SimIDs,
-        Ns: List[int]
+        Ns: List[int],
+        ExpIDs: List[int]
     ):
     config_amt = len(configs_structs)
     try:
         if len(configs_structs) == 1:
             return single_proc_exec(
-                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, Ns
+                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, Ns,
+                ExpIDs
             )
         elif len(configs_structs) > 1 and config_amt < remote_threshold:
             return parallelize_simulations(
-                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, Ns
+                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, Ns,
+                ExpIDs
             )
     except ValueError:
         print('ValueError: sim_configs\' N must > 0')

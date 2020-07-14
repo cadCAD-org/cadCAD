@@ -1,7 +1,7 @@
 from pprint import pprint
 from typing import Dict, Callable, List, Tuple
 from pandas.core.frame import DataFrame
-from functools import reduce
+from collections import deque
 from copy import deepcopy
 import pandas as pd
 # from time import time
@@ -15,7 +15,8 @@ from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_stat
 class Configuration(object):
     def __init__(self, user_id, sim_config={}, initial_state={}, seeds={}, env_processes={},
                  exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
-                 session_id=0, simulation_id=0, run_id=1, **kwargs) -> None:
+                 session_id=0, simulation_id=0, run_id=1, experiment_id=0, exp_window=deque([0, None], 2), **kwargs
+    ) -> None:
         # print(exogenous_states)
         self.sim_config = sim_config
         self.initial_state = initial_state
@@ -27,88 +28,197 @@ class Configuration(object):
         self.kwargs = kwargs
 
         self.user_id = user_id
-        self.session_id = session_id
+        self.session_id = session_id # eesntially config id
         self.simulation_id = simulation_id
         self.run_id = run_id
+        self.experiment_id = experiment_id
+        self.exp_window = exp_window
 
         sanitize_config(self)
 
 
-def append_configs(
-    user_id='cadCAD_user',
-    session_id=0, #ToDo: change to string
-    sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
-    partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
-    config_list=configs
-                  ) -> None:
+class Experiment:
+    def __init__(self):
+        self.exp_id = 0
+        self.exp_window = deque([self.exp_id, None], 2)
 
-    try:
-        max_runs = sim_configs[0]['N']
-    except KeyError:
-        max_runs = sim_configs['N']
+    def append_configs(
+            self,
+            user_id='cadCAD_user',
+            session_id=0,  # ToDo: change to string
+            sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
+            partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
+            config_list=configs
+    ) -> None:
 
-    if _exo_update_per_ts is True:
-        exogenous_states = exo_update_per_ts(raw_exogenous_states)
-    else:
-        exogenous_states = raw_exogenous_states
+        try:
+            max_runs = sim_configs[0]['N']
+        except KeyError:
+            max_runs = sim_configs['N']
 
-    if isinstance(sim_configs, dict):
-        sim_configs = [sim_configs]
-
-    simulation_id = 0
-    if len(config_list) > 0:
-        last_config = config_list[-1]
-        simulation_id = last_config.simulation_id + 1
-
-    sim_cnt = 0
-    new_sim_configs = []
-    for t in list(zip(sim_configs, list(range(len(sim_configs))))):
-        sim_config = t[0]
-        N = sim_config['N']
-
-        if N > 1:
-            for n in range(N):
-                sim_config['simulation_id'] = simulation_id + sim_cnt
-                sim_config['run_id'] = n
-                sim_config['N'] = 1
-                # sim_config['N'] = n + 1
-                new_sim_configs.append(deepcopy(sim_config))
-            del sim_config
+        if _exo_update_per_ts is True:
+            exogenous_states = exo_update_per_ts(raw_exogenous_states)
         else:
-            sim_config['simulation_id'] = simulation_id
-            sim_config['run_id'] = 0
-            new_sim_configs.append(deepcopy(sim_config))
-            # del sim_config
+            exogenous_states = raw_exogenous_states
 
-        sim_cnt += 1
+        if isinstance(sim_configs, dict):
+            sim_configs = [sim_configs]
 
-    run_id = 0
-    for sim_config in new_sim_configs:
-        sim_config['N'] = run_id + 1
-        if max_runs == 1:
-            sim_config['run_id'] = run_id
-        elif max_runs >= 1:
-            if run_id >= max_runs:
-                sim_config['N'] = run_id - (max_runs - 1)
+        simulation_id = 0
+        if len(config_list) > 0:
+            last_config = config_list[-1]
+            simulation_id = last_config.simulation_id + 1
 
-        config = Configuration(
-            sim_config=sim_config,
-            initial_state=initial_state,
-            seeds=seeds,
-            exogenous_states=exogenous_states,
-            env_processes=env_processes,
-            partial_state_update_blocks=partial_state_update_blocks,
-            policy_ops=policy_ops,
+        sim_cnt = 0
+        new_sim_configs = []
+        for t in list(zip(sim_configs, list(range(len(sim_configs))))):
+            sim_config = t[0]
+            N = sim_config['N']
 
-            # session_id=session_id,
-            user_id=user_id,
-            session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
-            simulation_id=sim_config['simulation_id'],
-            # run_id=run_id_config
-            run_id=sim_config['run_id']
-        )
-        configs.append(config)
-        run_id += 1
+            if N > 1:
+                for n in range(N):
+                    sim_config['simulation_id'] = simulation_id + sim_cnt
+                    sim_config['run_id'] = n
+                    sim_config['N'] = 1
+                    # sim_config['N'] = n + 1
+                    new_sim_configs.append(deepcopy(sim_config))
+                del sim_config
+            else:
+                sim_config['simulation_id'] = simulation_id
+                sim_config['run_id'] = 0
+                new_sim_configs.append(deepcopy(sim_config))
+                # del sim_config
+
+            sim_cnt += 1
+
+        run_id = 0
+        print(self.exp_id)
+        for sim_config in new_sim_configs:
+            sim_config['N'] = run_id + 1
+            if max_runs == 1:
+                sim_config['run_id'] = run_id
+            elif max_runs >= 1:
+                if run_id >= max_runs:
+                    sim_config['N'] = run_id - (max_runs - 1)
+
+            self.exp_window = deepcopy(self.exp_window)
+            config = Configuration(
+                sim_config=sim_config,
+                initial_state=initial_state,
+                seeds=seeds,
+                exogenous_states=exogenous_states,
+                env_processes=env_processes,
+                partial_state_update_blocks=partial_state_update_blocks,
+                policy_ops=policy_ops,
+
+                # session_id=session_id,
+                user_id=user_id,
+                session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
+                simulation_id=sim_config['simulation_id'],
+                # run_id=run_id_config
+                run_id=sim_config['run_id'],
+                experiment_id=self.exp_id,
+                exp_window=self.exp_window
+            )
+            configs.append(config)
+            run_id += 1
+
+        # print(exp_cnt)
+        self.exp_id += 1
+        self.exp_window.appendleft(self.exp_id)
+        # print()
+        # print(self.exp_id)
+
+
+# def append_configs(
+#     user_id='cadCAD_user',
+#     session_id=0, #ToDo: change to string
+#     sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
+#     partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
+#     config_list=configs
+#                   ) -> None:
+#
+#     try:
+#         max_runs = sim_configs[0]['N']
+#     except KeyError:
+#         max_runs = sim_configs['N']
+#
+#     if _exo_update_per_ts is True:
+#         exogenous_states = exo_update_per_ts(raw_exogenous_states)
+#     else:
+#         exogenous_states = raw_exogenous_states
+#
+#     if isinstance(sim_configs, dict):
+#         sim_configs = [sim_configs]
+#
+#     simulation_id = 0
+#     if len(config_list) > 0:
+#         last_config = config_list[-1]
+#         simulation_id = last_config.simulation_id + 1
+#
+#     sim_cnt = 0
+#     new_sim_configs = []
+#     for t in list(zip(sim_configs, list(range(len(sim_configs))))):
+#         sim_config = t[0]
+#         N = sim_config['N']
+#
+#         if N > 1:
+#             for n in range(N):
+#                 sim_config['simulation_id'] = simulation_id + sim_cnt
+#                 sim_config['run_id'] = n
+#                 sim_config['N'] = 1
+#                 # sim_config['N'] = n + 1
+#                 new_sim_configs.append(deepcopy(sim_config))
+#             del sim_config
+#         else:
+#             sim_config['simulation_id'] = simulation_id
+#             sim_config['run_id'] = 0
+#             new_sim_configs.append(deepcopy(sim_config))
+#             # del sim_config
+#
+#         sim_cnt += 1
+#
+#     # print(configs)
+#     run_id = 0
+#     # if len(configs) > 0:
+#     #     ds_run_id = configs[-1].__dict__['run_id'] + 1
+#     #     # print()
+#     #     # print(configs[-1].__dict__['simulation_id'])
+#     #     # print(configs[-1].__dict__['run_id'])
+#     #     # configs[-1].__dict__['run_id']
+#     #     # print(configs[-1].__dict__['run_id'] + 1)
+#     #     run_id = ds_run_id + 1
+#
+#     for sim_config in new_sim_configs:
+#         sim_config['N'] = run_id + 1
+#         if max_runs == 1:
+#             sim_config['run_id'] = run_id
+#         elif max_runs >= 1:
+#             if run_id >= max_runs:
+#                 sim_config['N'] = run_id - (max_runs - 1)
+#
+#         config = Configuration(
+#             sim_config=sim_config,
+#             initial_state=initial_state,
+#             seeds=seeds,
+#             exogenous_states=exogenous_states,
+#             env_processes=env_processes,
+#             partial_state_update_blocks=partial_state_update_blocks,
+#             policy_ops=policy_ops,
+#
+#             # session_id=session_id,
+#             user_id=user_id,
+#             session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
+#             simulation_id=sim_config['simulation_id'],
+#             # run_id=run_id_config
+#             run_id=sim_config['run_id']
+#         )
+#         configs.append(config)
+#         run_id += 1
+#
+#     # print(configs)
+#     # print(f'simulation_id: {configs[-1].__dict__["simulation_id"]}')
+#     # print(f'run_id: {configs[-1].__dict__["run_id"]}')
 
 
 class Identity:

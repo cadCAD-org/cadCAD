@@ -65,7 +65,7 @@ class Executor:
 
         sessions = []
         var_dict_list, states_lists = [], []
-        Ts, Ns, SimIDs, RunIDs = [], [], [], []
+        Ts, Ns, SimIDs, RunIDs, ExpIDs, ExpWindows = [], [], [], [], [], []
         eps, configs_structs, env_processes_list = [], [], []
         partial_state_updates, sim_executors = [], []
         config_idx = 0
@@ -78,11 +78,16 @@ class Executor:
         t1 = time()
         for x in self.configs:
             sessions.append(
-                {'user_id': x.user_id, 'session_id': x.session_id, 'simulation_id': x.simulation_id, 'run_id': x.run_id}
+                {
+                    'user_id': x.user_id, 'experiment_id': x.experiment_id, 'session_id': x.session_id,
+                    'simulation_id': x.simulation_id, 'run_id': x.run_id
+                }
             )
             Ts.append(x.sim_config['T'])
             Ns.append(x.sim_config['N'])
 
+            ExpIDs.append(x.experiment_id)
+            ExpWindows.append(x.exp_window)
             SimIDs.append(x.simulation_id)
             RunIDs.append(x.run_id)
 
@@ -136,14 +141,15 @@ class Executor:
 
             print("Execution Method: " + self.exec_method.__name__)
             simulations_results = self.exec_method(
-                sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs #Ns
+                sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs,
+                ExpIDs #Ns
             )
             final_result = get_final_results(simulations_results, partial_state_updates, eps, sessions, remote_threshold)
         elif self.exec_context == ExecutionMode.distributed:
             print("Execution Method: " + self.exec_method.__name__)
             simulations_results = self.exec_method(
                 sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts,
-                SimIDs, RunIDs, self.sc
+                SimIDs, RunIDs, ExpIDs, self.sc
             )
             final_result = get_final_dist_results(simulations_results, partial_state_updates, eps, sessions)
 
