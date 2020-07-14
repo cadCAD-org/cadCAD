@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Any, Callable, Dict, List, Tuple
 from pathos.pools import ThreadPool as TPool
 from functools import reduce
@@ -218,18 +219,28 @@ class Executor:
             run: int,
             additional_objs=None
     ):
+        run += 1
+        # print(run)
 
-        def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
-            run += 1
+        def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, _run) -> List[Dict[str, Any]]:
+            # _run += 1
 
-            def generate_init_sys_metrics(genesis_states_list):
+            def generate_init_sys_metrics(genesis_states_list, sim_id, _run):
+                # pprint(genesis_states_list)
+                # print()
                 # for d in genesis_states_list.asDict():
-                for d in genesis_states_list:
-                    # d['simulation'], d['run'], d['substep'], d['timestep'] = simulation_id, run, 0, 0
-                    d['simulation'], d['run'], d['substep'], d['timestep'] = simulation_id, 1, 0, 0
+                for D in genesis_states_list:
+                    d = deepcopy(D)
+                    print(str(sim_id) + ' ' + ' ' + str(_run))
+                    d['simulation'], d['run'], d['substep'], d['timestep'] = sim_id, _run, 0, 0
+                    # d['simulation'], d['run'], d['substep'], d['timestep'] = _run, sim_id, 0, 0
+                    # print('simulation_id')
+                    # print(simulation_id)
                     yield d
+            print(tuple(states_list))
 
-            states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(tuple(states_list)))
+            states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(tuple(states_list), simulation_id, run))
+            # simulation_id = + 1
 
             first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(
                 sweep_dict, states_list_copy, configs, env_processes, time_seq, run, additional_objs
@@ -238,6 +249,8 @@ class Executor:
 
             return first_timestep_per_run
 
+        # print('sim_id: ' + str(simulation_id))
+        # print('run_id: ' + str(run))
         pipe_run = flatten(
             [execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run)]
         )
