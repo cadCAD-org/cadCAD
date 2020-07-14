@@ -1,8 +1,9 @@
 import pprint
 from typing import Dict, List
 
-from cadCAD.configuration import append_configs
+# from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
+from testing.experiments import exp_param_sweep
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -75,7 +76,7 @@ env_process['sweeped'] = env_timestep_trigger(trigger_field='timestep', trigger_
 
 sim_config = config_sim(
     {
-        "N": 2,
+        "N": 1,
         "T": range(2),
         "M": g, # Optional
     }
@@ -83,7 +84,7 @@ sim_config = config_sim(
 
 # New Convention
 partial_state_update_blocks = psub_list(psu_block, psu_steps)
-append_configs(
+exp_param_sweep.append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_process,

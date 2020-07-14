@@ -231,13 +231,14 @@ class Executor:
                 # for d in genesis_states_list.asDict():
                 for D in genesis_states_list:
                     d = deepcopy(D)
-                    print(str(sim_id) + ' ' + ' ' + str(_run))
+                    # d = D
+                    # print(str(sim_id) + ' ' + ' ' + str(_run))
                     d['simulation'], d['run'], d['substep'], d['timestep'] = sim_id, _run, 0, 0
                     # d['simulation'], d['run'], d['substep'], d['timestep'] = _run, sim_id, 0, 0
                     # print('simulation_id')
                     # print(simulation_id)
                     yield d
-            print(tuple(states_list))
+            # print(tuple(states_list))
 
             states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(tuple(states_list), simulation_id, run))
             # simulation_id = + 1
