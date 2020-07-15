@@ -53,7 +53,7 @@ from cadCAD import configs
 
 If no longer accessing a configuration directly, you can remove:
 
-`~~from cadCAD.configuration import Configuration~~`
+~~`from cadCAD.configuration import Configuration`~~
 
 ## Adding configurations
 
@@ -64,6 +64,7 @@ Configurations are appended to the (imported) `configs` array via:
   `append_configs(initial_state, partial_state_update_blocks, sim_configs)`
 
 Note `sim_configs` now takes an array.
+And as per [docs](https://github.com/cadCAD-org/cadCAD/tree/master/documentation#simulation-properties) each element (dictionary) should be preprocessed with `config_sim()`
 
 ## Executor
 
