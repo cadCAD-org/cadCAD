@@ -12,7 +12,7 @@ cadCAD according to the definitions set by the user in [Partial State Update Blo
 A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of 
 [Simulation Properties](#Simulation-Properties).
 
-`append_configs`, stores a **Simulation Configuration** to be [Executed](/JS4Q9oayQASihxHBJzz4Ug) by cadCAD
+`append_configs`, stores a **Simulation Configuration** to be [Executed](Simulation_Execution.md) by cadCAD
 
 ```python
 from cadCAD.configuration import append_configs
