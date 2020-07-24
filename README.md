@@ -19,8 +19,7 @@ by cadCAD                  ver. 0.4.17
 through simulation, with support for Monte Carlo methods, A/B testing and parameter sweeping. 
 
 # Getting Started
-
-#### Change Log: [ver. 0.4.**](CHANGELOG.md)
+#### Change Log: [ver. 0.4.*](CHANGELOG.md)
 [Previous Release (No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
 
 ## 1. Installation: 
@@ -39,8 +38,8 @@ pip3 install dist/*.whl
 ```
 
 **Option C: Using [Nix](https://nixos.org/nix/)**
-1. Run `curl -L https://nixos.org/nix/install | sh` or install Nix via system package manager
-2. Run `nix-shell` to enter into a development environment, `nix-build` to build project from source, and `nix-env -if default.nix` to install
+1. Run `curl -L https://nixos.org/nix/install | sh` or install Nix via system package manager.
+2. Run `nix-shell` to enter into a development environment, `nix-build` to build project from source, and `nix-env -if default.nix` to install.
 
 The above steps will enter you into a Nix development environment, with all package requirements for development of and with cadCAD.
 
