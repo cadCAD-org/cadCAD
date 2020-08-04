@@ -7,7 +7,7 @@ from testing.models import policy_aggregation
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
-exec_ctx = ExecutionContext(context=exec_mode.single_mode)
+exec_ctx = ExecutionContext(context=exec_mode.local_mode)
 run = Executor(exec_context=exec_ctx, configs=configs)
 
 raw_result, tensor_field, _ = run.execute()
