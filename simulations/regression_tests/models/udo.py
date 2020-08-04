@@ -1,13 +1,11 @@
 import pandas as pd
-# from fn.func import curried
 from datetime import timedelta
 import pprint as pp
 
-from cadCAD.utils import SilentDF #, val_switch
-from cadCAD.configuration import append_configs
+from cadCAD.utils import SilentDF
 from cadCAD.configuration.utils import time_step, config_sim, var_trigger, var_substep_trigger, env_trigger, psub_list
 from cadCAD.configuration.utils.userDefinedObject import udoPipe, UDO
-
+from simulations.regression_tests.experiments import udo1_exp
 
 DF = SilentDF(pd.read_csv('simulations/external_data/output.csv'))
 
@@ -44,8 +42,6 @@ class udoExample(object):
     def write(self, ds_uri):
         pd.to_csv(ds_uri)
 
-    # ToDo: Generic update function
-
     pass
 
 
@@ -59,7 +55,6 @@ sim_config = config_sim({
     "T": range(4)
 })
 
-# ToDo: DataFrame Column order
 state_dict = {
     'increment': 0,
     'state_udo': state_udo, 'state_udo_tracker': 0,
@@ -166,10 +161,9 @@ for m in psu_steps:
     # )
     # psu_block[m]["variables"]['timestamp'] = update_timestamp
 
-# ToDo: Bug without specifying parameters
 # New Convention
 partial_state_update_blocks = psub_list(psu_block, psu_steps)
-append_configs(
+udo1_exp.append_configs(
     sim_configs=sim_config,
     initial_state=state_dict,
     partial_state_update_blocks=partial_state_update_blocks

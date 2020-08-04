@@ -15,9 +15,10 @@ A Simulation Configuration is comprised of a [System Model](#System-Model) and a
 `append_configs`, stores a **Simulation Configuration** to be [Executed](Simulation_Execution.md) by cadCAD
 
 ```python
-from cadCAD.configuration import append_configs
+from cadCAD.configuration import Experiment
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     user_id = ..., # OPTIONAL: cadCAD Session User ID
     initial_state = ..., # System Model
     partial_state_update_blocks = ..., # System Model
@@ -38,8 +39,8 @@ Simulation properties are passed to `append_configs` in the `sim_configs` parame
 use the `config_sim` function in `cadCAD.configuration.utils`
 
 ```python
-from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import config_sim
+from cadCAD.configuration import Experiment
 
 sim_config_dict = {
     "N": ...,
@@ -49,7 +50,8 @@ sim_config_dict = {
 
 c = config_sim(sim_config_dict)
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     ...
     sim_configs = c # Simulation Properties
 )
@@ -100,7 +102,7 @@ State Variables are passed to `append_configs` along with its initial values, as
 are the names of the variables and the `dict_values` are their initial values.
 
 ```python
-from cadCAD.configuration import append_configs
+from cadCAD.configuration import Experiment
 
 genesis_states = {
     'state_variable_1': 0,
@@ -109,7 +111,8 @@ genesis_states = {
     'timestamp': '2019-01-01 00:00:00'
 }
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     initial_state = genesis_states,
     ...
 )
@@ -202,6 +205,8 @@ Partial State Update Blocks are passed to `append_configs` as a List of Python `
 state update functions and the values are the functions.
 
 ```python
+from cadCAD.configuration import Experiment
+
 PSUBs = [
     {
         "policies": {
@@ -220,12 +225,12 @@ PSUBs = [
     {...} #PSUB_M
 ]
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     ...
     partial_state_update_blocks = PSUBs,
     ...
 )
-
 ```
 
 #### Substep

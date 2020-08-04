@@ -1,9 +1,8 @@
 import numpy as np
 from datetime import timedelta
 
-
-from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import bound_norm_random, config_sim, time_step, env_trigger
+from cadCAD.configuration import Experiment
 
 seeds = {
     'z': np.random.RandomState(1),
@@ -94,7 +93,6 @@ genesis_states = {
 
 
 # Environment Process
-# ToDo: Depreciation Waring for env_proc_trigger convention
 trigger_timestamps = ['2018-10-01 15:16:25', '2018-10-01 15:16:27', '2018-10-01 15:16:29']
 env_processes = {
     "s3": [lambda _g, x: 5],
@@ -150,7 +148,8 @@ sim_config = config_sim(
     }
 )
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_processes,
