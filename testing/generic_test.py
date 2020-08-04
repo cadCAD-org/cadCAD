@@ -21,7 +21,7 @@ def generate_assertions_df(df, expected_results, target_cols, evaluations):
         df[test_name] = df.apply(
             lambda x: wrapped_eval(
                 x.filter(items=target_cols).to_dict(),
-                expected_results[(x['simulation'], x['run'], x['timestep'], x['substep'])]
+                expected_results[(x['subset'], x['run'], x['timestep'], x['substep'])]
             ),
             axis=1
         )
@@ -39,7 +39,8 @@ def make_generic_test(params):
 
             if erroneous.empty is False:  # Or Entire df IS NOT erroneous
                 for index, row in erroneous.iterrows():
-                    expected = expected_reults[(row['simulation'], row['run'], row['timestep'], row['substep'])]
+                    # expected = expected_reults[(row['simulation'], row['run'], row['timestep'], row['substep'])]
+                    expected = expected_reults[(row['subset'], row['run'], row['timestep'], row['substep'])]
                     unexpected = {f"invalid_{k}": expected[k] for k in expected if k in row and expected[k] != row[k]}
 
                     for key in unexpected.keys():
