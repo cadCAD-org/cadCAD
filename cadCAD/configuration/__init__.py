@@ -1,10 +1,8 @@
-from pprint import pprint
 from typing import Dict, Callable, List, Tuple
 from pandas.core.frame import DataFrame
 from collections import deque
 from copy import deepcopy
 import pandas as pd
-# from time import time
 
 from cadCAD import configs
 from cadCAD.utils import key_filter
@@ -13,11 +11,10 @@ from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_stat
 
 
 class Configuration(object):
-    def __init__(self, user_id, sim_config={}, initial_state={}, seeds={}, env_processes={},
+    def __init__(self, user_id, subset_id, subset_window, sim_config={}, initial_state={}, seeds={}, env_processes={},
                  exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
                  session_id=0, simulation_id=0, run_id=1, experiment_id=0, exp_window=deque([0, None], 2), **kwargs
     ) -> None:
-        # print(exogenous_states)
         self.sim_config = sim_config
         self.initial_state = initial_state
         self.seeds = seeds
@@ -28,11 +25,13 @@ class Configuration(object):
         self.kwargs = kwargs
 
         self.user_id = user_id
-        self.session_id = session_id # eesntially config id
+        self.session_id = session_id # essentially config id
         self.simulation_id = simulation_id
         self.run_id = run_id
         self.experiment_id = experiment_id
         self.exp_window = exp_window
+        self.subset_id = subset_id
+        self.subset_window = subset_window
 
         sanitize_config(self)
 
@@ -40,12 +39,13 @@ class Configuration(object):
 class Experiment:
     def __init__(self):
         self.exp_id = 0
+        self.subset_id = 0
         self.exp_window = deque([self.exp_id, None], 2)
+        self.subset_window = deque([self.subset_id, None], 2)
 
     def append_configs(
             self,
             user_id='cadCAD_user',
-            session_id=0,  # ToDo: change to string
             sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
             partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
             config_list=configs
@@ -71,10 +71,11 @@ class Experiment:
 
         sim_cnt = 0
         new_sim_configs = []
-        for t in list(zip(sim_configs, list(range(len(sim_configs))))):
+        for subset_id, t in enumerate(list(zip(sim_configs, list(range(len(sim_configs)))))):
             sim_config = t[0]
+            sim_config['subset_id'] = subset_id
+            sim_config['subset_window'] = self.subset_window
             N = sim_config['N']
-
             if N > 1:
                 for n in range(N):
                     sim_config['simulation_id'] = simulation_id + sim_cnt
@@ -92,8 +93,8 @@ class Experiment:
             sim_cnt += 1
 
         run_id = 0
-        print(self.exp_id)
         for sim_config in new_sim_configs:
+            subset_id = sim_config['subset_id']
             sim_config['N'] = run_id + 1
             if max_runs == 1:
                 sim_config['run_id'] = run_id
@@ -115,110 +116,17 @@ class Experiment:
                 user_id=user_id,
                 session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
                 simulation_id=sim_config['simulation_id'],
-                # run_id=run_id_config
                 run_id=sim_config['run_id'],
+
                 experiment_id=self.exp_id,
-                exp_window=self.exp_window
+                exp_window=self.exp_window,
+                subset_id=subset_id,
+                subset_window=self.subset_window
             )
             configs.append(config)
             run_id += 1
-
-        # print(exp_cnt)
         self.exp_id += 1
         self.exp_window.appendleft(self.exp_id)
-        # print()
-        # print(self.exp_id)
-
-
-# def append_configs(
-#     user_id='cadCAD_user',
-#     session_id=0, #ToDo: change to string
-#     sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
-#     partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
-#     config_list=configs
-#                   ) -> None:
-#
-#     try:
-#         max_runs = sim_configs[0]['N']
-#     except KeyError:
-#         max_runs = sim_configs['N']
-#
-#     if _exo_update_per_ts is True:
-#         exogenous_states = exo_update_per_ts(raw_exogenous_states)
-#     else:
-#         exogenous_states = raw_exogenous_states
-#
-#     if isinstance(sim_configs, dict):
-#         sim_configs = [sim_configs]
-#
-#     simulation_id = 0
-#     if len(config_list) > 0:
-#         last_config = config_list[-1]
-#         simulation_id = last_config.simulation_id + 1
-#
-#     sim_cnt = 0
-#     new_sim_configs = []
-#     for t in list(zip(sim_configs, list(range(len(sim_configs))))):
-#         sim_config = t[0]
-#         N = sim_config['N']
-#
-#         if N > 1:
-#             for n in range(N):
-#                 sim_config['simulation_id'] = simulation_id + sim_cnt
-#                 sim_config['run_id'] = n
-#                 sim_config['N'] = 1
-#                 # sim_config['N'] = n + 1
-#                 new_sim_configs.append(deepcopy(sim_config))
-#             del sim_config
-#         else:
-#             sim_config['simulation_id'] = simulation_id
-#             sim_config['run_id'] = 0
-#             new_sim_configs.append(deepcopy(sim_config))
-#             # del sim_config
-#
-#         sim_cnt += 1
-#
-#     # print(configs)
-#     run_id = 0
-#     # if len(configs) > 0:
-#     #     ds_run_id = configs[-1].__dict__['run_id'] + 1
-#     #     # print()
-#     #     # print(configs[-1].__dict__['simulation_id'])
-#     #     # print(configs[-1].__dict__['run_id'])
-#     #     # configs[-1].__dict__['run_id']
-#     #     # print(configs[-1].__dict__['run_id'] + 1)
-#     #     run_id = ds_run_id + 1
-#
-#     for sim_config in new_sim_configs:
-#         sim_config['N'] = run_id + 1
-#         if max_runs == 1:
-#             sim_config['run_id'] = run_id
-#         elif max_runs >= 1:
-#             if run_id >= max_runs:
-#                 sim_config['N'] = run_id - (max_runs - 1)
-#
-#         config = Configuration(
-#             sim_config=sim_config,
-#             initial_state=initial_state,
-#             seeds=seeds,
-#             exogenous_states=exogenous_states,
-#             env_processes=env_processes,
-#             partial_state_update_blocks=partial_state_update_blocks,
-#             policy_ops=policy_ops,
-#
-#             # session_id=session_id,
-#             user_id=user_id,
-#             session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
-#             simulation_id=sim_config['simulation_id'],
-#             # run_id=run_id_config
-#             run_id=sim_config['run_id']
-#         )
-#         configs.append(config)
-#         run_id += 1
-#
-#     # print(configs)
-#     # print(f'simulation_id: {configs[-1].__dict__["simulation_id"]}')
-#     # print(f'run_id: {configs[-1].__dict__["run_id"]}')
 
 
 class Identity:
@@ -300,7 +208,7 @@ class Processor:
             return sdf_values, bdf_values
 
         if len(partial_state_updates) != 0:
-            # backwards compatibility #
+            # backwards compatibility
             partial_state_updates = sanitize_partial_state_updates(partial_state_updates)
 
             bdf = self.create_matrix_field(partial_state_updates, 'policies')
@@ -312,13 +220,3 @@ class Processor:
             zipped_list = list(zip(sdf_values, bdf_values))
 
         return list(map(lambda x: (x[0] + exo_proc, x[1]), zipped_list))
-
-# def timing_val(func):
-#     def wrapper(*arg, **kw):
-#         '''source: http://www.daniweb.com/code/snippet368.html'''
-#         t1 = time()
-#         res = func(*arg, **kw)
-#         t2 = time()
-#         print(f"{func.__name__}: {t2-t1 :.5f}")
-#         return res
-#     return wrapper

@@ -1,10 +1,10 @@
 import pandas as pd
 from tabulate import tabulate
-from cadCAD.configuration import append_configs
+
 from cadCAD.configuration.utils import config_sim, access_block
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+from cadCAD.configuration import Experiment
 from cadCAD import configs
-
 
 policies, variables = {}, {}
 exclusion_list = ['nonexsistant', 'last_x', '2nd_to_last_x', '3rd_to_last_x', '4th_to_last_x']
@@ -87,7 +87,8 @@ sim_config = config_sim(
     }
 )
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     partial_state_update_blocks=psubs

@@ -4,10 +4,9 @@ import pprint as pp
 from datetime import timedelta
 
 from cadCAD.utils import SilentDF #, val_switch
-from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import time_step, config_sim
 from cadCAD.configuration.utils.userDefinedObject import udoPipe, UDO
-
+from simulations.regression_tests.experiments import udo1_exp
 
 DF = SilentDF(pd.read_csv('simulations/external_data/output.csv'))
 
@@ -43,7 +42,6 @@ class udoExample(object):
     pass
 
 # can be accessed after an update within the same substep and timestep
-
 state_udo = UDO(udo=udoExample(0, DF), masked_members=['obj', 'perception'])
 policy_udoA = UDO(udo=udoExample(0, DF), masked_members=['obj', 'perception'])
 policy_udoB = UDO(udo=udoExample(0, DF), masked_members=['obj', 'perception'])
@@ -59,7 +57,6 @@ def udo_policyB(_g, step, sL, s, **kwargs):
 
 policies = {"p1": udo_policyA, "p2": udo_policyB}
 
-# ToDo: DataFrame Column order
 state_dict = {
     'increment': 0,
     'state_udo': state_udo, 'state_udo_tracker_a': 0, 'state_udo_tracker_b': 0,
@@ -152,8 +149,7 @@ sim_config = config_sim({
     "T": range(4)
 })
 
-# ToDo: Bug without specifying parameters
-append_configs(
+udo1_exp.append_configs(
     sim_configs=sim_config,
     initial_state=state_dict,
     seeds={},

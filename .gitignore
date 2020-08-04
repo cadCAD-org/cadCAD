@@ -4,6 +4,8 @@
 .idea
 .eggs
 .pytest_cache
+client_work
+
 notebooks
 *.egg-info
 __pycache__
