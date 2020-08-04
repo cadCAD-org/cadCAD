@@ -1,6 +1,6 @@
+from tabulate import tabulate
 from pprint import pprint
 import pandas as pd
-from tabulate import tabulate
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from simulations.regression_tests.models import config1, config2
