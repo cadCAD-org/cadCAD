@@ -1,5 +1,5 @@
 # Changelog:
-### August 4, 2020
+### August 5, 2020
 * Experiment Class: Representation of an experiment as one or more configured System Models
 
 ### June 22, 2020
