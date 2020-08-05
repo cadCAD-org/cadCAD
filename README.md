@@ -45,10 +45,10 @@ pip3 install dist/*.whl
 `nix-env -if default.nix` to install
 
 The above steps will enter you into a Nix development environment, with all package requirements for development of and 
-with cadCAD.
+with cadCAD. 
 
-This works with just about all Unix systems as well as MacOS, for pure reproducible builds that don't dirty your local 
-environment.
+This works with just about all Unix systems as well as MacOS, for pure reproducible builds that don't 
+affect your local environment.
 
 ## 2. Documentation:
 * [System Model Configuration](documentation/README.md)

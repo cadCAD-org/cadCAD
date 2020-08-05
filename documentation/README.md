@@ -242,11 +242,14 @@ timestep as a `substep`.
 
 cadCAD returns a dataset containing the evolution of the state variables defined by the user over time, with three `int` 
 indexes:
-* `run` - id of the [run](#N-Number-of-Runs)
+* `subset` - identifies the subset per sweepable parameter produced by a parameter sweep (ver. `0.3.1`'s result was 
+multiple datasets; A single dataset per sweepable parameter).
+* `run` - identifies the [run](#N-Number-of-Runs)
 * `timestep` - discrete unit of time (the total number of timesteps is defined by the user in the 
 [T Simulation Parameter](#T-Simulation-Length))
 * `substep` - subdivision of timestep (the number of [substeps](#Substeps) is the same as the number of Partial State 
 Update Blocks)
+* `simulation` - **Beta: Ignore**
 
 Therefore, the total number of records in the resulting dataset is `N` x `T` x `len(partial_state_update_blocks)`
 
