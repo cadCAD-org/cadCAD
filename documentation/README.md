@@ -249,7 +249,7 @@ multiple datasets; A single dataset per sweepable parameter).
 [T Simulation Parameter](#T-Simulation-Length))
 * `substep` - subdivision of timestep (the number of [substeps](#Substeps) is the same as the number of Partial State 
 Update Blocks)
-* `simulation` - **Beta: Ignore**
+* `simulation` - **Alpha: Ignore**
 
 Therefore, the total number of records in the resulting dataset is `N` x `T` x `len(partial_state_update_blocks)`
 
