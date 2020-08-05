@@ -47,11 +47,11 @@ The above steps will enter you into a Nix development environment, with all pack
 This works with just about all Unix systems as well as MacOS, for pure reproducible builds that don't dirty your local environment.
 
 ## 2. Documentation:
-* [Simulation Configuration](documentation/README.md)
-* [System Simulation Execution](documentation/Simulation_Execution.md)
+* [System Model Configuration](documentation/README.md)
+* [Simulation Execution](documentation/Simulation_Execution.md)
 * [Policy Aggregation](documentation/Policy_Aggregation.md)
 * [System Model Parameter Sweep](documentation/System_Model_Parameter_Sweep.md)
-* [System Model Configuration](documentation/System_Configuration.md)
+* [System Model Views](documentation/System_Configuration.md)
 
 ## 3. Connect:
 Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
