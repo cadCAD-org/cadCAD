@@ -12,7 +12,7 @@ cadCAD according to the definitions set by the user in [Partial State Update Blo
 A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of 
 [Simulation Properties](#Simulation-Properties).
 
-`append_configs`, stores a **Simulation Configuration** to be [Executed](Simulation_Execution.md) by cadCAD
+`Experiment`'s `append_configs`, stores a **Simulation Configuration** to be [Executed](Simulation_Execution.md) by cadCAD
 
 ```python
 from cadCAD.configuration import Experiment
@@ -82,7 +82,7 @@ runs in a single dataset. This is especially helpful for running
 ### M - Parameters of the System
 
 Parameters of the system, passed to the state update functions and the policy functions in the `params` parameter are 
-defined here. See [System Model Parameter Sweep](/4oJ_GT6zRWW8AO3yMhFKrg) for more information.
+defined here. See [System Model Parameter Sweep](System_Model_Parameter_Sweep.md) for more information.
 
 ## System Model
 The System Model describes the system that will be simulated in cadCAD. It is comprised of a set of 
@@ -127,10 +127,10 @@ def state_update_function_A(_params, substep, sH, s, _input, **kwargs):
     return 'state_variable_name', new_value
 ```
 Parameters:
-* **_params** : _dict_ - [System parameters](/4oJ_GT6zRWW8AO3yMhFKrg)
+* **_params** : _dict_ - [System parameters](System_Model_Parameter_Sweep.md)
 * **substep** : _int_ - Current [substep](#Substep)
 * **sH** : _list[list[dict_]] - Historical values of all state variables for the simulation. See 
-[Historical State Access](/smiyQTnATtC9xPwvF8KbBQ) for details
+[Historical State Access](Historically_State_Access.md) for details
 * **s** : _dict_ - Current state of the system, where the `dict_keys` are the names of the state variables and the 
 `dict_values` are their current values.
 * **_input** : _dict_ - Aggregation of the signals of all policy functions in the current 
@@ -170,10 +170,10 @@ def policy_function_1(_params, substep, sH, s, **kwargs):
     return {'signal_1': value_1, ..., 'signal_N': value_N}
 ```
 Parameters:
-* **_params** : _dict_ - [System parameters](/4oJ_GT6zRWW8AO3yMhFKrg)
+* **_params** : _dict_ - [System parameters](System_Model_Parameter_Sweep.md)
 * **substep** : _int_ - Current [substep](#Substep)
 * **sH** : _list[list[dict_]] - Historical values of all state variables for the simulation. See 
-[Historical State Access](/smiyQTnATtC9xPwvF8KbBQ) for details
+[Historical State Access](Historically_State_Access.md) for details
 * **s** : _dict_ - Current state of the system, where the `dict_keys` are the names of the state variables and the 
 `dict_values` are their current values.
 * **\*\*kwargs** - Policy Update feature extensions 
@@ -189,7 +189,7 @@ At each [Partial State Update Block](#Partial-State-Update-Blocks) (PSUB), the `
 within that PSUB dictionaries are aggregated into a single `dict` using an initial reduction function 
 (a key-wise operation, default: `dic1['keyA'] + dic2['keyA']`) and optional subsequent map functions. The resulting 
 aggregated `dict` is then passed as the `_input` parameter to the state update functions in that PSUB. For more 
-information on how to modify the aggregation method, see [Policy Aggregation](/63k2ncjITuqOPCUHzK7Viw).
+information on how to modify the aggregation method, see [Policy Aggregation](Policy_Aggregation.md).
 
 ### Partial State Update Blocks
 

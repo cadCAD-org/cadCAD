@@ -1,9 +1,13 @@
 Historical State Access (Alpha)
 ==
 #### Motivation
-The current state (values of state variables) is accessed through the `s` list. When the user requires previous state variable values, they may be accessed through the state history list, `sH`. Accessing the state history should be implemented without creating unintended feedback loops on the current state.
+The current state (values of state variables) is accessed through the `s` list. When the user requires previous state 
+variable values, they may be accessed through the state history list, `sH`. Accessing the state history should be 
+implemented without creating unintended feedback loops on the current state.
 
-The 3rd parameter of state and policy update functions (labeled as `sH` of type `List[List[dict]]`) provides access to past Partial State Update Block (PSUB) given a negative offset number. `access_block` is used to access past PSUBs (`List[dict]`) from `sH`. For example, an offset of `-2` denotes the second to last PSUB.
+The 3rd parameter of state and policy update functions (labeled as `sH` of type `List[List[dict]]`) provides access to 
+past Partial State Update Block (PSUB) given a negative offset number. `access_block` is used to access past PSUBs 
+(`List[dict]`) from `sH`. For example, an offset of `-2` denotes the second to last PSUB.
 
 #### Exclusion List
 Create a list of states to exclude from the reported PSU.
@@ -24,7 +28,8 @@ def last_update(_params, substep, sH, s, **kwargs):
         )
     }
 ```
-* Note: Although `target_field` adding a field to the exclusion may seem redundant, it is useful in the case of the exclusion list being empty while the `target_field` is assigned to a state or a policy key.
+* Note: Although `target_field` adding a field to the exclusion may seem redundant, it is useful in the case of the 
+exclusion list being empty while the `target_field` is assigned to a state or a policy key.
 ##### Define State Updates
 ###### 2nd to last partial state update
 ```python
