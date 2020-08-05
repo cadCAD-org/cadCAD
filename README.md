@@ -51,11 +51,11 @@ This works with just about all Unix systems as well as MacOS, for pure reproduci
 affect your local environment.
 
 ## 2. Documentation:
-* [System Model Configuration](documentation/README.md)
+* [Simulation Configuration](documentation/README.md)
 * [Simulation Execution](documentation/Simulation_Execution.md)
 * [Policy Aggregation](documentation/Policy_Aggregation.md)
-* [System Model Parameter Sweep](documentation/System_Model_Parameter_Sweep.md)
-* [System Model Views](documentation/System_Configuration.md)
+* [Parameter Sweep](documentation/System_Model_Parameter_Sweep.md)
+* [Display System Model Configurations](documentation/System_Configuration.md)
 
 ## 3. Connect:
 Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
