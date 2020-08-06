@@ -1,19 +1,21 @@
 import unittest
-from pprint import pprint
-
 import pandas as pd
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from testing.models import param_sweep
 from cadCAD import configs
+from cadCAD.utils.sys_exec import to_pandas_df
 
+from testing.models import param_sweep
 from testing.generic_test import make_generic_test
 from testing.models.param_sweep import some_function, g as sweep_params
 
+from distroduce.engine.execution import distributed_simulations, transform
+from distroduce.session import sc_alt as sc
 
 exec_mode = ExecutionMode()
-exec_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=exec_ctx, configs=configs)
+distributed_sims = distributed_simulations(transform)
+distributed_ctx = ExecutionContext(context=exec_mode.distributed, method=distributed_sims)
+run = Executor(exec_context=distributed_ctx, configs=configs, spark_context=sc)
 
 # sim, run, substep, timestep
 def get_expected_results(subset, run, beta, gamma):
@@ -72,7 +74,7 @@ def row(a, b):
 
 def create_test_params(feature, fields):
     raw_result, tensor_fields, sessions = run.execute()
-    df = pd.DataFrame(raw_result)
+    df: pd.DataFrame = to_pandas_df(raw_result)
     expected = generate_expected(sweep_params)
     return [[feature, df, expected, fields, [row]]]
 

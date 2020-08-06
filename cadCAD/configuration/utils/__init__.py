@@ -1,5 +1,5 @@
-from collections import Counter
 from datetime import datetime, timedelta
+from collections import Counter
 from copy import deepcopy
 from functools import reduce
 from funcy import curry
@@ -41,9 +41,9 @@ def configs_as_spec(configs):
 
 def configs_as_objs(configs):
     counted_IDs_configs = configs_as_spec(configs)
-    new_config = list(map(lambda x: x[1], counted_IDs_configs))
+    new_configs = list(map(lambda x: x[1], counted_IDs_configs))
     del counted_IDs_configs
-    return new_config
+    return new_configs
 
 
 def configs_as_dicts(configs):
@@ -79,7 +79,6 @@ def bound_norm_random(rng, low, high):
 
 tstep_delta = timedelta(days=0, minutes=0, seconds=30)
 def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = tstep_delta):
-    # print(dt_str)
     dt = datetime.strptime(dt_str, dt_format)
     t = dt + _timedelta
     return t.strftime(dt_format)
@@ -87,7 +86,6 @@ def time_step(dt_str, dt_format='%Y-%m-%d %H:%M:%S', _timedelta = tstep_delta):
 
 ep_t_delta = timedelta(days=0, minutes=0, seconds=1)
 def ep_time_step(s_condition, dt_str, fromat_str='%Y-%m-%d %H:%M:%S', _timedelta = ep_t_delta):
-    # print(dt_str)
     if s_condition:
         return time_step(dt_str, fromat_str, _timedelta)
     else:

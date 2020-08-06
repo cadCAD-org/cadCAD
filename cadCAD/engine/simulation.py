@@ -1,13 +1,10 @@
 from typing import Any, Callable, Dict, List, Tuple
-from pathos.pools import ThreadPool as TPool
-from functools import reduce
-from types import MappingProxyType
 from copy import deepcopy
 from functools import reduce
 from funcy import curry
 
-from cadCAD.engine.utils import engine_exception
 from cadCAD.utils import flatten
+from cadCAD.engine.utils import engine_exception
 
 id_exception: Callable = curry(engine_exception)(KeyError)(KeyError)(None)
 
@@ -25,14 +22,14 @@ class Executor:
         self.policy_update_exception = policy_update_exception
 
     def get_policy_input(
-                self,
-                sweep_dict: Dict[str, List[Any]],
-                sub_step: int,
-                sL: List[Dict[str, Any]],
-                s: Dict[str, Any],
-                funcs: List[Callable],
-                additional_objs
-            ) -> Dict[str, Any]:
+        self,
+        sweep_dict: Dict[str, List[Any]],
+        sub_step: int,
+        sL: List[Dict[str, Any]],
+        s: Dict[str, Any],
+        funcs: List[Callable],
+        additional_objs
+    ) -> Dict[str, Any]:
 
         ops = self.policy_ops
 
@@ -72,11 +69,11 @@ class Executor:
         }
 
     def apply_env_proc(
-                self,
-                sweep_dict,
-                env_processes: Dict[str, Callable],
-                state_dict: Dict[str, Any]
-            ) -> Dict[str, Any]:
+        self,
+        sweep_dict,
+        env_processes: Dict[str, Callable],
+        state_dict: Dict[str, Any]
+    ) -> Dict[str, Any]:
 
         def env_composition(target_field, state_dict, target_value):
             function_type = type(lambda x: x)
@@ -104,18 +101,18 @@ class Executor:
 
     # mech_step
     def partial_state_update(
-                self,
-                sweep_dict: Dict[str, List[Any]],
-                sub_step: int,
-                sL,
-                sH,
-                state_funcs: List[Callable],
-                policy_funcs: List[Callable],
-                env_processes: Dict[str, Callable],
-                time_step: int,
-                run: int,
-                additional_objs
-            ) -> List[Dict[str, Any]]:
+        self,
+        sweep_dict: Dict[str, List[Any]],
+        sub_step: int,
+        sL,
+        sH,
+        state_funcs: List[Callable],
+        policy_funcs: List[Callable],
+        env_processes: Dict[str, Callable],
+        time_step: int,
+        run: int,
+        additional_objs
+    ) -> List[Dict[str, Any]]:
 
         # last_in_obj: Dict[str, Any] = MappingProxyType(sL[-1])
         last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
@@ -151,15 +148,15 @@ class Executor:
 
     # mech_pipeline - state_update_block
     def state_update_pipeline(
-                self,
-                sweep_dict: Dict[str, List[Any]],
-                simulation_list,
-                configs: List[Tuple[List[Callable], List[Callable]]],
-                env_processes: Dict[str, Callable],
-                time_step: int,
-                run: int,
-                additional_objs
-            ) -> List[Dict[str, Any]]:
+        self,
+        sweep_dict: Dict[str, List[Any]],
+        simulation_list,
+        configs: List[Tuple[List[Callable], List[Callable]]],
+        env_processes: Dict[str, Callable],
+        time_step: int,
+        run: int,
+        additional_objs
+    ) -> List[Dict[str, Any]]:
 
         sub_step = 0
         states_list_copy: List[Dict[str, Any]] = tuple(simulation_list[-1])
@@ -175,7 +172,8 @@ class Executor:
         sub_step += 1
         for [s_conf, p_conf] in configs:
             states_list: List[Dict[str, Any]] = self.partial_state_update(
-                sweep_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run, additional_objs
+                sweep_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run,
+                additional_objs
             )
             sub_step += 1
 
@@ -185,15 +183,15 @@ class Executor:
 
     # state_update_pipeline
     def run_pipeline(
-                self,
-                sweep_dict: Dict[str, List[Any]],
-                states_list: List[Dict[str, Any]],
-                configs: List[Tuple[List[Callable], List[Callable]]],
-                env_processes: Dict[str, Callable],
-                time_seq: range,
-                run: int,
-                additional_objs
-            ) -> List[List[Dict[str, Any]]]:
+        self,
+        sweep_dict: Dict[str, List[Any]],
+        states_list: List[Dict[str, Any]],
+        configs: List[Tuple[List[Callable], List[Callable]]],
+        env_processes: Dict[str, Callable],
+        time_seq: range,
+        run: int,
+        additional_objs
+    ) -> List[List[Dict[str, Any]]]:
         time_seq: List[int] = [x + 1 for x in time_seq]
         simulation_list: List[List[Dict[str, Any]]] = [states_list]
 
@@ -208,28 +206,39 @@ class Executor:
         return simulation_list
 
     def simulation(
-            self,
-            sweep_dict: Dict[str, List[Any]],
-            states_list: List[Dict[str, Any]],
-            configs,
-            env_processes: Dict[str, Callable],
-            time_seq: range,
-            simulation_id: int,
-            run: int,
-            additional_objs=None
+        self,
+        sweep_dict: Dict[str, List[Any]],
+        states_list: List[Dict[str, Any]],
+        configs,
+        env_processes: Dict[str, Callable],
+        time_seq: range,
+        simulation_id: int,
+        run: int,
+        subset_id,
+        subset_window,
+        configured_N,
+        # remote_ind
+        additional_objs=None
     ):
+        run += 1
 
-        def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run) -> List[Dict[str, Any]]:
-            run += 1
+        subset_window.appendleft(subset_id)
+        latest_subset_id, previous_subset_id = tuple(subset_window)
 
-            def generate_init_sys_metrics(genesis_states_list):
-                # for d in genesis_states_list.asDict():
-                for d in genesis_states_list:
-                    # d['simulation'], d['run'], d['substep'], d['timestep'] = simulation_id, run, 0, 0
-                    d['simulation'], d['run'], d['substep'], d['timestep'] = simulation_id, 1, 0, 0
+        if configured_N == 1 and latest_subset_id > previous_subset_id:
+            run -= 1
+
+        def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, _run) -> List[Dict[str, Any]]:
+            def generate_init_sys_metrics(genesis_states_list, sim_id, _subset_id, _run, _subset_window):
+                for D in genesis_states_list:
+                    d = deepcopy(D)
+                    d['simulation'], d['subset'], d['run'], d['substep'], d['timestep'] = \
+                        sim_id, _subset_id, _run, 0, 0
                     yield d
 
-            states_list_copy: List[Dict[str, Any]] = list(generate_init_sys_metrics(tuple(states_list)))
+            states_list_copy: List[Dict[str, Any]] = list(
+                generate_init_sys_metrics(tuple(states_list), simulation_id, subset_id, run, subset_window)
+            )
 
             first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(
                 sweep_dict, states_list_copy, configs, env_processes, time_seq, run, additional_objs

@@ -1,4 +1,7 @@
 # Changelog:
+### August 5, 2020
+* Experiment Class: Representation of an experiment as one or more configured System Models
+
 ### June 22, 2020
 * Bug Fix: Multiprocessing error for Windows
 
