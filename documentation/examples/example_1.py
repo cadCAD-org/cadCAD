@@ -2,6 +2,7 @@ from pprint import pprint
 
 import pandas as pd
 from tabulate import tabulate
+
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from documentation.examples import sys_model_A, sys_model_B
 from cadCAD import configs

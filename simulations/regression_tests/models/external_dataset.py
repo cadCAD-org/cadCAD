@@ -1,7 +1,7 @@
-from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import config_sim
 import pandas as pd
 from cadCAD.utils import SilentDF
+from simulations.regression_tests.experiments import ext_ds_exp
 
 df = SilentDF(pd.read_csv('simulations/external_data/output.csv'))
 
@@ -21,7 +21,6 @@ def p2(_g, substep, sL, s, **kwargs):
     del result_dict["ds1"], result_dict["ds2"]
     return {k: list(v.values()).pop() for k, v in result_dict.items()}
 
-# ToDo: SilentDF(df) wont work
 #integrate_ext_dataset
 def integrate_ext_dataset(_g, step, sL, s, _input, **kwargs):
     result_dict = query(s, df).to_dict()
@@ -59,7 +58,7 @@ sim_config = config_sim({
     "T": range(4)
 })
 
-append_configs(
+ext_ds_exp.append_configs(
     sim_configs=sim_config,
     initial_state=state_dict,
     partial_state_update_blocks=partial_state_update_blocks,

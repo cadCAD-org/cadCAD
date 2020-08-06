@@ -1,9 +1,9 @@
 import pandas as pd
 from tabulate import tabulate
 
-from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import config_sim
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+from cadCAD.configuration import Experiment
 from cadCAD import configs
 
 # Policies per Mechanism
@@ -76,7 +76,8 @@ sim_config = config_sim(
     }
 )
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     partial_state_update_blocks=psubs,

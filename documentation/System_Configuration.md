@@ -1,4 +1,4 @@
-# [System Configuration:](https://github.com/BlockScience/distroduce/blob/master/documentation/dist_exec_doc.ipynb) 
+# [Display System Model Configurations:](https://github.com/BlockScience/distroduce/blob/master/documentation/dist_exec_doc.ipynb) 
 
 
 ## Conversions
