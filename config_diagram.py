@@ -155,22 +155,6 @@ def generate_psub_graph(i: int):
     return psub_graph
 
 
-def relate_variables_to_state(
-    graph: Digraph, variables: dict, i: int, suffix="", reverse=False, dst_i=None
-) -> Digraph:
-    if dst_i is None:
-        dst_i = i
-    dst = "state_{}".format(dst_i)
-    graph.node(dst, "State {}".format(i + 1))
-    for key, value in variables.items():
-        src = "variable_{}_{}{}".format(key, i, suffix)
-        if reverse:
-            graph.edge(dst, src)
-        else:
-            graph.edge(src, dst)
-    return graph
-
-
 def relate_params(graph: Digraph, params, i, origin=-1) -> Digraph:
     for param in params:
         dst = "param_{}_{}".format(param, i)
@@ -257,13 +241,6 @@ def diagram(initial_state, params, psubs):
     time_graph = generate_time_graph()
     for i_psub, psub in enumerate(psubs):
         psub_graph = generate_psub_graph(i_psub)
-        psub_graph.node(
-            "state_{}".format(i_psub),
-            "State {}".format(i_psub),
-            shape="cylinder",
-            style="filled, solid",
-            fillcolor="honeydew",
-        )
 
         # Parameters
         psub_params = relations[i_psub].get("params", set())
@@ -292,10 +269,6 @@ def diagram(initial_state, params, psubs):
             psub_graph.subgraph(generate_policies_cluster(policies, i_psub, psub_graph))
             psub_graph = relate(psub_graph, policy_params, i_psub, "param", "policy")
             psub_graph = relate(psub_graph, policy_inputs, i_psub, "variable", "policy")
-            for policy in policies.keys():
-                psub_graph.edge(
-                    "state_{}".format(i_psub), "policy_{}_{}".format(policy, i_psub)
-                )
         else:
             agg = False
 
@@ -317,27 +290,6 @@ def diagram(initial_state, params, psubs):
             psub_graph = relate(psub_graph, sufs_inputs, i_psub, "variable", "suf")
 
             time_graph.subgraph(psub_graph)
-            for suf in sufs.keys():
-                time_graph.edge(
-                    "suf_{}_{}".format(suf, i_psub),
-                    "state_{}".format(i_psub + 1),
-                    style="invis",
-                    constraint="False",
-                )
-                if agg is False:
-                    time_graph.edge(
-                        "state_{}".format(i_psub),
-                        "suf_{}_{}".format(suf, i_psub),
-                        style="invis",
-                        constraint="False",
-                    )
-    time_graph.node(
-        "state_{}".format(i_psub + 1),
-        "Final state",
-        shape="cylinder",
-        style="filled, solid",
-        fillcolor="honeydew",
-    )
     return time_graph
 
 
