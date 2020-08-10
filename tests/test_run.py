@@ -1,4 +1,4 @@
-from config_diagram import diagram
+from cadCAD_diagram.config_diagram import diagram
 
 
 def policy_1(p, s, h, v):
