@@ -1,0 +1,1 @@
+from cadCAD_diagram.config_diagram import diagram, diagram_from_config
