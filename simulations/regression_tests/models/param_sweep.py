@@ -79,7 +79,7 @@ env_process['sweeped'] = env_timestep_trigger(trigger_field='timestep', trigger_
 sim_config = config_sim(
     {
         "N": 2,
-        "T": range(5),
+        "T": range(2),
         "M": g, # Optional
     }
 )

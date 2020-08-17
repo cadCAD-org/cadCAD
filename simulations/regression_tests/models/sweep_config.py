@@ -2,10 +2,11 @@ import numpy as np
 from datetime import timedelta
 import pprint
 
-from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, time_step, psub_list
 
 from typing import Dict, List
+
+from simulations.regression_tests.experiments import sweep_exp
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -110,12 +111,6 @@ def es4(_g, step, sL, s, _input, **kwargs):
 for m in ['m1','m2','m3']:
     psu_block[m]["variables"]['s4'] = var_timestep_trigger(y='s4', f=es4)
 
-
-# ToDo: The number of values entered in sweep should be the # of config objs created,
-# not dependent on the # of times the sweep is applied
-# sweep exo_state func and point to exo-state in every other funtion
-# param sweep on genesis states
-
 # Genesis States
 genesis_states = {
     's1': 0.0,
@@ -127,7 +122,6 @@ genesis_states = {
 
 
 # Environment Process
-# ToDo: Validate - make env proc trigger field agnostic
 env_process["s3"] = [lambda _g, x: _g['beta'], lambda _g, x: x + 1]
 env_process["s4"] = env_timestep_trigger(trigger_field='timestep', trigger_vals=[5], funct_list=[lambda _g, x: _g['beta']])
 
@@ -135,15 +129,15 @@ env_process["s4"] = env_timestep_trigger(trigger_field='timestep', trigger_vals=
 # config_sim Necessary
 sim_config = config_sim(
     {
-        "N": 2,
-        "T": range(5),
+        "N": 5,
+        "T": range(2),
         "M": g, # Optional
     }
 )
 
 # New Convention
 partial_state_update_blocks = psub_list(psu_block, psu_steps)
-append_configs(
+sweep_exp.append_configs(
     # user_id='user_a',
     sim_configs=sim_config,
     initial_state=genesis_states,
@@ -153,8 +147,8 @@ append_configs(
 )
 
 
-print()
-print("Policie State Update Block:")
-pp.pprint(partial_state_update_blocks)
-print()
-print()
+# print()
+# print("Partial State Update Block:")
+# pp.pprint(partial_state_update_blocks)
+# print()
+# print()

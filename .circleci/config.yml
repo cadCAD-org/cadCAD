@@ -1,0 +1,28 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.3.2
+
+jobs:
+  test:
+    executor: python/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run: pip install cadCAD==0.4.18
+      - run:
+          command: python testing/tests/param_sweep.py
+          name: Parameter sweep
+      - run:
+          command: python testing/tests/policy_aggregation.py
+          name: Policy Aggregation
+      - run:
+          command: python -m unittest discover -s testing/tests -p "*_test.py"
+          name: Test Suite
+
+workflows:
+  main:
+    jobs:
+      - test

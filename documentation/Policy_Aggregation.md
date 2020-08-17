@@ -1,7 +1,7 @@
 Policy Aggregation
 ==
 
-For each Partial State Update, multiple policy dictionaries are aggregated into a single dictionary to be imputted into 
+For each Partial State Update, multiple policy dictionaries are aggregated into a single dictionary to be inputted into 
 all state functions using an initial reduction function and optional subsequent map functions. 
 
 #### Aggregate Function Composition:
@@ -46,9 +46,10 @@ def p2_psu3(_params, step, sH, s, **kwargs):
 
 #### Aggregate Policies using functions
 ```python
-from cadCAD.configuration import append_configs
+from cadCAD.configuration import Experiment
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     sim_configs=???,
     initial_state=???,
     partial_state_update_blocks=???,

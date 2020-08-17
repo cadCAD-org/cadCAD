@@ -21,12 +21,12 @@ provided.
 """
 
 setup(name='cadCAD',
-      version='0.4.15',
+      version='0.4.18',
       description=short_description,
       long_description=long_description,
-      url='https://github.com/BlockScience/cadCAD',
+      url='https://github.com/cadCAD-org/cadCAD',
       author='Joshua E. Jodesty',
-      author_email='joshua@block.science, joshua.jodesty@gmail.com',
+      author_email='joshua@block.science',
       license='LICENSE.txt',
       packages=find_packages(),
       install_requires=[

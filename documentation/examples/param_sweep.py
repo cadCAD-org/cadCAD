@@ -4,9 +4,9 @@ from typing import Dict, List
 import pandas as pd
 from tabulate import tabulate
 
-from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+from cadCAD.configuration import Experiment
 from cadCAD import configs
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -92,7 +92,8 @@ print()
 pp.pprint(psu_block)
 print()
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_process,

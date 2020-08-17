@@ -1,8 +1,8 @@
-from copy import deepcopy
 from typing import Dict, Callable, List, Tuple
-from functools import reduce
-import pandas as pd
 from pandas.core.frame import DataFrame
+from collections import deque
+from copy import deepcopy
+import pandas as pd
 
 from cadCAD import configs
 from cadCAD.utils import key_filter
@@ -11,10 +11,10 @@ from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_stat
 
 
 class Configuration(object):
-    def __init__(self, user_id, sim_config={}, initial_state={}, seeds={}, env_processes={},
+    def __init__(self, user_id, subset_id, subset_window, sim_config={}, initial_state={}, seeds={}, env_processes={},
                  exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
-                 session_id=0, simulation_id=0, run_id=1, **kwargs) -> None:
-        # print(exogenous_states)
+                 session_id=0, simulation_id=0, run_id=1, experiment_id=0, exp_window=deque([0, None], 2), **kwargs
+    ) -> None:
         self.sim_config = sim_config
         self.initial_state = initial_state
         self.seeds = seeds
@@ -25,72 +25,108 @@ class Configuration(object):
         self.kwargs = kwargs
 
         self.user_id = user_id
-        self.session_id = session_id
+        self.session_id = session_id # essentially config id
         self.simulation_id = simulation_id
         self.run_id = run_id
+        self.experiment_id = experiment_id
+        self.exp_window = exp_window
+        self.subset_id = subset_id
+        self.subset_window = subset_window
 
         sanitize_config(self)
 
 
-def append_configs(
-    user_id='cadCAD_user',
-    session_id=0, #ToDo: change to string
-    sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
-    partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
-    config_list=configs
-                  ) -> None:
-    if _exo_update_per_ts is True:
-        exogenous_states = exo_update_per_ts(raw_exogenous_states)
-    else:
-        exogenous_states = raw_exogenous_states
+class Experiment:
+    def __init__(self):
+        self.exp_id = 0
+        self.subset_id = 0
+        self.exp_window = deque([self.exp_id, None], 2)
+        self.subset_window = deque([self.subset_id, None], 2)
 
-    if isinstance(sim_configs, dict):
-        sim_configs = [sim_configs]
+    def append_configs(
+            self,
+            user_id='cadCAD_user',
+            sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
+            partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
+            config_list=configs
+    ) -> None:
 
-    simulation_id = 0
-    if len(config_list) > 0:
-        last_config = config_list[-1]
-        simulation_id = last_config.simulation_id + 1
+        try:
+            max_runs = sim_configs[0]['N']
+        except KeyError:
+            max_runs = sim_configs['N']
 
-    sim_cnt = 0
-    new_sim_configs = []
-    for t in list(zip(sim_configs, list(range(len(sim_configs))))):
-        sim_config = t[0]
-        N = sim_config['N']
-
-        if N > 1:
-            for n in range(N):
-                sim_config['simulation_id'] = simulation_id + sim_cnt
-                sim_config['run_id'] = n
-                sim_config['N'] = 1
-                # sim_config['N'] = n + 1
-                new_sim_configs.append(deepcopy(sim_config))
-            del sim_config
+        if _exo_update_per_ts is True:
+            exogenous_states = exo_update_per_ts(raw_exogenous_states)
         else:
-            sim_config['simulation_id'] = simulation_id
-            sim_config['run_id'] = 0
-            new_sim_configs.append(deepcopy(sim_config))
+            exogenous_states = raw_exogenous_states
 
-        sim_cnt += 1
+        if isinstance(sim_configs, dict):
+            sim_configs = [sim_configs]
 
-    # for sim_config in sim_configs:
-    for sim_config in new_sim_configs:
-        config = Configuration(
-            sim_config=sim_config,
-            initial_state=initial_state,
-            seeds=seeds,
-            exogenous_states=exogenous_states,
-            env_processes=env_processes,
-            partial_state_update_blocks=partial_state_update_blocks,
-            policy_ops=policy_ops,
+        simulation_id = 0
+        if len(config_list) > 0:
+            last_config = config_list[-1]
+            simulation_id = last_config.simulation_id + 1
 
-            # session_id=session_id,
-            user_id=user_id,
-            session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
-            simulation_id=sim_config['simulation_id'],
-            run_id=sim_config['run_id']
-        )
-        configs.append(config)
+        sim_cnt = 0
+        new_sim_configs = []
+        for subset_id, t in enumerate(list(zip(sim_configs, list(range(len(sim_configs)))))):
+            sim_config = t[0]
+            sim_config['subset_id'] = subset_id
+            sim_config['subset_window'] = self.subset_window
+            N = sim_config['N']
+            if N > 1:
+                for n in range(N):
+                    sim_config['simulation_id'] = simulation_id + sim_cnt
+                    sim_config['run_id'] = n
+                    sim_config['N'] = 1
+                    # sim_config['N'] = n + 1
+                    new_sim_configs.append(deepcopy(sim_config))
+                del sim_config
+            else:
+                sim_config['simulation_id'] = simulation_id
+                sim_config['run_id'] = 0
+                new_sim_configs.append(deepcopy(sim_config))
+                # del sim_config
+
+            sim_cnt += 1
+
+        run_id = 0
+        for sim_config in new_sim_configs:
+            subset_id = sim_config['subset_id']
+            sim_config['N'] = run_id + 1
+            if max_runs == 1:
+                sim_config['run_id'] = run_id
+            elif max_runs >= 1:
+                if run_id >= max_runs:
+                    sim_config['N'] = run_id - (max_runs - 1)
+
+            self.exp_window = deepcopy(self.exp_window)
+            config = Configuration(
+                sim_config=sim_config,
+                initial_state=initial_state,
+                seeds=seeds,
+                exogenous_states=exogenous_states,
+                env_processes=env_processes,
+                partial_state_update_blocks=partial_state_update_blocks,
+                policy_ops=policy_ops,
+
+                # session_id=session_id,
+                user_id=user_id,
+                session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
+                simulation_id=sim_config['simulation_id'],
+                run_id=sim_config['run_id'],
+
+                experiment_id=self.exp_id,
+                exp_window=self.exp_window,
+                subset_id=subset_id,
+                subset_window=self.subset_window
+            )
+            configs.append(config)
+            run_id += 1
+        self.exp_id += 1
+        self.exp_window.appendleft(self.exp_id)
 
 
 class Identity:
@@ -111,12 +147,17 @@ class Identity:
 
     # state_identity = cloudpickle.dumps(state_identity)
 
-    def apply_identity_funcs(self, identity: Callable, df: DataFrame, cols: List[str]) -> List[DataFrame]:
-        # identity = pickle.loads(identity)
-        def fillna_with_id_func(identity, df, col):
-            return df[[col]].fillna(value=identity(col))
-
-        return list(map(lambda col: fillna_with_id_func(identity, df, col), cols))
+    def apply_identity_funcs(self,
+                             identity: Callable,
+                             df: DataFrame,
+                             cols: List[str]) -> DataFrame:
+        """
+        Apply the identity on each df column, using its self value as the
+        argument.
+        """
+        fill_values = {col: identity(col) for col in cols}
+        filled_df = df.fillna(fill_values)
+        return filled_df
 
 
 class Processor:
@@ -135,9 +176,9 @@ class Processor:
             identity = self.policy_identity
 
         df = pd.DataFrame(key_filter(partial_state_updates, key))
-        col_list = self.apply_identity_funcs(identity, df, list(df.columns))
-        if len(col_list) != 0:
-            return reduce((lambda x, y: pd.concat([x, y], axis=1)), col_list)
+        filled_df = self.apply_identity_funcs(identity, df, list(df.columns))
+        if len(filled_df) > 0:
+            return filled_df
         else:
             return pd.DataFrame({'empty': []})
 
@@ -167,7 +208,7 @@ class Processor:
             return sdf_values, bdf_values
 
         if len(partial_state_updates) != 0:
-            # backwards compatibility #
+            # backwards compatibility
             partial_state_updates = sanitize_partial_state_updates(partial_state_updates)
 
             bdf = self.create_matrix_field(partial_state_updates, 'policies')
