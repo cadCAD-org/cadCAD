@@ -77,7 +77,7 @@ class Executor:
         partial_state_updates, sim_executors = [], []
         config_idx = 0
 
-        print_exec_info(self.exec_context, configs_as_objs(self.configs))
+        print_exec_info(self.exec_context, self.configs)
 
         t1 = time()
         for x in self.configs:
