@@ -1,9 +1,11 @@
 .idea
-jupyter notebook
 .ipynb_checkpoints
 .DS_Store
 .idea
-.pytest_cache/
+.eggs
+.pytest_cache
+client_work
+
 notebooks
 *.egg-info
 __pycache__

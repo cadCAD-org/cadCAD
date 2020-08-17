@@ -31,7 +31,7 @@ Previous State:
 `y = 0`
 
 ```python
-def state_update(_params, step, sH, s, _input):
+def state_update(_params, step, sH, s, _input, **kwargs):
     y = 'state'
     x = s['state'] + _params['alpha'] + _params['gamma']
     return y, x
@@ -43,7 +43,7 @@ def state_update(_params, step, sH, s, _input):
 ##### Example Policy Updates
 ```python
 # Internal States per Mechanism
-def policies(_params, step, sH, s):
+def policies(_params, step, sH, s, **kwargs):
     return {'beta': _params['beta'], 'gamma': _params['gamma']}
 ```
 * Simulation 1: `{'beta': 2, 'gamma': 3]}` 

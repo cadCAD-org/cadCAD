@@ -10,21 +10,24 @@ system is described by a set of [State Variables](#State-Variables). The dynamic
 cadCAD according to the definitions set by the user in [Partial State Update Blocks](#Partial-State-Update-Blocks).
 
 A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of 
-[Simulation Properties](#Simulation-Properties)
+[Simulation Properties](#Simulation-Properties).
 
-`append_configs`, stores a **Simulation Configuration** to be [Executed](/JS4Q9oayQASihxHBJzz4Ug) by cadCAD
+`Experiment`'s `append_configs`, stores a **Simulation Configuration** to be [Executed](Simulation_Execution.md) by cadCAD
 
 ```python
-from cadCAD.configuration import append_configs
+from cadCAD.configuration import Experiment
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
+    user_id = ..., # OPTIONAL: cadCAD Session User ID
     initial_state = ..., # System Model
-    partial_state_update_blocks = .., # System Model
+    partial_state_update_blocks = ..., # System Model
     policy_ops = ..., # System Model
     sim_configs = ... # Simulation Properties
 )
 ```
 Parameters:
+* **user_id** : str - OPTIONAL: cadCAD Session User ID
 * **initial_state** : _dict_ - [State Variables](#State-Variables) and their initial values
 * **partial_state_update_blocks** : List[dict[dict]] - List of [Partial State Update Blocks](#Partial-State-Update-Blocks)
 * **policy_ops** : List[functions] - See [Policy Aggregation](Policy_Aggregation.md) 
@@ -37,14 +40,18 @@ use the `config_sim` function in `cadCAD.configuration.utils`
 
 ```python
 from cadCAD.configuration.utils import config_sim
+from cadCAD.configuration import Experiment
 
-c = config_sim({
+sim_config_dict = {
     "N": ...,
     "T": range(...),
     "M": ...
-})
+}
 
-append_configs(
+c = config_sim(sim_config_dict)
+
+exp = Experiment()
+exp.append_configs(
     ...
     sim_configs = c # Simulation Properties
 )
@@ -75,11 +82,11 @@ runs in a single dataset. This is especially helpful for running
 ### M - Parameters of the System
 
 Parameters of the system, passed to the state update functions and the policy functions in the `params` parameter are 
-defined here. See [System Model Parameter Sweep](/4oJ_GT6zRWW8AO3yMhFKrg) for more information.
+defined here. See [System Model Parameter Sweep](System_Model_Parameter_Sweep.md) for more information.
 
 ## System Model
 The System Model describes the system that will be simulated in cadCAD. It is comprised of a set of 
-[State Variables](###Sate-Variables) and the [State Update Functions](#State-Update-Functions) that determine the 
+[State Variables](##State-Variables) and the [State Update Functions](#State-Update-Functions) that determine the 
 evolution of the state of the system over time. [Policy Functions](#Policy-Functions) (representations of user policies 
 or internal system control policies) may also be part of a System Model.
 
@@ -95,7 +102,7 @@ State Variables are passed to `append_configs` along with its initial values, as
 are the names of the variables and the `dict_values` are their initial values.
 
 ```python
-from cadCAD.configuration import append_configs
+from cadCAD.configuration import Experiment
 
 genesis_states = {
     'state_variable_1': 0,
@@ -104,7 +111,8 @@ genesis_states = {
     'timestamp': '2019-01-01 00:00:00'
 }
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     initial_state = genesis_states,
     ...
 )
@@ -114,19 +122,20 @@ State Update Functions represent equations according to which the state variable
 function must return a tuple containing a string with the name of the state variable being updated and its new value. 
 Each state update function can only modify a single state variable. The general structure of a state update function is:
 ```python
-def state_update_function_A(_params, substep, sH, s, _input):
+def state_update_function_A(_params, substep, sH, s, _input, **kwargs):
     ...
     return 'state_variable_name', new_value
 ```
 Parameters:
-* **_params** : _dict_ - [System parameters](/4oJ_GT6zRWW8AO3yMhFKrg)
+* **_params** : _dict_ - [System parameters](System_Model_Parameter_Sweep.md)
 * **substep** : _int_ - Current [substep](#Substep)
 * **sH** : _list[list[dict_]] - Historical values of all state variables for the simulation. See 
-[Historical State Access](/smiyQTnATtC9xPwvF8KbBQ) for details
+[Historical State Access](Historically_State_Access.md) for details
 * **s** : _dict_ - Current state of the system, where the `dict_keys` are the names of the state variables and the 
 `dict_values` are their current values.
 * **_input** : _dict_ - Aggregation of the signals of all policy functions in the current 
 [Partial State Update Block](#Partial-State-Update-Block)
+* **\*\*kwargs** - State Update feature extensions 
 
 Return:
 * _tuple_ containing a string with the name of the state variable being updated and its new value.
@@ -156,17 +165,18 @@ The action taken, as well as the potential to act, through a mechanism is a beha
 
 The general structure of a policy function is:
 ```python
-def policy_function_1(_params, substep, sH, s):
+def policy_function_1(_params, substep, sH, s, **kwargs):
     ...
     return {'signal_1': value_1, ..., 'signal_N': value_N}
 ```
 Parameters:
-* **_params** : _dict_ - [System parameters](/4oJ_GT6zRWW8AO3yMhFKrg)
+* **_params** : _dict_ - [System parameters](System_Model_Parameter_Sweep.md)
 * **substep** : _int_ - Current [substep](#Substep)
 * **sH** : _list[list[dict_]] - Historical values of all state variables for the simulation. See 
-[Historical State Access](/smiyQTnATtC9xPwvF8KbBQ) for details
+[Historical State Access](Historically_State_Access.md) for details
 * **s** : _dict_ - Current state of the system, where the `dict_keys` are the names of the state variables and the 
 `dict_values` are their current values.
+* **\*\*kwargs** - Policy Update feature extensions 
     
 Return:
 * _dict_ of signals to be passed to the state update functions in the same 
@@ -179,7 +189,7 @@ At each [Partial State Update Block](#Partial-State-Update-Blocks) (PSUB), the `
 within that PSUB dictionaries are aggregated into a single `dict` using an initial reduction function 
 (a key-wise operation, default: `dic1['keyA'] + dic2['keyA']`) and optional subsequent map functions. The resulting 
 aggregated `dict` is then passed as the `_input` parameter to the state update functions in that PSUB. For more 
-information on how to modify the aggregation method, see [Policy Aggregation](/63k2ncjITuqOPCUHzK7Viw).
+information on how to modify the aggregation method, see [Policy Aggregation](Policy_Aggregation.md).
 
 ### Partial State Update Blocks
 
@@ -195,6 +205,8 @@ Partial State Update Blocks are passed to `append_configs` as a List of Python `
 state update functions and the values are the functions.
 
 ```python
+from cadCAD.configuration import Experiment
+
 PSUBs = [
     {
         "policies": {
@@ -213,12 +225,12 @@ PSUBs = [
     {...} #PSUB_M
 ]
 
-append_configs(
+exp = Experiment()
+exp.append_configs(
     ...
     partial_state_update_blocks = PSUBs,
     ...
 )
-
 ```
 
 #### Substep
@@ -230,11 +242,14 @@ timestep as a `substep`.
 
 cadCAD returns a dataset containing the evolution of the state variables defined by the user over time, with three `int` 
 indexes:
-* `run` - id of the [run](#N-Number-of-Runs)
+* `subset` - identifies the subset per sweepable parameter produced by a parameter sweep (ver. `0.3.1`'s result was 
+multiple datasets; A single dataset per sweepable parameter).
+* `run` - identifies the [run](#N-Number-of-Runs)
 * `timestep` - discrete unit of time (the total number of timesteps is defined by the user in the 
 [T Simulation Parameter](#T-Simulation-Length))
 * `substep` - subdivision of timestep (the number of [substeps](#Substeps) is the same as the number of Partial State 
 Update Blocks)
+* `simulation` - **Alpha: Ignore**
 
 Therefore, the total number of records in the resulting dataset is `N` x `T` x `len(partial_state_update_blocks)`
 

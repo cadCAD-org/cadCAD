@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+short_description = "cadCAD: a differential games based simulation software package for research, validation, and \
+        Computer Aided Design of economic systems"
+
 long_description = """
 cadCAD (complex adaptive systems computer-aided design) is a python based, unified modeling framework for stochastic 
 dynamical systems and differential games for research, validation, and Computer Aided Design of economic systems created 
@@ -18,21 +21,19 @@ provided.
 """
 
 setup(name='cadCAD',
-      version='0.3.1',
-      description="cadCAD: a differential games based simulation software package for research, validation, and \
-        Computer Aided Design of economic systems",
+      version='0.4.18',
+      description=short_description,
       long_description=long_description,
-      url='https://github.com/BlockScience/cadCAD',
+      url='https://github.com/cadCAD-org/cadCAD',
       author='Joshua E. Jodesty',
-      author_email='joshua@block.science, joshua.jodesty@gmail.com',
+      author_email='joshua@block.science',
       license='LICENSE.txt',
       packages=find_packages(),
       install_requires=[
             "pandas",
-            "wheel",
             "pathos",
             "fn",
-            "tabulate",
             "funcy"
-      ]
+      ],
+      python_requires='>=3.6'
 )
