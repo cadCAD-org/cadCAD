@@ -2,6 +2,7 @@ from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ThreadPool as TPool
 from pathos.multiprocessing import ProcessPool as PPool
 from collections import Counter
+from tqdm.auto import tqdm
 
 from cadCAD.utils import flatten
 
@@ -99,7 +100,11 @@ def parallelize_simulations(
         return results
 
     pp = PPool()
-    results = flatten(list(pp.map(lambda params: threaded_executor(params), new_params)))
+    sim_map = pp.imap(lambda params: threaded_executor(params), new_params)
+    progress_bar = tqdm(sim_map, 
+                        total=len(new_params),
+                        desc='Executing PSUBs')
+    results = flatten(list(progress_bar))
     pp.close()
     pp.join()
     pp.clear()
