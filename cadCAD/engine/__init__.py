@@ -37,15 +37,13 @@ class ExecutionContext:
             self.method = parallelize_simulations
         elif context == 'dist_proc':
             add_obj = additional_objs
-            # pprint(additional_objs)
-            # exit()
+
             def distroduce_proc(
                     simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs,
                     ExpIDs,
                     SubsetIDs,
                     SubsetWindows,
-                    configured_n,
-                    # exec_method,
+                    configured_n, # exec_method,
                     sc, additional_objs=add_obj
             ):
                 return method(
@@ -53,8 +51,7 @@ class ExecutionContext:
                     ExpIDs,
                     SubsetIDs,
                     SubsetWindows,
-                    configured_n,
-                    # exec_method,
+                    configured_n, # exec_method,
                     sc, additional_objs
                 )
 
