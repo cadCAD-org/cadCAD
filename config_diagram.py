@@ -293,4 +293,4 @@ def diagram_from_config(config):
     initial_state = config.initial_state
     params = config.sim_config["M"]
     psubs = config.partial_state_updates
-    return diagram(initial_state, params, time_graph, psubs)
+    return diagram(initial_state, params, psubs)
