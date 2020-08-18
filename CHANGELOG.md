@@ -1,4 +1,7 @@
 # Changelog:
+### August 17,  2020
+Hot Fix: Missing required positional argument: 'configured_N'
+
 ### August 5, 2020
 * Experiment Class: Representation of an experiment as one or more configured System Models
 
