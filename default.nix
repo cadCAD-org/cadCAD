@@ -4,7 +4,7 @@
 
 buildPythonPackage rec {
   pname = "cadCAD";
-  version = "0.4.15";
+  version = "0.4.19";
 
   # Nix allows fetching the project source from different locations
   #src = fetchPypi {
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   #  sha256 = "4f2a4d39e4ea601b9ab42b2db08b5918a9538c168cff1c6895ae26646f3d73b1";
   #};
   # src = builtins.fetchGit {
-  #   url = "git@github.com:BlockScience/cadCAD.git";
+  #   url = "https://github.com/cadCAD-org/cadCAD";
   #   ref = "master";
   # };
   src = ./.;
@@ -37,7 +37,7 @@ buildPythonPackage rec {
   meta = with stdenv.lib; {
     description =
       "Design, test and validate complex systems through simulation in Python";
-    homepage = "https://github.com/BlockScience/cadCAD";
+    homepage = "https://github.com/cadCAD-org/cadCAD";
     license = licenses.mit;
     # maintainers = with maintainers; [ benschza ];
     platforms = platforms.unix;
