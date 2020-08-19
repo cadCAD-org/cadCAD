@@ -36,9 +36,9 @@ class Executor:
         def get_col_results(sweep_dict, sub_step, sL, s, funcs):
             def policy_scope_tuner(additional_objs, f):
                 if additional_objs is None:
-                    return f(sweep_dict, sub_step, sL, s, kwargs_1=None)
+                    return f(sweep_dict, sub_step, sL, s)
                 else:
-                    return f(sweep_dict, sub_step, sL, s, kwargs_1=additional_objs)
+                    return f(sweep_dict, sub_step, sL, s, additional_objs)
             return list(map(lambda f: policy_scope_tuner(additional_objs, f), funcs))
 
         def compose(init_reduction_funct, funct_list, val_list):
@@ -216,7 +216,8 @@ class Executor:
         run: int,
         subset_id,
         subset_window,
-        configured_N, # remote_ind
+        configured_N,
+        # remote_ind
         additional_objs=None
     ):
         run += 1

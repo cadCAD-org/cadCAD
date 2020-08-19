@@ -21,7 +21,7 @@ provided.
 """
 
 setup(name='cadCAD',
-      version='0.4.19',
+      version='0.4.18',
       description=short_description,
       long_description=long_description,
       url='https://github.com/cadCAD-org/cadCAD',

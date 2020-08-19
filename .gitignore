@@ -16,7 +16,6 @@ results
 *.csv
 simulations/.ipynb_checkpoints
 simulations/validation/config3.py
-simulations/regression_tests/poc/
 cadCAD.egg-info
 
 build
