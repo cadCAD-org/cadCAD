@@ -130,17 +130,17 @@ def local_simulations(
     print(f'ExpIDs   : {ExpIDs}')
     config_amt = len(configs_structs)
     try:
-        params = None
+        _params = None
         if config_amt == 1:
-            params = var_dict_list[0]
+            _params = var_dict_list[0]
             return single_proc_exec(
-                simulation_execs, params, states_lists, configs_structs, env_processes_list,
+                simulation_execs, _params, states_lists, configs_structs, env_processes_list,
                 Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
             )
         elif config_amt > 1: # and config_amt < remote_threshold:
-            params = var_dict_list
+            _params = var_dict_list
             return parallelize_simulations(
-                simulation_execs, params, states_lists, configs_structs, env_processes_list,
+                simulation_execs, _params, states_lists, configs_structs, env_processes_list,
                 Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
             )
     except ValueError:
