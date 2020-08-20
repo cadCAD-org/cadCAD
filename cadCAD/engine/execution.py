@@ -132,9 +132,9 @@ def local_simulations(
     try:
         _params = None
         if config_amt == 1:
-            _params = var_dict_list
-            if var_dict_list[0] is list:
-                _params = var_dict_list[0]
+            _params, first = var_dict_list, var_dict_list[0]
+            if first is list:
+                _params = first
             return single_proc_exec(
                 simulation_execs, _params, states_lists, configs_structs, env_processes_list,
                 Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
