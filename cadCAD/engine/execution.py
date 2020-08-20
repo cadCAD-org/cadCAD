@@ -27,7 +27,8 @@ def single_proc_exec(
 ):
     print(f'Execution Mode: single_threaded')
     params = [
-        simulation_execs, states_lists, configs_structs, env_processes_list, Ts, SimIDs, Ns, SubsetIDs, SubsetWindows
+        simulation_execs, states_lists, configs_structs, env_processes_list,
+        Ts, SimIDs, Ns, SubsetIDs, SubsetWindows
     ]
     simulation_exec, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window = list(
         map(lambda x: x.pop(), params)
@@ -128,15 +129,18 @@ def local_simulations(
     print(f'ExpIDs   : {ExpIDs}')
     config_amt = len(configs_structs)
     try:
+        _params = None
         if config_amt == 1:
+            _params = var_dict_list[0]
             return single_proc_exec(
-                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, Ns,
-                ExpIDs, SubsetIDs, SubsetWindows, configured_n
+                simulation_execs, _params, states_lists, configs_structs, env_processes_list,
+                Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
             )
         elif config_amt > 1: # and config_amt < remote_threshold:
+            _params = var_dict_list
             return parallelize_simulations(
-                simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, Ns,
-                ExpIDs, SubsetIDs, SubsetWindows, configured_n
+                simulation_execs, _params, states_lists, configs_structs, env_processes_list,
+                Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
             )
     except ValueError:
         raise ValueError("\'sim_configs\' N must > 0")
