@@ -130,8 +130,8 @@ def local_simulations(
     print(f'ExpIDs   : {ExpIDs}')
     config_amt = len(configs_structs)
     exec_sim = None
+    _params = None
     try:
-        _params = None
         if config_amt == 1:
             _params, first = var_dict_list, var_dict_list[0]
             if first is list:
