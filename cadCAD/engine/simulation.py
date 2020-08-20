@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Any, Callable, Dict, List, Tuple
 from copy import deepcopy
 from functools import reduce
@@ -34,6 +35,8 @@ class Executor:
         ops = self.policy_ops
 
         def get_col_results(sweep_dict, sub_step, sL, s, funcs):
+            # pprint(sweep_dict)
+            # exit()
             def policy_scope_tuner(additional_objs, f):
                 if additional_objs is None:
                     return f(sweep_dict, sub_step, sL, s)
