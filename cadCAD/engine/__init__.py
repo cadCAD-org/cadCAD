@@ -1,4 +1,3 @@
-from pprint import pprint
 from time import time
 from typing import Callable, Dict, List, Any, Tuple
 
@@ -108,10 +107,6 @@ class Executor:
             sim_executors.append(SimExecutor(x.policy_ops).simulation)
 
             config_idx += 1
-
-            # print(self.exec_context)
-            # pprint(x.sim_config['M'])
-            # exit()
 
         def get_final_dist_results(simulations, psus, eps, sessions):
             tensor_fields = [create_tensor_field(psu, ep) for psu, ep in list(zip(psus, eps))]
