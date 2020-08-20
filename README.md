@@ -4,7 +4,7 @@
  / ___/ __` / __  / /   / /| | / / / /
 / /__/ /_/ / /_/ / /___/ ___ |/ /_/ /
 \___/\__,_/\__,_/\____/_/  |_/_____/
-by cadCAD                  ver. 0.4.20
+by cadCAD                  ver. 0.4.21
 ======================================
        Complex Adaptive Dynamics       
        o       i        e
@@ -20,7 +20,10 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 
 # Getting Started
 
-#### Change Log: [ver. 0.4.20](CHANGELOG.md)
+#### Change Log: [ver. 0.4.21](CHANGELOG.md)
+
+[ver 0.4.18](https://github.com/cadCAD-org/cadCAD/tree/0.4.18)
+
 [Previous Stable Release (No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
 
 
