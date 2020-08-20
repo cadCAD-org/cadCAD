@@ -1,5 +1,6 @@
 from time import time
 from typing import Callable, Dict, List, Any, Tuple
+from tqdm.auto import tqdm
 
 from cadCAD.utils import flatten
 from cadCAD.utils.execution import print_exec_info
@@ -80,7 +81,9 @@ class Executor:
         print_exec_info(self.exec_context, configs_as_objs(self.configs))
 
         t1 = time()
-        for x in self.configs:
+        for x in tqdm(self.configs,
+                      total=len(self.configs),
+                      desc="Initializing configurations"):
             sessions.append(
                 {
                     'user_id': x.user_id, 'experiment_id': x.experiment_id, 'session_id': x.session_id,
@@ -114,7 +117,9 @@ class Executor:
 
         def get_final_results(simulations, psus, eps, sessions, remote_threshold):
             flat_timesteps, tensor_fields = [], []
-            for sim_result, psu, ep in list(zip(simulations, psus, eps)):
+            for sim_result, psu, ep in tqdm(list(zip(simulations, psus, eps)),
+                                            total=len(simulations),
+                                            desc='Flattening results'):
                 flat_timesteps.append(flatten(sim_result))
                 tensor_fields.append(create_tensor_field(psu, ep))
 
