@@ -33,7 +33,13 @@ Contributing to an existing feature:
 9. PR Approved (There may be circumstances delaying the merge.)
 10. Your contribution merged into next feature release on `org:master`
 
-### Recommended Merge Strategy
-
+### Recommended Strategy: [Rebasing](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
+Add cadCAD-org/cadCAD as remote.
+`git checkout remote/master`
+`git pull remote master`
+`git checkout your_branch`
+`git rebase your_branch`
+Resolve merge conflicts (while leveraging rebase commands)
+`git push origin your_branch`
 
 Thanks! :heart:
