@@ -26,14 +26,14 @@ Contributing to an existing feature:
 2. `git checkout -b feature` (new feature)
 3. Apply your awesomeness! (Commit Often)
 4. `git push fork feature`
-5. Apply a merge strategy you're comfortable with (Recommended Below).
+5. Apply a rebase/merge strategy you're comfortable with (Recommended Below).
 6. Submit PR from `user:staging` into `org:staging`
 7. PR is queued for review
 8. PR Reviewed (Update necessary if rejected)
 9. PR Approved (There may be circumstances delaying the merge.)
 10. Your contribution merged into next feature release on `org:master`
 
-### Recommended Strategy: [Rebasing](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
+### Recommended Strategy: [Rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
 1. Add cadCAD-org/cadCAD as remote within you forked project locally.
 2. `git checkout remote/master`
 3. `git pull remote master`
