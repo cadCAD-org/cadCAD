@@ -38,7 +38,7 @@ Contributing to an existing feature:
 2. `git checkout remote/master`
 3. `git pull remote master`
 4. `git checkout your_branch`
-5. `git rebase your_branch`
+5. `git rebase master`
 6. Resolve merge conflicts (while leveraging rebase commands)
 7. `git push origin your_branch`
 
