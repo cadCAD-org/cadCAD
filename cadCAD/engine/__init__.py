@@ -1,4 +1,3 @@
-from pprint import pprint
 from time import time
 from typing import Callable, Dict, List, Any, Tuple
 
@@ -36,22 +35,20 @@ class ExecutionContext:
         elif context == 'multi_proc':
             self.method = parallelize_simulations
         elif context == 'dist_proc':
-            add_obj = additional_objs
-
             def distroduce_proc(
-                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs,
+                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, RunIDs,
                     ExpIDs,
                     SubsetIDs,
                     SubsetWindows,
-                    configured_n, # exec_method,
-                    sc, additional_objs=add_obj
+                    exec_method,
+                    sc, additional_objs=additional_objs
             ):
                 return method(
-                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs,
+                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, RunIDs,
                     ExpIDs,
                     SubsetIDs,
                     SubsetWindows,
-                    configured_n, # exec_method,
+                    exec_method,
                     sc, additional_objs
                 )
 

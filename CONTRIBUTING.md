@@ -11,26 +11,35 @@ Pull Request (PR) presented as "->".
 
 General Template:
 
-`user/branch -> BlockScience/staging`
+`user:branch -> org:staging`
 
 Contributing a new feature:
 
-`user/feature -> BlockScience/staging`
+`user:feature -> org:staging`
 
 Contributing to an existing feature:
 
-`user/feature -> BlockScience/feature`
+`user:feature -> org:feature`
 
 ### General Advise for Forked Repositories:
 1. `git pull fork staging`
 2. `git checkout -b feature` (new feature)
 3. Apply your awesomeness! (Commit Often)
 4. `git push fork feature`
-5. Apply a merge strategy you're comfortable with.
-6. Submit PR from `user:staging` into `BlockScience:staging`
+5. Apply a rebase/merge strategy you're comfortable with (Recommended Below).
+6. Submit PR from `user:staging` into `org:staging`
 7. PR is queued for review
 8. PR Reviewed (Update necessary if rejected)
 9. PR Approved (There may be circumstances delaying the merge.)
-10. Your contribution merged into next feature release on `BlockScience:master`
+10. Your contribution merged into next feature release on `org:master`
+
+### Recommended Strategy: [Rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
+1. Add cadCAD-org/cadCAD as remote within you forked project locally.
+2. `git checkout remote/master`
+3. `git pull remote master`
+4. `git checkout your_branch`
+5. `git rebase master`
+6. Resolve merge conflicts (while leveraging rebase commands)
+7. `git push origin your_branch`
 
 Thanks! :heart:
