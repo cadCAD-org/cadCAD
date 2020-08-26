@@ -34,12 +34,12 @@ Contributing to an existing feature:
 10. Your contribution merged into next feature release on `org:master`
 
 ### Recommended Strategy: [Rebasing](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
-Add cadCAD-org/cadCAD as remote.
-`git checkout remote/master`
-`git pull remote master`
-`git checkout your_branch`
-`git rebase your_branch`
-Resolve merge conflicts (while leveraging rebase commands)
-`git push origin your_branch`
+1. Add cadCAD-org/cadCAD as remote within you forked project locally.
+2. `git checkout remote/master`
+3. `git pull remote master`
+4. `git checkout your_branch`
+5. `git rebase your_branch`
+6. Resolve merge conflicts (while leveraging rebase commands)
+7. `git push origin your_branch`
 
 Thanks! :heart:
