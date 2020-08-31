@@ -40,6 +40,6 @@ Contributing to an existing feature:
 4. `git checkout your_branch`
 5. `git rebase master`
 6. Resolve merge conflicts (while leveraging rebase commands)
-7. `git push origin your_branch`
+7. `git push fork your_branch`
 
 Thanks! :heart:
