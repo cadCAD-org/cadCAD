@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from collections import Counter
-from copy import deepcopy
 from functools import reduce
 from funcy import curry
 import pandas as pd
@@ -139,7 +138,7 @@ def var_substep_trigger(substeps):
 def env_trigger(end_substep):
     def trigger(end_substep, trigger_field, trigger_vals, funct_list):
         def env_update(state_dict, sweep_dict, target_value):
-            state_dict_copy = deepcopy(state_dict)
+            state_dict_copy = state_dict.copy()
             # Use supstep to simulate current sysMetrics
             if state_dict_copy['substep'] == end_substep:
                 state_dict_copy['timestep'] = state_dict_copy['timestep'] + 1
@@ -229,7 +228,7 @@ def sweep_partial_states(_type, in_config):
         for partial_state, state_dict in filtered_partial_states.items():
             for state, state_funcs in state_dict.items():
                 for f in state_funcs:
-                    config = deepcopy(in_config)
+                    config = in_config.copy()
                     config.partial_state_updates[partial_state][_type][state] = f
                     configs.append(config)
                     del config
@@ -245,8 +244,8 @@ def sweep_states(state_type, states, in_config):
     if len(filtered_states) > 0:
         for state, state_funcs in filtered_states.items():
             for f in state_funcs:
-                config = deepcopy(in_config)
-                exploded_states = deepcopy(states)
+                config = in_config.copy()
+                exploded_states = states.copy()
                 exploded_states[state] = f
                 if state_type == 'exogenous':
                     config.exogenous_states = exploded_states
