@@ -26,6 +26,7 @@ testing/example2.py
 testing/multi_config_test.py
 testing/udo.py
 testing/udo_test.py
+simulations/regression_tests/poc
 
 Simulation.md
 
