@@ -1,6 +1,5 @@
 # Display System Model Configurations:
 
-
 ## Conversions
 ##### Note: The following applies as a result of simulation execution
 

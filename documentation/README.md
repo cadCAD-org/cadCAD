@@ -9,10 +9,17 @@ system is described by a set of [State Variables](#State-Variables). The dynamic
 [Policy Functions](#Policy-Functions) and [State Update Functions](#State-Update-Functions), which are evaluated by 
 cadCAD according to the definitions set by the user in [Partial State Update Blocks](#Partial-State-Update-Blocks).
 
-A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of 
-[Simulation Properties](#Simulation-Properties).
+A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of [Simulation Properties](#Simulation-Properties).
 
-`Experiment`'s `append_configs`, stores a **Simulation Configuration** to be [Executed](Simulation_Execution.md) by cadCAD
+### Experiments
+`cadCAD.configuration.Experiment` (Alpha) is in development and needed to be released to support the development of web 
+applications and proprietary feature extensions to be [Executed](Simulation_Execution.md) by cadCAD. 
+
+It is intended to represent a unique identifier of an experiment of one or more configured System Models / 
+Configurations. For this reason, `append_configs` is a method of `Experiment`.
+
+As of now it does not support multi - system model simulation because configurations are still appended globally despite 
+`append_config` being a method of `Experiment`.
 
 ```python
 from cadCAD.configuration import Experiment
@@ -26,7 +33,7 @@ exp.append_configs(
     sim_configs = ... # Simulation Properties
 )
 ```
-Parameters:
+Parameters: `append_configs`
 * **user_id** : str - OPTIONAL: cadCAD Session User ID
 * **initial_state** : _dict_ - [State Variables](#State-Variables) and their initial values
 * **partial_state_update_blocks** : List[dict[dict]] - List of [Partial State Update Blocks](#Partial-State-Update-Blocks)
