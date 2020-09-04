@@ -30,7 +30,8 @@ selects Multi-Process / Threaded Mode if simulations are configure for a single 
     simulation
     
 * 	The `configs` `list` has been temporarily flattened to contain single run System Model `Configuration` objects to 
-support elastic workloads. This functionality will be restored in a subsequent release by a class that returns 
+support both fault tolerance simulation and elastic workloads for scalable micro-service architecture and distributed 
+computing. This functionality will be restored in a subsequent release by a class that returns 
 `configs`'s original representation in ver. `0.3.1`.
     * The conversion utilities have been provided to restore its original representation of configurations with 
     runs >= 1
