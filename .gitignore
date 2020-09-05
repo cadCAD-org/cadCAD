@@ -27,9 +27,10 @@ testing/multi_config_test.py
 testing/udo.py
 testing/udo_test.py
 simulations/regression_tests/poc
+simulations/tickets
 
 Simulation.md
 
 monkeytype.sqlite3
-
+notes.py
 result

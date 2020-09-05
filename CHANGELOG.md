@@ -16,7 +16,7 @@ are still appended globally despite `append_config` being a method of Experiment
 ### New Features:
 ##### [Local Execution Mode (Default)](documentation/Simulation_Execution.md)
 * Local Execution Mode (Default): Implicit parallelization of Monte-Carlo / Stochastic simulations (Automatically 
-selects Multi-Process / Threaded Mode if simulations are configure for a single run)
+selects Multi-Threaded Mode if simulations are configured for more than a single run)
     * **Backwards Compatibility:** `cadCAD.engine.ExecutionMode` accepts legacy execution modes from ver. `0.3.1`
 
 ##### cadCAD Post-Processing Enhancements / Modifications
@@ -28,17 +28,6 @@ selects Multi-Process / Threaded Mode if simulations are configure for a single 
                 * **Subset** is a unique identifier of Monte Carlo simulations produced by parameter sweeps
     * Note: Returning a single dataset was originally specified during the project’s inception instead of multiple per 
     simulation
-    
-* 	The `configs` `list` has been temporarily flattened to contain single run System Model `Configuration` objects to 
-support elastic workloads. This functionality will be restored in a subsequent release by a class that returns 
-`configs`'s original representation in ver. `0.3.1`.
-    * The conversion utilities have been provided to restore its original representation of configurations with 
-    runs >= 1
-        * [System Configuration Conversions](documentation/System_Configuration.md)
-            * Configuration as List of Configuration Objects (as in ver. `0.3.1`) 
-            * New: System Configuration as a Pandas DataFrame
-            * New: System Configuration as List of Dictionaries
-
 
 ##### Expandable state and policy update parameter space: 
 * Enables the development of feature enhancements that involve the use of additional parameters without requiring users 
@@ -46,6 +35,19 @@ to modify their update parameters spaces when upgrading to newer versions. For t
 examples in documentation include an additional `**kwargs` parameter.
     * [State Updates:](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/README.md#state-update-functions)
     * [Policy Updates:](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/README.md#state-update-functions)
+
+### Modifications:
+* **Flattened Configuration List:** 
+    * The `configs` `list` has been temporarily flattened to contain single run System Model `Configuration` objects to 
+    support both fault tolerant simulation and elastic workloads for scalable micro-service architecture and 
+    distributed computing. This functionality will be restored in a subsequent release by a class that returns 
+    `configs`'s original representation in ver. `0.3.1`.
+        * The conversion utilities have been provided to restore its original representation of configurations with 
+        runs >= 1
+            * [System Configuration Conversions](documentation/System_Configuration.md)
+                * Configuration as List of Configuration Objects (as in ver. `0.3.1`) 
+                * New: System Configuration as a Pandas DataFrame
+                * New: System Configuration as List of Dictionaries
 
 
 ### May 29, 2020
