@@ -1,6 +1,6 @@
 from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ThreadPool as TPool
-from pathos.multiprocessing import ProcessPool as PPool
+# from pathos.multiprocessing import ProcessPool as PPool
 from collections import Counter
 
 from cadCAD.utils import flatten
@@ -99,11 +99,12 @@ def parallelize_simulations(
         tp.close()
         return results
 
-    pp = PPool()
-    results = flatten(list(pp.map(lambda params: threaded_executor(params), new_params)))
-    pp.close()
-    pp.join()
-    pp.clear()
+    # pp = PPool()
+    # results = flatten(list(pp.map(lambda params: threaded_executor(params), new_params)))
+    results = flatten(list(map(lambda params: threaded_executor(params), new_params)))
+    # pp.close()
+    # pp.join()
+    # pp.clear()
     # pp.restart()
 
     return results
@@ -130,17 +131,18 @@ def local_simulations(
     config_amt = len(configs_structs)
     try:
         _params = None
-        if config_amt == 1:
+        if config_amt == 1: # and configured_n != 1
             _params = var_dict_list[0]
             return single_proc_exec(
                 simulation_execs, _params, states_lists, configs_structs, env_processes_list,
                 Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
             )
-        elif config_amt > 1: # and config_amt < remote_threshold:
+        elif config_amt > 1: # and configured_n != 1 # and config_amt < remote_threshold
             _params = var_dict_list
             return parallelize_simulations(
                 simulation_execs, _params, states_lists, configs_structs, env_processes_list,
                 Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
             )
+        # elif config_amt > 1 and configured_n == 1:
     except ValueError:
         raise ValueError("\'sim_configs\' N must > 0")
