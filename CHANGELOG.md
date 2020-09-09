@@ -85,7 +85,7 @@ selects Multi-Process / Threaded Mode if simulations are configure for a single 
             print(tabulate(result, headers='keys', tablefmt='psql'))
             ```
             Results:
-            ```bash
+            ```
             +----+------------+-----------+----+---------------------+------------+--------+-----+---------+----------+
             |    | s1         | s2        | s3 | timestamp           | simulation | subset | run | substep | timestep |
             |----+------------+-----------+----+---------------------+------------+--------+-----+---------+----------|
@@ -121,6 +121,21 @@ selects Multi-Process / Threaded Mode if simulations are configure for a single 
                 print(tabulate(result, headers='keys', tablefmt='psql'))
                 print()
                 i += 1
+            ```
+            Results:
+            ```
+            +----+------------+-----------+----+---------------------+-----+---------+----------+
+            |    | s1         | s2        | s3 | timestamp           | run | substep | timestep |
+            |----+------------+-----------+----+---------------------+-----+---------+----------|
+            |  0 | 0.0        | 0.0       |  1 | 2018-10-01 15:16:24 |   1 |       0 |        0 |
+            |  1 | 1.0        | 4         |  5 | 2018-10-01 15:16:25 |   1 |       1 |        1 |
+            |  2 | 2.0        | 6         |  5 | 2018-10-01 15:16:25 |   1 |       2 |        1 |
+            |  3 | 3.0        | [ 30 300] |  5 | 2018-10-01 15:16:25 |   1 |       3 |        1 |
+            |  4 | 0          | 0         |  1 | 2018-10-01 15:16:24 |   1 |       0 |        0 |
+            |  5 | 1          | 0         |  5 | 2018-10-01 15:16:25 |   1 |       1 |        1 |
+            |  6 | a          | 0         |  5 | 2018-10-01 15:16:25 |   1 |       2 |        1 |
+            |  7 | ['c', 'd'] | [ 30 300] |  5 | 2018-10-01 15:16:25 |   1 |       3 |        1 |
+            +----+------------+-----------+----+---------------------+-----+---------+----------+
             ```
     
 * 	The `configs` `list` has been temporarily flattened to contain single run System Model `Configuration` objects to 
