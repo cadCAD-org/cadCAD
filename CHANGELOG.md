@@ -15,11 +15,10 @@ from cadCAD.configuration import Experiment
 exp = Experiment()
 exp.append_configs(...)
 ````
-**Deprecated: ver 0.3.1**
+**Deprecated: ver. `0.3.1`**
 ````python
-from cadCAD.configuration import Experiment
-exp = Experiment()
-exp.append_configs(...)
+from cadCAD.configuration import append_configs
+append_configs(...)
 ````
 
 ### June 22, 2020
