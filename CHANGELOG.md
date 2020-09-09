@@ -8,18 +8,18 @@ one or more configured System Models. For this reason, `append_configs` is a met
 `cadCAD.configuration.Experiment`. As of now it does not support multi - system model simulation because configurations 
 are still appended globally despite `append_config` being a method of Experiment.
 
-###### Examples:
-**Current:**
-````python
-from cadCAD.configuration import Experiment
-exp = Experiment()
-exp.append_configs(...)
-````
-**Deprecated: ver. `0.3.1`**
-````python
-from cadCAD.configuration import append_configs
-append_configs(...)
-````
+* Examples:
+    * **Current:**
+        ````python
+        from cadCAD.configuration import Experiment
+        exp = Experiment()
+        exp.append_configs(...)
+        ````
+    * **Deprecated:** ver. `0.3.1`
+        ````python
+        from cadCAD.configuration import append_configs
+        append_configs(...)
+        ````
 
 ### June 22, 2020
 * Bug Fix: Multiprocessing error for Windows
@@ -31,6 +31,13 @@ append_configs(...)
 * Local Execution Mode (Default): Implicit parallelization of Monte-Carlo / Stochastic simulations (Automatically 
 selects Multi-Process / Threaded Mode if simulations are configure for a single run)
     * **Backwards Compatibility:** `cadCAD.engine.ExecutionMode` accepts legacy execution modes from ver. `0.3.1`
+* Examples:
+    * **Current:**
+        ````python
+        ````
+    * **Legacy / Backwards Compatible:** ver. `0.3.1`
+        ````python
+        ````
 
 ##### cadCAD Post-Processing Enhancements / Modifications
 * 	[**Single Result Dataset**]((https://github.com/cadCAD-org/cadCAD/blob/master/documentation/Simulation_Execution.md#4-execute-simulation--produce-system-event-dataset)) as a 2 dimensional `list`
