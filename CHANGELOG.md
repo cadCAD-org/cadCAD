@@ -8,6 +8,20 @@ one or more configured System Models. For this reason, `append_configs` is a met
 `cadCAD.configuration.Experiment`. As of now it does not support multi - system model simulation because configurations 
 are still appended globally despite `append_config` being a method of Experiment.
 
+###### Examples:
+**Current:**
+````python
+from cadCAD.configuration import Experiment
+exp = Experiment()
+exp.append_configs(...)
+````
+**Deprecated: ver 0.3.1**
+````python
+from cadCAD.configuration import Experiment
+exp = Experiment()
+exp.append_configs(...)
+````
+
 ### June 22, 2020
 * Bug Fix: Multiprocessing error for Windows
 
