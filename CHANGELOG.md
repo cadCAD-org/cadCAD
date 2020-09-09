@@ -153,8 +153,30 @@ support elastic workloads. This functionality will be restored in a subsequent r
 * Enables the development of feature enhancements that involve the use of additional parameters without requiring users 
 to modify their update parameters spaces when upgrading to newer versions. For this reason state / policy update 
 examples in documentation include an additional `**kwargs` parameter.
-    * [State Updates:](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/README.md#state-update-functions)
-    * [Policy Updates:](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/README.md#state-update-functions)
+    * [State Updates:](documentation/README.md#state-update-functions)
+    * [Policy Updates:](documentation/README.md#state-update-functions)
+* Examples:
+    * **ver. `0.4.22`:**
+        ```python
+        def state_update(_params, substep, sH, s, _input, **kwargs):
+            ...
+            return 'state_variable_name', new_value
+
+        def policy(_params, substep, sH, s, **kwargs):
+            ...
+            return {'signal_1': value_1, ..., 'signal_N': value_N}
+        ```
+    * **ver. `0.3.1`:**
+    
+        ```python
+        def state_update(_params, substep, sH, s, _input):
+            ...
+            return 'state_variable_name', new_value
+
+        def policy(_params, substep, sH, s):
+            ...
+            return {'signal_1': value_1, ..., 'signal_N': value_N}
+        ```
 
 
 ### May 29, 2020
