@@ -66,13 +66,15 @@ selects Multi-Process / Threaded Mode if simulations are configure for a single 
                 * **Subset** is a unique identifier of Monte Carlo simulations produced by parameter sweeps
     * Note: Returning a single dataset was originally specified during the project’s inception instead of multiple per 
     simulation
+
     * Examples:
         * **ver. `0.4.22`:**
             ```python
             import pandas as pd
             from tabulate import tabulate
-            from cadCAD import configs
             from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+            import system_model_A, system_model_B
+            from cadCAD import configs
           
             exec_mode = ExecutionMode()
             local_ctx = ExecutionContext(context=exec_mode.local_mode)
@@ -99,6 +101,26 @@ selects Multi-Process / Threaded Mode if simulations are configure for a single 
             ```
         * **ver. `0.3.1`:**
             ```python
+            import pandas as pd
+            from tabulate import tabulate
+            from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+            import system_model_A, system_model_B
+            from cadCAD import configs
+            
+            exec_mode = ExecutionMode()
+            
+            multi_ctx = ExecutionContext(context=exec_mode.multi_proc)
+            simulation = Executor(exec_context=multi_ctx, configs=configs)
+            
+            i = 0
+            config_names = ['sys_model_A', 'sys_model_B']
+            for raw_result, _ in simulation.execute():
+                result = pd.DataFrame(raw_result)
+                print()
+                print(f"{config_names[i]} Result: System Events DataFrame:")
+                print(tabulate(result, headers='keys', tablefmt='psql'))
+                print()
+                i += 1
             ```
     
 * 	The `configs` `list` has been temporarily flattened to contain single run System Model `Configuration` objects to 
