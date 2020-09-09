@@ -138,23 +138,60 @@ selects Multi-Process / Threaded Mode if simulations are configure for a single 
             +----+------------+-----------+----+---------------------+-----+---------+----------+
             ```
     
-* 	The `configs` `list` has been temporarily flattened to contain single run System Model `Configuration` objects to 
-support elastic workloads. This functionality will be restored in a subsequent release by a class that returns 
-`configs`'s original representation in ver. `0.3.1`.
+* 	The `configs` (System Model Configurations) `list` has been **temporarily** flattened to contain single run 
+`Configuration` objects to support elastic workloads. This functionality will be restored in a subsequent release by a 
+class that returns `configs`'s original representation in ver. `0.3.1`.
     * The conversion utilities have been provided to restore its original representation of configurations with 
     runs >= 1
         * [System Configuration Conversions](documentation/System_Configuration.md)
             * Configuration as List of Configuration Objects (as in ver. `0.3.1`) 
             * New: System Configuration as a Pandas DataFrame
             * New: System Configuration as List of Dictionaries
+            
+    * Example: 
+        * Notes:
+            * `configs` is temporarily returned in a flattened format and reformatted into its intended format 
+            * `Configuration` objects at `0x10790e470` and `0x1143dd630` are reconstituted into objects at `0x10790e7b8` 
+            and `0x116268908` respectively.
+        * **ver. `0.4.22`:** 
+            ```python
+            from pprint import pprint
+            from documentation.examples import sys_model_A, sys_model_B
+            from cadCAD.configuration.utils import configs_as_objs, configs_as_dataframe, configs_as_dicts
+            from cadCAD import configs
+            
+            flattened_configs = configs
+         
+            print('Flattened Format: Temporary')  
+            pprint(flattened_configs)
+            print()
+            
+            print('Intended Format:')
+            intended_configs = configs_as_objs(flattened_configs)
+            pprint(intended_configs)
+            print()
+            
+            ```
+            Result:
+            ```bash
+            Flattened Format: Temporary
+            [<cadCAD.configuration.Configuration object at 0x10790e470>,
+             <cadCAD.configuration.Configuration object at 0x10790e7b8>,
+             <cadCAD.configuration.Configuration object at 0x1143dd630>,
+             <cadCAD.configuration.Configuration object at 0x116268908>]
+            
+            Intended Format:
+            [<cadCAD.configuration.Configuration object at 0x10790e7b8>,
+             <cadCAD.configuration.Configuration object at 0x116268908>]
+            ```
 
 
 ##### Expandable state and policy update parameter space: 
 * Enables the development of feature enhancements that involve the use of additional parameters without requiring users 
 to modify their update parameters spaces when upgrading to newer versions. For this reason state / policy update 
 examples in documentation include an additional `**kwargs` parameter.
-    * [State Updates:](documentation/README.md#state-update-functions)
-    * [Policy Updates:](documentation/README.md#state-update-functions)
+    * [State Updates](documentation/README.md#state-update-functions)
+    * [Policy Updates](documentation/README.md#state-update-functions)
 * Examples:
     * **ver. `0.4.22`:**
         ```python
