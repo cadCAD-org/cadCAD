@@ -25,21 +25,16 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 
 
 ## 1. Installation: 
-Requires [>= Python 3.6](https://www.python.org/downloads/) 
+Requires [>= Python 3.6](https://www.python.org/downloads/)
 
-**Option A: Install Using [pip](https://pypi.org/project/cadCAD/)** 
-```bash
-pip3 install cadCAD
-```
-
-**Option B:** Build From Source
+**Option A:** Build From Source
 ```
 pip3 install -r requirements.txt
 python3 setup.py sdist bdist_wheel
 pip3 install dist/*.whl
 ```
 
-**Option C: Using [Nix](https://nixos.org/nix/)**
+**Option B: Using [Nix](https://nixos.org/nix/)**
 1. Run `curl -L https://nixos.org/nix/install | sh` or install Nix via system package manager
 2. Run `nix-shell` to enter into a development environment, `nix-build` to build project from source, and 
 `nix-env -if default.nix` to install
