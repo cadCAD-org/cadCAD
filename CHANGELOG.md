@@ -27,7 +27,7 @@ are still appended globally despite `append_config` being a method of Experiment
 ### June 19, 2020
     
 ### New Features:
-##### [Local Execution Mode (Default)](documentation/Simulation_Execution.md)
+##### [Local Execution Mode (Default)](documentation/Simulation_Execution.md#simulation-execution-modes)
 * Local Execution Mode (Default): Implicit parallelization of Monte-Carlo / Stochastic simulations (Automatically 
 selects Multi-Process / Threaded Mode if simulations are configure for a single run)
     * **Backwards Compatibility:** `cadCAD.engine.ExecutionMode` accepts legacy execution modes from ver. `0.3.1`
@@ -59,7 +59,8 @@ selects Multi-Process / Threaded Mode if simulations are configure for a single 
         
 
 ##### cadCAD Post-Processing Enhancements / Modifications
-* 	[**Single Result Dataset**]((https://github.com/cadCAD-org/cadCAD/blob/master/documentation/Simulation_Execution.md#4-execute-simulation--produce-system-event-dataset)) as a 2 dimensional `list`
+* 	[**Single Result Dataset**](documentation/Simulation_Execution.md#4-execute-simulation--produce-system-event-dataset) 
+as a 2 dimensional `list`
     * Returns a single dataset instead of multiple datasets per Monte Carlo simulation as in `0.3.1`:
         * New System Metrics as dataset attributes: 
             * **Simulation** (Alpha) is a unique identifier being developed to represent Experiments as stated above and 
