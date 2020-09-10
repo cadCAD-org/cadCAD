@@ -31,7 +31,7 @@ are still appended globally despite `append_config` being a method of Experiment
 * Local Execution Mode (Default): Implicit parallelization of Monte-Carlo / Stochastic simulations (Automatically 
 selects Multi-Process / Threaded Mode if simulations are configure for a single run)
     * **Backwards Compatibility:** `cadCAD.engine.ExecutionMode` accepts legacy execution modes from ver. `0.3.1`
-* Examples:
+###### Examples:
     * **ver. `0.4.22`:**
         ```python
         from cadCAD.engine import ExecutionMode, ExecutionContext
