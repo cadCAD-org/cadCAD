@@ -1,6 +1,6 @@
 # Display System Model Configurations:
 
-###Announcement:
+## Announcement:
 
 See [CHANGELOG](CHANGELOG.md)
 
