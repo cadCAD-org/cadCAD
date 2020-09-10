@@ -1,7 +1,7 @@
 # Changelog:
 
 ### August 5, 2020
-##### [Experiments](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/README.md#introduction)
+##### [Experiments](documentation#experiments)
 * `cadCAD.configuration.Experiment` (Alpha) is in development and needed to be released to support the implementation of 
 web applications and proprietary feature extensions. It is intended to represent a unique identifier of an experiment of 
 one or more configured System Models. For this reason, `append_configs` is a method of 
@@ -155,36 +155,36 @@ class that returns `configs`'s original representation in ver. `0.3.1`.
     * `Configuration` objects at `0x10790e470` and `0x1143dd630` are reconstituted into objects at `0x10790e7b8` 
     and `0x116268908` respectively.
 * **ver. `0.4.22`:** 
-        ```python
-        from pprint import pprint
-        from documentation.examples import sys_model_A, sys_model_B
-        from cadCAD.configuration.utils import configs_as_objs, configs_as_dataframe, configs_as_dicts
-        from cadCAD import configs
+    ```python
+    from pprint import pprint
+    from documentation.examples import sys_model_A, sys_model_B
+    from cadCAD.configuration.utils import configs_as_objs, configs_as_dataframe, configs_as_dicts
+    from cadCAD import configs
+    
+    flattened_configs = configs
+    
+    print('Flattened Format: Temporary')  
+    pprint(flattened_configs)
+    print()
+    
+    print('Intended Format:')
+    intended_configs = configs_as_objs(flattened_configs)
+    pprint(intended_configs)
+    print()
+    ```
         
-        flattened_configs = configs
-     
-        print('Flattened Format: Temporary')  
-        pprint(flattened_configs)
-        print()
-        
-        print('Intended Format:')
-        intended_configs = configs_as_objs(flattened_configs)
-        pprint(intended_configs)
-        print()
-        
-        ```
-        Result:
-        ```bash
-        Flattened Format: Temporary
-        [<cadCAD.configuration.Configuration object at 0x10790e470>,
-         <cadCAD.configuration.Configuration object at 0x10790e7b8>,
-         <cadCAD.configuration.Configuration object at 0x1143dd630>,
-         <cadCAD.configuration.Configuration object at 0x116268908>]
-        
-        Intended Format:
-        [<cadCAD.configuration.Configuration object at 0x10790e7b8>,
-         <cadCAD.configuration.Configuration object at 0x116268908>]
-        ```
+    Result:
+    ```bash
+    Flattened Format: Temporary
+    [<cadCAD.configuration.Configuration object at 0x10790e470>,
+     <cadCAD.configuration.Configuration object at 0x10790e7b8>,
+     <cadCAD.configuration.Configuration object at 0x1143dd630>,
+     <cadCAD.configuration.Configuration object at 0x116268908>]
+    
+    Intended Format:
+    [<cadCAD.configuration.Configuration object at 0x10790e7b8>,
+     <cadCAD.configuration.Configuration object at 0x116268908>]
+    ```
 
 
 ##### Expandable state and policy update parameter space: 
