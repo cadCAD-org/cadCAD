@@ -199,7 +199,6 @@ class Executor:
             pipe_run: List[Dict[str, Any]] = self.state_update_pipeline(
                 sweep_dict, simulation_list, configs, env_processes, time_step, run, additional_objs
             )
-
             _, *pipe_run = pipe_run
             simulation_list.append(pipe_run)
 
