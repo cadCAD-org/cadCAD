@@ -139,7 +139,7 @@ selects Multi-Process / Threaded Mode if simulations are configure for a single 
     +----+------------+-----------+----+---------------------+-----+---------+----------+
     ```
     
-* 	The `configs` (System Model Configurations) `list` has been **temporarily** flattened to contain single run 
+* 	**Flattened Configuration List:** The `configs` (System Model Configurations) `list` has been **temporarily** flattened to contain single run 
 `Configuration` objects to support elastic workloads. This functionality will be restored in a subsequent release by a 
 class that returns `configs`'s original representation in ver. `0.3.1`.
     * The conversion utilities have been provided to restore its original representation of configurations with 
