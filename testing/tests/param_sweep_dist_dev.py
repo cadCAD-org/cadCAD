@@ -13,7 +13,7 @@ from distroduce.engine.execution import distributed_simulations, transform
 from distroduce.session import sc_alt as sc
 
 exec_mode = ExecutionMode()
-distributed_sims = distributed_simulations(transform)
+distributed_sims = distributed_simulations(transform(publish=False))
 distributed_ctx = ExecutionContext(context=exec_mode.distributed, method=distributed_sims)
 run = Executor(exec_context=distributed_ctx, configs=configs, spark_context=sc)
 
