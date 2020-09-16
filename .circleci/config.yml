@@ -11,7 +11,7 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - run: pip install cadCAD==0.4.18
+      - run: pip install cadcad
       - run:
           command: python testing/tests/param_sweep.py
           name: Parameter sweep
