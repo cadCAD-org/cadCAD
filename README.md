@@ -23,13 +23,13 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 
 #### Change Log: [ver. 0.4.22](CHANGELOG.md)
 
-[Previous Stable Release (Deprecated / No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
+[Previous Stable Release (No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
 
-## 0. Pre-installation Virtual Environments
+## 0. Pre-installation Virtual Environments (Optional)
 If you wish to create an easy to use virtual environment to install cadCAD inside of, please use the built in `venv` package.
 
 ```bash
-$ python -m venv ~/cadcad
+$ python3 -m venv ~/cadcad
 $ source ~/cadcad/bin/activate
 (cadcad) $
 ```
@@ -39,14 +39,14 @@ Requires [>= Python 3.6](https://www.python.org/downloads/)
 
 **Option A: Install Using [pip](https://pypi.org/project/cadCAD/)** 
 ```bash
-pip3 install cadCAD
+$ pip3 install cadCAD
 ```
 
 **Option B:** Build From Source
 ```
-pip3 install -r requirements.txt
-python3 setup.py sdist bdist_wheel
-pip3 install dist/*.whl
+$ pip3 install -r requirements.txt
+$ python3 setup.py sdist bdist_wheel
+$ pip3 install dist/*.whl
 ```
 
 **Option C: Using [Nix](https://nixos.org/nix/)**
