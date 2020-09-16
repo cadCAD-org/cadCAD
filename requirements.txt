@@ -1,6 +1,7 @@
 -i https://pypi.org/simple
 
 wheel>=0.35
+fn==0.4.3
 funcy==1.14
 matplotlib==3.3.2
 networkx==2.5
