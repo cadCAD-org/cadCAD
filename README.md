@@ -25,6 +25,14 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 
 [Previous Stable Release (Deprecated / No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
 
+## 0. Pre-installation Virtual Environments
+If you wish to create an easy to use virtual environment to install cadCAD inside of, please use the built in `venv` package.
+
+```bash
+$ python -m venv ~/cadcad
+$ source ~/cadcad/bin/activate
+(cadcad) $
+```
 
 ## 1. Installation: 
 Requires [>= Python 3.6](https://www.python.org/downloads/) 
