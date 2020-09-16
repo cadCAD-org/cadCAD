@@ -35,5 +35,5 @@ setup(name='cadCAD',
             "fn",
             "funcy"
       ],
-      python_requires='>=3.6'
+      python_requires='>=3.6.8'
 )
