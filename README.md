@@ -28,18 +28,18 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 ## 0. Pre-installation Virtual Environments with `venv` (Optional):
 If you wish to create an easy to use virtual environment to install cadCAD inside of, please use the built in `venv` package.
 
-**Create a virtual environment:**
+*Create a virtual environment:*
 ```bash
 $ python3 -m venv ~/cadcad
 ```
 
-**Activate an existing virtual environment:**
+*Activate an existing virtual environment:*
 ```bash
 $ source ~/cadcad/bin/activate
 (cadcad) $
 ```
 
-**Deactivate virtual environment:**
+*Deactivate virtual environment:*
 ```bash
 (cadcad) $ deactivate
 $
