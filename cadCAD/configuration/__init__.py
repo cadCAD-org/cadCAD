@@ -50,7 +50,7 @@ class Experiment:
             user_id='cadCAD_user',
             sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
             partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
-            config_list=global_configs
+            config_list=deepcopy(global_configs)
     ) -> None:
         self.configs = config_list
 

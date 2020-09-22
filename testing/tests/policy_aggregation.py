@@ -4,11 +4,11 @@ import pandas as pd
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from testing.generic_test import make_generic_test
 from testing.models import policy_aggregation
-from cadCAD import configs
+from testing.experiments import exp_policy_agg
 
 exec_mode = ExecutionMode()
 exec_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=exec_ctx, configs=configs)
+run = Executor(exec_context=exec_ctx, configs=exp_policy_agg.configs)
 
 raw_result, tensor_field, _ = run.execute()
 result = pd.DataFrame(raw_result)

@@ -5,7 +5,7 @@ import pandas as pd
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from testing.models import param_sweep
-from cadCAD import configs
+from testing.experiments import exp_param_sweep
 
 from testing.generic_test import make_generic_test
 from testing.models.param_sweep import some_function, g as sweep_params
@@ -13,7 +13,7 @@ from testing.models.param_sweep import some_function, g as sweep_params
 
 exec_mode = ExecutionMode()
 exec_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=exec_ctx, configs=configs)
+run = Executor(exec_context=exec_ctx, configs=exp_param_sweep.configs)
 
 # sim, run, substep, timestep
 def get_expected_results(subset, run, beta, gamma):
