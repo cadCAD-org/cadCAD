@@ -1,16 +1,12 @@
-import functools
-import operator
-from pprint import pprint
 from time import time
 from typing import Callable, Dict, List, Any, Tuple
 
 from cadCAD.utils import flatten
 from cadCAD.utils.execution import print_exec_info
 from cadCAD.configuration import Configuration, Processor
-from cadCAD.configuration.utils import TensorFieldReport, configs_as_objs
+from cadCAD.configuration.utils import TensorFieldReport, configs_as_objs, configs_as_dicts
 from cadCAD.engine.simulation import Executor as SimExecutor
 from cadCAD.engine.execution import single_proc_exec, parallelize_simulations, local_simulations
-from cadCAD.configuration.utils import configs_as_dicts
 
 VarDictType = Dict[str, List[Any]]
 StatesListsType = List[Dict[str, Any]]
@@ -121,21 +117,10 @@ class Executor:
                 flat_timesteps.append(flatten(sim_result))
                 tensor_fields.append(create_tensor_field(psu, ep))
 
-            # print(len(simulations))
-            # print(config_amt)
-            # # exit()
-            #
             flat_simulations = flatten(flat_timesteps)
-            # # flat_simulations = functools.reduce(operator.iconcat, flat_timesteps, [])
-            # # flat_simulations = [item for sublist in flat_timesteps for item in sublist]
-            # # print(type(flat_timesteps))
-            # print(len(flat_timesteps))
-            # # pprint(len(flat_simulations))
-            # exit()
-
             if config_amt == 1:
                 return simulations, tensor_fields, sessions
-            elif (config_amt > 1): # and (config_amt < remote_threshold):
+            elif config_amt > 1: # and (config_amt < remote_threshold):
                 return flat_simulations, tensor_fields, sessions
 
         remote_threshold = 100
@@ -154,7 +139,6 @@ class Executor:
                 #     print('Remote Threshold is N=100. Use ExecutionMode.dist_proc if N >= 100')
 
         final_result = None
-        # original_context = self.exec_context
         original_N = len(configs_as_dicts(self.configs))
         if self.exec_context != ExecutionMode.distributed:
             # Consider Legacy Support
@@ -167,10 +151,6 @@ class Executor:
                 ExpIDs, SubsetIDs, SubsetWindows, original_N
             )
 
-            # print(config_amt)
-            # print(len(sim_executors))
-            # print(len(simulations_results))
-            # pprint(simulations_results)
             final_result = get_final_results(simulations_results, partial_state_updates, eps, sessions, remote_threshold)
         elif self.exec_context == ExecutionMode.distributed:
             print("Execution Method: " + self.exec_method.__name__)
