@@ -4,8 +4,8 @@
 ##### [Multi - System Model Execution](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/Simulation_Execution.md#multiple-simulation-execution)
 * **ver. ≥ `0.4.23`:**
     * **Hot-Fix:** [#203](https://github.com/cadCAD-org/cadCAD/pull/203) (**No Breaking Changes**)
-        * Multi - System Model simulation results will no longer return truncated results / exclude the results of the last 
-        `cadCAD.configuration.Configuration` appended to `cadCAD.configs`.
+        * Multi - System Model simulation results will no longer return truncated results (exclude the results of the last 
+        `cadCAD.configuration.Configuration` appended to `cadCAD.configs`).
         * Issue: [#195](https://github.com/cadCAD-org/cadCAD/issues/195)
 
 
