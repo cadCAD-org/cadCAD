@@ -4,7 +4,7 @@ import pprint
 
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, time_step, psub_list
 
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from simulations.regression_tests.experiments import sweep_exp
 
@@ -18,7 +18,7 @@ seeds = {
 }
 
 # Optional
-g: Dict[str, List[int]] = {
+g: Dict[str, List[Any]] = {
     'alpha': [1],
     # 'beta': [2],
     # 'gamma': [3],

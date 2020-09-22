@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ThreadPool as TPool
 # from pathos.multiprocessing import ProcessPool as PPool
@@ -68,8 +69,18 @@ def parallelize_simulations(
     sim_count = max(unique_runs.values())
     highest_divisor = int(len_configs_structs / sim_count)
 
+    print()
+    print(f"SimIDs {SimIDs}")
+    print(f"unique_runs {Counter(SimIDs)}")
+    print(f"unique_runs.values() {Counter(SimIDs).values()}")
+    print(f"sim_count {sim_count}")
+    print(f"params {len(params)}")
+
     new_configs_structs, new_params = [], []
-    for count in range(sim_count):
+    # new_configs_structs, new_params = configs_structs, params
+    print(list(range(sim_count)))
+    # for count in range(4):
+    for count in range(len(params)):
         if count == 0:
             new_params.append(
                 params[count: highest_divisor]
@@ -78,6 +89,9 @@ def parallelize_simulations(
                 configs_structs[count: highest_divisor]
             )
         elif count > 0:
+            print(f"a: {count * highest_divisor}")
+            print(f"b: {(count + 1) * highest_divisor}")
+
             new_params.append(
                 params[count * highest_divisor: (count + 1) * highest_divisor]
             )
@@ -85,18 +99,18 @@ def parallelize_simulations(
                 configs_structs[count * highest_divisor: (count + 1) * highest_divisor]
             )
 
+    print(f"new_params {len(new_params)}")
 
     def threaded_executor(params):
-        tp = TPool()
         if len_configs_structs > 1:
+            tp = TPool()
             results = tp.map(
                 lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n), params
             )
+            tp.close()
         else:
             t = params[0]
             results = t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n)
-
-        tp.close()
         return results
 
     # pp = PPool()
@@ -133,12 +147,16 @@ def local_simulations(
         _params = None
         if config_amt == 1: # and configured_n != 1
             _params = var_dict_list[0]
+            pprint(var_dict_list)
+            # exit()
             return single_proc_exec(
                 simulation_execs, _params, states_lists, configs_structs, env_processes_list,
                 Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
             )
         elif config_amt > 1: # and configured_n != 1 # and config_amt < remote_threshold
             _params = var_dict_list
+            pprint(var_dict_list)
+            # exit()
             return parallelize_simulations(
                 simulation_execs, _params, states_lists, configs_structs, env_processes_list,
                 Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n

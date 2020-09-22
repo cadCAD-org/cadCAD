@@ -1,10 +1,10 @@
-from typing import Dict, Callable, List, Tuple
+from typing import Dict, Callable, List, Tuple, Any
 from pandas.core.frame import DataFrame
 from collections import deque
 from copy import deepcopy
 import pandas as pd
 
-from cadCAD import configs
+from cadCAD import configs as global_configs
 from cadCAD.utils import key_filter
 from cadCAD.configuration.utils import exo_update_per_ts
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates, sanitize_config
@@ -37,7 +37,9 @@ class Configuration(object):
 
 
 class Experiment:
-    def __init__(self):
+    def __init__(self, configs=[]):
+        self.configs = configs
+
         self.exp_id = 0
         self.subset_id = 0
         self.exp_window = deque([self.exp_id, None], 2)
@@ -48,8 +50,9 @@ class Experiment:
             user_id='cadCAD_user',
             sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
             partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
-            config_list=configs
+            config_list=global_configs
     ) -> None:
+        self.configs = config_list
 
         try:
             max_runs = sim_configs[0]['N']
@@ -123,7 +126,7 @@ class Experiment:
                 subset_id=subset_id,
                 subset_window=self.subset_window
             )
-            configs.append(config)
+            self.configs.append(config)
             run_id += 1
         self.exp_id += 1
         self.exp_window.appendleft(self.exp_id)

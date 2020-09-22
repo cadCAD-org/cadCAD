@@ -1,3 +1,6 @@
+import functools
+import operator
+from pprint import pprint
 from time import time
 from typing import Callable, Dict, List, Any, Tuple
 
@@ -118,7 +121,18 @@ class Executor:
                 flat_timesteps.append(flatten(sim_result))
                 tensor_fields.append(create_tensor_field(psu, ep))
 
+            # print(len(simulations))
+            # print(config_amt)
+            # # exit()
+            #
             flat_simulations = flatten(flat_timesteps)
+            # # flat_simulations = functools.reduce(operator.iconcat, flat_timesteps, [])
+            # # flat_simulations = [item for sublist in flat_timesteps for item in sublist]
+            # # print(type(flat_timesteps))
+            # print(len(flat_timesteps))
+            # # pprint(len(flat_simulations))
+            # exit()
+
             if config_amt == 1:
                 return simulations, tensor_fields, sessions
             elif (config_amt > 1): # and (config_amt < remote_threshold):
@@ -152,6 +166,11 @@ class Executor:
                 sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs,
                 ExpIDs, SubsetIDs, SubsetWindows, original_N
             )
+
+            # print(config_amt)
+            # print(len(sim_executors))
+            # print(len(simulations_results))
+            # pprint(simulations_results)
             final_result = get_final_results(simulations_results, partial_state_updates, eps, sessions, remote_threshold)
         elif self.exec_context == ExecutionMode.distributed:
             print("Execution Method: " + self.exec_method.__name__)
