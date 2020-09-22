@@ -4,7 +4,7 @@
             Feature
         </th>
         <th>
-            ver. => 0.4.22
+            ver. 0.4.23
         </th>
       <th>
             ver. 0.3.1 (Deprecated)
