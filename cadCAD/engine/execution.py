@@ -69,7 +69,7 @@ def parallelize_simulations(
     highest_divisor = int(len_configs_structs / sim_count)
 
     new_configs_structs, new_params = [], []
-    for count in range(sim_count):
+    for count in range(len(params)):
         if count == 0:
             new_params.append(
                 params[count: highest_divisor]
@@ -87,16 +87,15 @@ def parallelize_simulations(
 
 
     def threaded_executor(params):
-        tp = TPool()
         if len_configs_structs > 1:
+            tp = TPool()
             results = tp.map(
                 lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n), params
             )
+            tp.close()
         else:
             t = params[0]
             results = t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n)
-
-        tp.close()
         return results
 
     # pp = PPool()
