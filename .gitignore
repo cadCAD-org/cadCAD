@@ -9,6 +9,7 @@
 *.egg-info
 *.ipynb_checkpoints
 *.sqlite3
+*.pyc
 
 __pycache__
 Pipfile
@@ -24,8 +25,9 @@ monkeytype
 simulations/tickets
 simulations/validation
 simulations/regression_tests/poc
+simulations/regression_tests/poc_configs
 
 */poc
 
-notes.py
+notes.*
 announcement.md

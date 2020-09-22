@@ -1,5 +1,14 @@
 # Changelog:
 
+### September 22, 2020
+##### [Multi - System Model Execution](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/Simulation_Execution.md#multiple-simulation-execution)
+* **ver. ≥ `0.4.23`:**
+    * Hot-Fix: [#203](https://github.com/cadCAD-org/cadCAD/pull/203) (**No Breaking Changes**)
+        * Simulation results will no longer return truncated results / exclude the results of the last 
+        `cadCAD.configuration.Configuration` appended to `cadCAD.configs`.
+    * Issue: [#195](https://github.com/cadCAD-org/cadCAD/issues/195)
+
+
 ### August 5, 2020
 ##### [Experiments](documentation#experiments)
 * `cadCAD.configuration.Experiment` (Alpha) is in development and needed to be released to support the implementation of 
@@ -9,7 +18,7 @@ one or more configured System Models. For this reason, `append_configs` is a met
 are still appended globally despite `append_config` being a method of Experiment.
 
 ###### Examples:
-* **ver. `0.4.22`:**
+* **ver. ≥ `0.4.22`:**
     ```python
     from cadCAD.configuration import Experiment
     exp = Experiment()
@@ -21,8 +30,10 @@ are still appended globally despite `append_config` being a method of Experiment
     append_configs(...)
     ```
 
+
 ### June 22, 2020
 * Bug Fix: Multiprocessing error for Windows
+
 
 ### June 19, 2020
     
@@ -33,7 +44,7 @@ selects Multi-Threaded Mode if simulations are configured for more than a single
     * **Backwards Compatibility:** `cadCAD.engine.ExecutionMode` accepts legacy execution modes from ver. `0.3.1`
     
 ###### Examples:
-* **ver. `0.4.22`:**
+* **ver. ≥ `0.4.22`:**
     ```python
     from cadCAD.engine import ExecutionMode, ExecutionContext
     exec_mode = ExecutionMode()
@@ -65,12 +76,12 @@ as a 2 dimensional `list`
         * New System Metrics as dataset attributes: 
             * **Simulation** (Alpha) is a unique identifier being developed to represent Experiments as stated above and 
             will be renamed accordingly
-                * **Subset** is a unique identifier of Monte Carlo simulations produced by parameter sweeps
+                * **Subset** is a unique identifier of Monte-Carlo simulations produced by parameter sweeps
     * Note: Returning a single dataset was originally specified during the project’s inception instead of multiple per 
     simulation
 
 ###### Examples:
-* **ver. `0.4.22`:**
+* **ver. ≥ `0.4.22`:**
     ```python
     import pandas as pd
     from tabulate import tabulate
@@ -140,9 +151,10 @@ as a 2 dimensional `list`
     +----+------------+-----------+----+---------------------+-----+---------+----------+
     ```
     
-* 	**Flattened Configuration List:** The `configs` (System Model Configurations) `list` has been **temporarily** flattened to contain single run 
-`Configuration` objects to support elastic workloads. This functionality will be restored in a subsequent release by a 
-class that returns `configs`'s original representation in ver. `0.3.1`.
+* **Flattened Configuration List:** The `cadCAD.configs` (System Model Configuration) `list` has been **temporarily** 
+flattened to contain single run `cadCAD.configuration.Configuration` objects to both fault-tolerant simulation and 
+elastic workloads. This functionality will be restored in a subsequent release by a class that returns 
+`cadCAD.configs`'s original representation in ver. `0.3.1`.
     * The conversion utilities have been provided to restore its original representation of configurations with 
     runs >= 1
         * [System Configuration Conversions](documentation/System_Configuration.md)
@@ -155,7 +167,7 @@ class that returns `configs`'s original representation in ver. `0.3.1`.
     * `configs` is temporarily returned in a flattened format and reformatted into its intended format 
     * `Configuration` objects at `0x10790e470` and `0x1143dd630` are reconstituted into objects at `0x10790e7b8` 
     and `0x116268908` respectively.
-* **ver. `0.4.22`:** 
+* **ver. ≥ `0.4.22`:** 
     ```python
     from pprint import pprint
     from documentation.examples import sys_model_A, sys_model_B
@@ -196,7 +208,7 @@ examples in documentation include an additional `**kwargs` parameter.
     * [Policy Updates](documentation/README.md#state-update-functions)
     
 ###### Examples:
-* **ver. `0.4.22`:**
+* **ver. ≥ `0.4.22`:**
     ```python
     def state_update(_params, substep, sH, s, _input, **kwargs):
         ...
@@ -217,19 +229,6 @@ examples in documentation include an additional `**kwargs` parameter.
         ...
         return {'signal_1': value_1, ..., 'signal_N': value_N}
     ```
-
-### Modifications:
-* **Flattened Configuration List:** 
-    * The `configs` `list` has been temporarily flattened to contain single run System Model `Configuration` objects to 
-    support both fault tolerant simulation and elastic workloads for scalable micro-service architecture and 
-    distributed computing. This functionality will be restored in a subsequent release by a class that returns 
-    `configs`'s original representation in ver. `0.3.1`.
-        * The conversion utilities have been provided to restore its original representation of configurations with 
-        runs >= 1
-            * [System Configuration Conversions](documentation/System_Configuration.md)
-                * Configuration as List of Configuration Objects (as in ver. `0.3.1`) 
-                * New: System Configuration as a Pandas DataFrame
-                * New: System Configuration as List of Dictionaries
 
 
 ### May 29, 2020
