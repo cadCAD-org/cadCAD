@@ -2,7 +2,10 @@ import os, dill
 
 name = "cadCAD"
 configs = []
-global experiment_count
+
+sys_job_metrics = None
+# sys_job_metrics = {'sim_id': 10, 'subset_id': 0, 'run': 10}
+remote_dict = {'metrics': sys_job_metrics}
 
 if os.name == 'nt':
     dill.settings['recurse'] = True
