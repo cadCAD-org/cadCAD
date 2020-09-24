@@ -220,25 +220,25 @@ class Executor:
         # remote_ind
         additional_objs=None
     ):
-        # subset_window.appendleft(subset_id)
-        # latest_subset_id, previous_subset_id = tuple(subset_window)
-        #
-        # if remote_dict['metrics'] == None:
-        #     run += 1
-        #     if configured_N == 1 and latest_subset_id > previous_subset_id:
-        #         run -= 1
-        # else:
-        #     simulation_id = remote_dict['metrics']['sim_id']
-        #     subset_id = remote_dict['metrics']['subset_id']
-        #     run = remote_dict['metrics']['run']
-
-        run += 1
-
         subset_window.appendleft(subset_id)
         latest_subset_id, previous_subset_id = tuple(subset_window)
 
-        if configured_N == 1 and latest_subset_id > previous_subset_id:
-            run -= 1
+        if remote_dict['metrics'] == None:
+            run += 1
+            if configured_N == 1 and latest_subset_id > previous_subset_id:
+                run -= 1
+        else:
+            simulation_id = remote_dict['metrics']['sim_id']
+            subset_id = remote_dict['metrics']['subset_id']
+            run = remote_dict['metrics']['run']
+
+        # run += 1
+        #
+        # subset_window.appendleft(subset_id)
+        # latest_subset_id, previous_subset_id = tuple(subset_window)
+        #
+        # if configured_N == 1 and latest_subset_id > previous_subset_id:
+        #     run -= 1
 
         def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, _run) -> List[Dict[str, Any]]:
             def generate_init_sys_metrics(genesis_states_list, sim_id, _subset_id, _run, _subset_window):

@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ThreadPool as TPool
 # from pathos.multiprocessing import ProcessPool as PPool
@@ -104,6 +105,13 @@ def parallelize_simulations(
     # pp.join()
     # pp.clear()
     # pp.restart()
+
+    # pprint(results)
+    # print()
+    # for r in results:
+    #     pprint(len(r))
+    #     print()
+    # exit()
 
     return results
 

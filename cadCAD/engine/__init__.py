@@ -1,3 +1,4 @@
+from pprint import pprint
 from time import time
 from typing import Callable, Dict, List, Any, Tuple
 
@@ -29,25 +30,26 @@ class ExecutionContext:
         self.name = context
         if context == 'local_proc':
             self.method = local_simulations
+
         elif context == 'single_proc':
             self.method = single_proc_exec
         elif context == 'multi_proc':
             self.method = parallelize_simulations
         elif context == 'dist_proc':
             def distroduce_proc(
-                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, RunIDs,
+                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs,
                     ExpIDs,
                     SubsetIDs,
                     SubsetWindows,
-                    exec_method,
+                    configured_n, # exec_method,
                     sc, additional_objs=additional_objs
             ):
                 return method(
-                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, RunIDs,
+                    simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs,
                     ExpIDs,
                     SubsetIDs,
                     SubsetWindows,
-                    exec_method,
+                    configured_n, # exec_method,
                     sc, additional_objs
                 )
 
@@ -56,15 +58,19 @@ class ExecutionContext:
 
 class Executor:
     def __init__(self,
-             exec_context: ExecutionContext, configs: List[Configuration], spark_context=None
+             exec_context: ExecutionContext, configs: List[Configuration], spark_context=None, empty_return=False
     ) -> None:
         self.sc = spark_context
         self.SimExecutor = SimExecutor
         self.exec_method = exec_context.method
         self.exec_context = exec_context.name
         self.configs = configs
+        self.empty_return = empty_return
 
     def execute(self) -> Tuple[Any, Any, Dict[str, Any]]:
+        if self.empty_return is True:
+            return [], [], []
+
         config_proc = Processor()
         create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
 
@@ -76,7 +82,9 @@ class Executor:
         partial_state_updates, sim_executors = [], []
         config_idx = 0
 
-        print_exec_info(self.exec_context, configs_as_objs(self.configs))
+        # print_exec_info(self.exec_context, configs_as_objs(self.configs))
+        print('exec info here')
+        print()
 
         t1 = time()
         for x in self.configs:

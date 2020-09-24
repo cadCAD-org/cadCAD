@@ -2,14 +2,14 @@ from pprint import pprint
 import pandas as pd
 from tabulate import tabulate
 
-from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from simulations.regression_tests.models import config2
-from cadCAD import configs
+from simulations.regression_tests.experiments import config2_exp
+from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 
 exec_mode = ExecutionMode()
 
 local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=local_proc_ctx, configs=configs)
+run = Executor(exec_context=local_proc_ctx, configs=config2_exp.configs)
 
 raw_result, tensor_fields, sessions = run.execute()
 result = pd.DataFrame(raw_result)

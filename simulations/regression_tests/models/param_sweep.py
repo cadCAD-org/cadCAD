@@ -3,7 +3,7 @@ from typing import Dict, List, Any
 
 # from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
-from testing.experiments import exp_param_sweep
+from simulations.regression_tests.experiments import param_sweep_exp
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -84,7 +84,7 @@ sim_config = config_sim(
 
 # New Convention
 partial_state_update_blocks = psub_list(psu_block, psu_steps)
-exp_param_sweep.append_configs(
+param_sweep_exp.append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_process,

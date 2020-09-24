@@ -3,13 +3,13 @@ from pprint import pprint
 import pandas as pd
 from tabulate import tabulate
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.regression_tests.models import sweep_config
-from cadCAD import configs
+from simulations.regression_tests.experiments import param_sweep_exp
+from simulations.regression_tests.models import param_sweep
 
 exec_mode = ExecutionMode()
 
 local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=local_proc_ctx, configs=configs)
+run = Executor(exec_context=local_proc_ctx, configs=param_sweep_exp.configs)
 
 raw_result, tensor_fields, sessions = run.execute()
 result = pd.DataFrame(raw_result)

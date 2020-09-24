@@ -4,7 +4,6 @@ name = "cadCAD"
 configs = []
 
 sys_job_metrics = None
-# sys_job_metrics = {'sim_id': 10, 'subset_id': 0, 'run': 10}
 remote_dict = {'metrics': sys_job_metrics}
 
 if os.name == 'nt':

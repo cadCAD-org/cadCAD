@@ -1,19 +1,23 @@
+from pprint import pprint
 from typing import Dict, Callable, List, Tuple, Any
 from pandas.core.frame import DataFrame
+from datetime import datetime
 from collections import deque
 from copy import deepcopy
 import pandas as pd
+import dill
 
+from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates, sanitize_config
+from cadCAD.configuration.utils import exo_update_per_ts, configs_as_objs
 from cadCAD import configs as global_configs
 from cadCAD.utils import key_filter
-from cadCAD.configuration.utils import exo_update_per_ts
-from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates, sanitize_config
 
 
 class Configuration(object):
     def __init__(self, user_id, subset_id, subset_window, sim_config={}, initial_state={}, seeds={}, env_processes={},
                  exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
-                 session_id=0, simulation_id=0, run_id=1, experiment_id=0, exp_window=deque([0, None], 2), **kwargs
+                 session_id=0, simulation_id=0, run_id=1, experiment_id=0, exp_window=deque([0, None], 2),
+                 exp_creation_ts=None, **kwargs
     ) -> None:
         self.sim_config = sim_config
         self.initial_state = initial_state
@@ -24,13 +28,17 @@ class Configuration(object):
         self.policy_ops = policy_ops
         self.kwargs = kwargs
 
-        self.user_id = user_id
-        self.session_id = session_id # essentially config id
-        self.simulation_id = simulation_id
-        self.run_id = run_id
+        self.session_id = session_id  # essentially config id
+
         self.experiment_id = experiment_id
-        self.exp_window = exp_window
+        self.user_id = user_id
+        self.exp_creation_ts = exp_creation_ts
+
+        self.simulation_id = simulation_id
         self.subset_id = subset_id
+        self.run_id = run_id
+
+        self.exp_window = exp_window
         self.subset_window = subset_window
 
         sanitize_config(self)
@@ -38,12 +46,19 @@ class Configuration(object):
 
 class Experiment:
     def __init__(self, configs=[]):
+        self.exp_creation_ts = str(datetime.utcnow())
         self.configs = configs
+        self.original_configs = []
+        self.flattened_configs = self.configs
+        self.ser_flattened_configs = []
 
         self.exp_id = 0
         self.subset_id = 0
         self.exp_window = deque([self.exp_id, None], 2)
         self.subset_window = deque([self.subset_id, None], 2)
+
+        # self.sys_job_metrics = None
+        # self.remote_dict = {'metrics': self.sys_job_metrics}
 
     def append_configs(
             self,
@@ -107,6 +122,8 @@ class Experiment:
 
             self.exp_window = deepcopy(self.exp_window)
             config = Configuration(
+                exp_creation_ts=self.exp_creation_ts,
+
                 sim_config=sim_config,
                 initial_state=initial_state,
                 seeds=seeds,
@@ -130,6 +147,9 @@ class Experiment:
             run_id += 1
         self.exp_id += 1
         self.exp_window.appendleft(self.exp_id)
+
+        self.original_configs = configs_as_objs(self.configs)
+        self.ser_flattened_configs = list(map(lambda x: dill.dumps(x), self.configs))
 
 
 class Identity:
