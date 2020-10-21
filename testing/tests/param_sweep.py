@@ -79,6 +79,9 @@ def create_test_params(feature, fields):
 
 params = list(create_test_params("param_sweep", ['alpha', 'beta', 'policies', 'sweeped']))
 
+# pprint(params[0][2])
+# exit()
+
 
 class GenericTest(make_generic_test(params)):
     pass

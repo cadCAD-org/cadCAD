@@ -1,4 +1,5 @@
 import unittest
+from pprint import pprint
 import pandas as pd
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor

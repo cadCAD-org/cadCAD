@@ -1,7 +1,8 @@
 .idea
+.vscode
 .ipynb_checkpoints
 .DS_Store
-.idea
+*._.DS_Store
 .eggs
 .pytest_cache
 .mypy_cache
