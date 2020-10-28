@@ -99,12 +99,12 @@ def tabulate_dict(d: Dict[str, List[int]]) -> Dict[str, List[int]]:
 
 def flatten_tabulated_dict(d: Dict[str, List[int]]) -> List[Dict[str, int]]:
     max_len = get_max_dict_val_len(d)
+    # print(max_len)
     dl = [{} for i in range(max_len)]
 
     for k, vl in d.items():
         for v, i in zip(vl, list(range(len(vl)))):
             dl[i][k] = v
-
     return dl
 
 
