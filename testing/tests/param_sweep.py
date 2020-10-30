@@ -1,14 +1,13 @@
 import unittest
-from pprint import pprint
-
 import pandas as pd
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from testing.models import param_sweep
-from cadCAD import configs
 
-from testing.generic_test import make_generic_test
 from testing.models.param_sweep import some_function, g as sweep_params
+from testing.generic_test import make_generic_test
+from testing.models import param_sweep
+
+from cadCAD import configs
 
 
 exec_mode = ExecutionMode()
@@ -79,11 +78,8 @@ def create_test_params(feature, fields):
 
 params = list(create_test_params("param_sweep", ['alpha', 'beta', 'policies', 'sweeped']))
 
-# pprint(params[0][2])
-# exit()
 
-
-class GenericTest(make_generic_test(params)):
+class GenericTest(make_generic_test(params, latest=False)):
     pass
 
 

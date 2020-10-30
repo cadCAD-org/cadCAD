@@ -1,10 +1,11 @@
 import unittest
-from pprint import pprint
 import pandas as pd
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
+
 from testing.generic_test import make_generic_test
 from testing.models import policy_aggregation
+
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
@@ -35,7 +36,7 @@ def row(a, b):
 params = [["policy_aggregation", result, expected_results, ['policies', 's1'], [row]]]
 
 
-class GenericTest(make_generic_test(params)):
+class GenericTest(make_generic_test(params, latest=False)):
     pass
 
 

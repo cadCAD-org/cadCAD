@@ -1,47 +1,30 @@
 import unittest
-from pprint import pprint
-
 from parameterized import parameterized
 from functools import reduce
-
 from tabulate import tabulate
 
 
-# def generate_assertions_df(df, expected_results, target_cols, evaluations):
-#     test_names = []
-#     for eval_f in evaluations:
-#         def wrapped_eval(a, b):
-#             try:
-#                 return eval_f(a, b)
-#             except KeyError:
-#                 return True
-#
-#         test_name = f"{eval_f.__name__}_test"
-#         test_names.append(test_name)
-#         df[test_name] = df.apply(
-#             lambda x: wrapped_eval(
-#                 x.filter(items=target_cols).to_dict(),
-#                 expected_results[(x['subset'], x['run'], x['timestep'], x['substep'])]
-#             ),
-#             axis=1
-#         )
-#
-#     return df, test_names
-
-
-def generate_assertions_df(df, expected_results, target_cols, evaluations):
+def generate_assertions_df(df, expected_results, target_cols, evaluations, latest):
     test_names = []
     for eval_f in evaluations:
         def wrapped_eval(a, b):
             return eval_f(a, b)
+            # try:
+            #     return eval_f(a, b)
+            # except KeyError:
+            #     return True
 
         test_name = f"{eval_f.__name__}_test"
         test_names.append(test_name)
-
+        def expected_key_tuner(d: dict, row, latest):
+            if latest is True:
+                return d[(row['simulation'], row['subset'], row['run'], row['timestep'], row['substep'])]
+            elif latest is False:
+                return d[(row['subset'], row['run'], row['timestep'], row['substep'])]
         df[test_name] = df.apply(
             lambda x: wrapped_eval(
                 x.filter(items=target_cols).to_dict(),
-                expected_results[(x['simulation'], x['subset'], x['run'], x['timestep'], x['substep'])]
+                expected_key_tuner(expected_results, x, latest)
             ),
             axis=1
         )
@@ -49,9 +32,8 @@ def generate_assertions_df(df, expected_results, target_cols, evaluations):
     return df, test_names
 
 
-def make_generic_test(params):
+def make_generic_test(params, latest=True):
     class TestSequence(unittest.TestCase):
-        # pprint(params)
 
         def generic_test(self, tested_df, expected_reults, test_name):
             erroneous = tested_df[(tested_df[test_name] == False)]
@@ -59,29 +41,31 @@ def make_generic_test(params):
 
             if erroneous.empty is False:  # Or Entire df IS NOT erroneous
                 for index, row in erroneous.iterrows():
-                    # expected = expected_reults[(row['simulation'], row['run'], row['timestep'], row['substep'])]
-                    # expected = expected_reults[(row['subset'], row['run'], row['timestep'], row['substep'])]
-                    expected = expected_reults[
-                        (row['simulation'], row['subset'], row['run'], row['timestep'], row['substep'])
-                    ]
+                    if latest is True:
+                        expected = expected_reults[
+                            (row['simulation'], row['subset'], row['run'], row['timestep'], row['substep'])
+                        ]
+                    elif latest is False:
+                        expected = expected_reults[
+                            (row['subset'], row['run'], row['timestep'], row['substep'])
+                        ]
                     unexpected = {f"invalid_{k}": expected[k] for k in expected if k in row and expected[k] != row[k]}
 
                     for key in unexpected.keys():
                         erroneous[key] = None
                         erroneous.at[index, key] = unexpected[key]
                 # etc.
+                print()
+                print("Erroneous:")
+                print(tabulate(erroneous, headers='keys', tablefmt='psql'))
 
             self.assertTrue(reduce(lambda a, b: a and b, tested_df[test_name]))
 
         @parameterized.expand(params)
         def test_validation(self, name, result_df, expected_results, target_cols, evaluations):
-            # print(name)
-            # print(result_df)
-            # print(expected_results)
-            # print(target_cols)
-            # print(evaluations)
-            tested_df, test_names = generate_assertions_df(result_df, expected_results, target_cols, evaluations)
-
+            tested_df, test_names = generate_assertions_df(
+                result_df, expected_results, target_cols, evaluations, latest
+            )
             for test_name in test_names:
                 self.generic_test(tested_df, expected_results, test_name)
 
