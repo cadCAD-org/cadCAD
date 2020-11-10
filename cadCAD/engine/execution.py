@@ -1,6 +1,6 @@
 from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ThreadPool as TPool
-from pathos.multiprocessing import ProcessPool as PPool
+# from pathos.multiprocessing import ProcessPool as PPool
 from collections import Counter
 from tqdm.auto import tqdm
 
@@ -70,7 +70,7 @@ def parallelize_simulations(
     highest_divisor = int(len_configs_structs / sim_count)
 
     new_configs_structs, new_params = [], []
-    for count in range(sim_count):
+    for count in range(len(params)):
         if count == 0:
             new_params.append(
                 params[count: highest_divisor]
@@ -88,27 +88,23 @@ def parallelize_simulations(
 
 
     def threaded_executor(params):
-        tp = TPool()
         if len_configs_structs > 1:
+            tp = TPool()
             results = tp.map(
                 lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n), params
             )
+            tp.close()
         else:
             t = params[0]
             results = t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n)
-
-        tp.close()
         return results
 
-    pp = PPool()
-    sim_map = pp.imap(lambda params: threaded_executor(params), new_params)
-    progress_bar = tqdm(sim_map, 
-                        total=len(new_params),
-                        desc='Executing PSUBs')
-    results = flatten(list(progress_bar))
-    pp.close()
-    pp.join()
-    pp.clear()
+    # pp = PPool()
+    # results = flatten(list(pp.map(lambda params: threaded_executor(params), new_params)))
+    results = flatten(list(map(lambda params: threaded_executor(params), new_params)))
+    # pp.close()
+    # pp.join()
+    # pp.clear()
     # pp.restart()
 
     return results
@@ -135,17 +131,18 @@ def local_simulations(
     config_amt = len(configs_structs)
     try:
         _params = None
-        if config_amt == 1:
+        if config_amt == 1: # and configured_n != 1
             _params = var_dict_list[0]
             return single_proc_exec(
                 simulation_execs, _params, states_lists, configs_structs, env_processes_list,
                 Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
             )
-        elif config_amt > 1: # and config_amt < remote_threshold:
+        elif config_amt > 1: # and configured_n != 1 # and config_amt < remote_threshold
             _params = var_dict_list
             return parallelize_simulations(
                 simulation_execs, _params, states_lists, configs_structs, env_processes_list,
                 Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
             )
+        # elif config_amt > 1 and configured_n == 1:
     except ValueError:
         raise ValueError("\'sim_configs\' N must > 0")
