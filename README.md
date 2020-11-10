@@ -4,7 +4,7 @@
  / ___/ __` / __  / /   / /| | / / / /
 / /__/ /_/ / /_/ / /___/ ___ |/ /_/ /
 \___/\__,_/\__,_/\____/_/  |_/_____/
-by cadCAD                  ver. 0.4.18
+by cadCAD                  ver. 0.4.23
 ======================================
        Complex Adaptive Dynamics       
        o       i        e
@@ -20,23 +20,44 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 
 # Getting Started
 
-#### Change Log: [ver. 0.4.18](CHANGELOG.md)
+
+#### Change Log: [ver. 0.4.23](CHANGELOG.md)
+
 [Previous Stable Release (No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
 
+## 0. Pre-installation Virtual Environments with [`venv`](https://docs.python.org/3/library/venv.html) (Optional):
+If you wish to create an easy to use virtual environment to install cadCAD inside of, please use the built in `venv` package.
+
+***Create** a virtual environment:*
+```bash
+$ python3 -m venv ~/cadcad
+```
+
+***Activate** an existing virtual environment:*
+```bash
+$ source ~/cadcad/bin/activate
+(cadcad) $
+```
+
+***Deactivate** virtual environment:*
+```bash
+(cadcad) $ deactivate
+$
+```
 
 ## 1. Installation: 
 Requires [>= Python 3.6](https://www.python.org/downloads/) 
 
 **Option A: Install Using [pip](https://pypi.org/project/cadCAD/)** 
 ```bash
-pip3 install cadCAD
+$ pip3 install cadCAD
 ```
 
 **Option B:** Build From Source
 ```
-pip3 install -r requirements.txt
-python3 setup.py sdist bdist_wheel
-pip3 install dist/*.whl
+$ pip3 install -r requirements.txt
+$ python3 setup.py sdist bdist_wheel
+$ pip3 install dist/*.whl
 ```
 
 **Option C: Using [Nix](https://nixos.org/nix/)**

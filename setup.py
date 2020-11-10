@@ -21,7 +21,7 @@ provided.
 """
 
 setup(name='cadCAD',
-      version='0.4.18',
+      version='0.4.23',
       description=short_description,
       long_description=long_description,
       url='https://github.com/cadCAD-org/cadCAD',
@@ -35,5 +35,5 @@ setup(name='cadCAD',
             "fn",
             "funcy"
       ],
-      python_requires='>=3.6'
+      python_requires='>=3.6.8'
 )

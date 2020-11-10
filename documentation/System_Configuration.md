@@ -1,5 +1,18 @@
-# [Display System Model Configurations:](https://github.com/BlockScience/distroduce/blob/master/documentation/dist_exec_doc.ipynb) 
+# Display System Model Configurations:
 
+## Announcement:
+
+See [CHANGELOG](CHANGELOG.md)
+
+The `configs` (System Model Configurations) `list` has been **temporarily** flattened to contain single run 
+`Configuration` objects to support elastic workloads. This functionality will be restored in a subsequent release by a 
+class that returns `configs`'s original representation in ver. `0.3.1`.
+* The conversion utilities have been provided to restore its original representation of configurations with 
+runs >= 1
+    * System Configuration Conversions:
+        * Configuration as List of Configuration Objects (as in ver. `0.3.1`) 
+        * New: System Configuration as a Pandas DataFrame
+        * New: System Configuration as List of Dictionaries
 
 ## Conversions
 ##### Note: The following applies as a result of simulation execution
@@ -10,26 +23,52 @@ from cadCAD.configuration.utils import configs_as_objs, configs_as_dataframe, co
 ```
 
 #### System Configurations as List of Configuration Objects
+Example:
+* `configs` is temporarily returned in a flattened format and reformatted into its intended format. 
+* `Configuration` objects at `0x10790e470` and `0x1143dd630` are reconstituted into objects at `0x10790e7b8` 
+and `0x116268908` respectively.
 ```python
-fmt_configs = configs_as_objs(configs)
-pprint(fmt_configs)
+from cadCAD import configs
+flattened_configs = configs
+         
+print('Flattened Format: Temporary')  
+pprint(flattened_configs)
 print()
-pprint(fmt_configs[0].sim_config)
+
+print('Intended Format:')
+intended_configs = configs_as_objs(flattened_configs)
+pprint(intended_configs)
+print()
+
+print("Object: cadCAD.configuration.Configuration(...).sim_config")
+pprint(intended_configs[0].sim_config)
+print()
 ```
 Return:
 ```
-[<cadCAD.configuration.Configuration object at 0x116a21b90>,
- <cadCAD.configuration.Configuration object at 0x116a21c90>]
+Flattened Format: Temporary
+[<cadCAD.configuration.Configuration object at 0x10790e470>,
+ <cadCAD.configuration.Configuration object at 0x10790e7b8>,
+ <cadCAD.configuration.Configuration object at 0x1143dd630>,
+ <cadCAD.configuration.Configuration object at 0x116268908>]
 
-{'M': {'alpha': 1, 'beta': 2, 'gamma': 3, 'omega': 7},
+Intended Format:
+[<cadCAD.configuration.Configuration object at 0x10790e7b8>,
+ <cadCAD.configuration.Configuration object at 0x116268908>]
+
+Object: cadCAD.configuration.Configuration(...).sim_config
+{'M': [{}],
  'N': 2,
- 'T': range(0, 10),
+ 'T': range(0, 1),
  'run_id': 1,
- 'simulation_id': 0}
+ 'simulation_id': 0,
+ 'subset_id': 0,
+ 'subset_window': deque([0, None], maxlen=2)}
 ```
 
 #### System Configurations as a Pandas DataFrame
 ```python
+flattened_configs = configs
 configs_df = configs_as_dataframe(configs)
 configs_df
 ```
