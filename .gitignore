@@ -1,10 +1,10 @@
-.idea
-.ipynb_checkpoints
-.DS_Store
-.idea
-.eggs
-.pytest_cache
-.mypy_cache
+*.idea
+*.ipynb_checkpoints
+*.DS_Store
+*.idea
+*.eggs
+*.pytest_cache
+*.mypy_cache
 *.csv
 *.egg-info
 *.ipynb_checkpoints
@@ -24,10 +24,13 @@ monkeytype
 
 simulations/tickets
 simulations/validation
-simulations/regression_tests/poc
-simulations/regression_tests/poc_configs
+*external_data
 
-*/poc
+*poc/
+*poc_configs/
 
 notes.*
 announcement.md
+
+*.vscode
+*venv

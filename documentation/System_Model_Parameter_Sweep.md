@@ -3,8 +3,9 @@ System Model Parameter Sweep
 Parametrization of a System Model configuration that produces multiple configurations.
 
 ##### Set Parameters
+*Note:* `M` values require up to a maximum of 2 distinct lengths
 ```python
-params = {
+M = {
     'alpha': [1],
     'beta': [2, 5],
     'gamma': [3, 4],
