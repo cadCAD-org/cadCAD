@@ -1,10 +1,9 @@
+from tabulate import tabulate
 from pprint import pprint
 import pandas as pd
-from tabulate import tabulate
 
-from cadCAD.configuration.utils import configs_as_dicts
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from simulations.regression_tests.models import config1
+from simulations.regression_tests.models import config1, config2
 from cadCAD import configs
 
 exec_mode = ExecutionMode()
@@ -17,7 +16,3 @@ result = pd.DataFrame(raw_result)
 print(tabulate(tensor_fields[0], headers='keys', tablefmt='psql'))
 pprint(sessions)
 print(tabulate(result, headers='keys', tablefmt='psql'))
-
-print()
-print(len(configs_as_dicts(configs)))
-print()
