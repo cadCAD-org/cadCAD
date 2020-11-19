@@ -2,6 +2,7 @@ from tabulate import tabulate
 from pprint import pprint
 import pandas as pd
 
+from cadCAD.configuration.utils import configs_as_dicts, configs_as_objs
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from simulations.regression_tests.models import config1, config2
 from cadCAD import configs
@@ -16,3 +17,13 @@ result = pd.DataFrame(raw_result)
 print(tabulate(tensor_fields[0], headers='keys', tablefmt='psql'))
 pprint(sessions)
 print(tabulate(result, headers='keys', tablefmt='psql'))
+
+print()
+print(len(configs_as_dicts(configs)))
+print()
+
+ds2 = configs_as_objs(configs)
+for c in ds2:
+    print(c.__dict__)
+    print()
+exit()
