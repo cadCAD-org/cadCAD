@@ -20,8 +20,8 @@ seeds = {
 # Optional
 g: Dict[str, List[Any]] = {
     'alpha': [1],
-    'beta': [2, 5],
-    'gamma': [3, 4],
+    'beta': [2, 5, 1],
+    'gamma': [3, 4, 1],
     'omega': [7]
 }
 
@@ -143,10 +143,3 @@ sweep_exp.append_configs(
     env_processes=env_process,
     partial_state_update_blocks=partial_state_update_blocks
 )
-
-
-# print()
-# print("Partial State Update Block:")
-# pp.pprint(partial_state_update_blocks)
-# print()
-# print()
