@@ -1,13 +1,12 @@
-.idea
-.ipynb_checkpoints
-.DS_Store
-.idea
-.eggs
-.pytest_cache
-.mypy_cache
+*.idea
+*.vscode
+*.ipynb_checkpoints
+*.DS_Store
+*.eggs
+*.pytest_cache
+*.mypy_cache
 *.csv
 *.egg-info
-*.ipynb_checkpoints
 *.sqlite3
 *.pyc
 
@@ -21,13 +20,14 @@ result
 notebooks
 client_work
 monkeytype
+*venv
+*external_data
 
 simulations/tickets
 simulations/validation
-simulations/regression_tests/poc
-simulations/regression_tests/poc_configs
+*poc/
+*poc_configs/
 
-*/poc
-
-notes.*
-announcement.md
+*notes.*
+*announcement.md
+*dist.py

@@ -143,10 +143,3 @@ sweep_exp.append_configs(
     env_processes=env_process,
     partial_state_update_blocks=partial_state_update_blocks
 )
-
-
-# print()
-# print("Partial State Update Block:")
-# pp.pprint(partial_state_update_blocks)
-# print()
-# print()

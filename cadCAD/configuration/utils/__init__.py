@@ -162,6 +162,9 @@ def config_sim(d):
         return flatten_tabulated_dict(tabulate_dict(d))
 
     if "M" in d:
+        M_lengths = len(list(set({key: len(value) for key, value in d["M"].items()}.values())))
+        if M_lengths > 2:
+            raise Exception('`M` values require up to a maximum of 2 distinct lengths')
         return [{"N": d["N"], "T": d["T"], "M": M} for M in process_variables(d["M"])]
     else:
         d["M"] = [{}]
