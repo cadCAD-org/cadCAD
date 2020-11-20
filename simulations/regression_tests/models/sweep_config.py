@@ -21,7 +21,7 @@ seeds = {
 g: Dict[str, List[Any]] = {
     'alpha': [1],
     'beta': [2, 5],
-    'gamma': [3, 4, 2],
+    'gamma': [3, 4],
     'omega': [7]
 }
 
