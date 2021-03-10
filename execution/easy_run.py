@@ -22,11 +22,15 @@ def easy_run(state_variables,
 
     sim_config = config_sim(simulation_parameters)
 
+    from cadCAD import configs
+    del configs[:]
+    
     exp = Experiment()
     exp.append_configs(sim_configs=sim_config,
                        initial_state=state_variables,
                        partial_state_update_blocks=psubs)
 
+    
     from cadCAD import configs
     exec_mode = ExecutionMode()
     exec_context = ExecutionContext(exec_mode.local_mode)
