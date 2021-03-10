@@ -81,12 +81,12 @@ class Experiment:
                     sim_config['run_id'] = n
                     sim_config['N'] = 1
                     # sim_config['N'] = n + 1
-                    new_sim_configs.append((sim_config))
+                    new_sim_configs.append((sim_config.copy()))
                 del sim_config
             else:
                 sim_config['simulation_id'] = simulation_id
                 sim_config['run_id'] = 0
-                new_sim_configs.append((sim_config))
+                new_sim_configs.append((sim_config.copy()))
                 # del sim_config
 
             sim_cnt += 1
