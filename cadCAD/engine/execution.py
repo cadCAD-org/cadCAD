@@ -102,10 +102,10 @@ def parallelize_simulations(
     pp = PPool()
     results = flatten(list(pp.map(lambda params: threaded_executor(params), new_params)))
     # results = flatten(list(map(lambda params: threaded_executor(params), new_params)))
-    # pp.close()
-    # pp.join()
-    # pp.clear()
-    # pp.restart()
+    pp.close()
+    pp.join()
+    pp.clear()
+    pp.restart()
 
     return results
 
