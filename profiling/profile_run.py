@@ -9,6 +9,7 @@ def MEASURE_TIME_SUF(p, s, h, v, p_i): return ('run_time', time())
 
 
 MEASURING_BLOCK = {
+    'label': 'Time Measure',
     'policies': {},
     'variables': {
         'run_time': MEASURE_TIME_SUF

@@ -8,6 +8,7 @@ def easy_run(state_variables,
              psubs,
              N_timesteps,
              N_samples,
+             use_label=False,
              assign_params=True,
              drop_substeps=True) -> pd.DataFrame:
     """
@@ -24,7 +25,7 @@ def easy_run(state_variables,
 
     from cadCAD import configs
     del configs[:]
-    
+
     exp = Experiment()
     exp.append_configs(sim_configs=sim_config,
                        initial_state=state_variables,
@@ -55,5 +56,14 @@ def easy_run(state_variables,
             df.loc[n_df.index] = n_df.assign(**configs[i].sim_config['M'])
     else:
         pass
+
+    # Based on Vitor Marthendal (@marthendalnunes) snippet
+    if use_label == True:
+        psub_map = {order + 1: psub.get('label', '')
+                    for (order, psub) 
+                    in enumerate(psubs)}
+        psub_map[0] = 'Initial State'
+        df['substep_label'] = df.substep.map(psub_map)
+
 
     return df
