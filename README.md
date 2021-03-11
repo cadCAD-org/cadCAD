@@ -1,3 +1,6 @@
+# WARNING! this is a tweaked version of cadCAD for optimizing performance!!!!
+
+
 ```
                   ___________    ____
   ________ __ ___/ / ____/   |  / __ \
