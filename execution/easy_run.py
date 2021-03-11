@@ -51,6 +51,7 @@ def easy_run(state_variables,
 
     if assign_params == True:
         # Attribute parameters to each row
+        print(configs[0].sim_config['M'])
         df = df.assign(**configs[0].sim_config['M'])
         for i, (_, n_df) in enumerate(df.groupby(['simulation', 'subset', 'run'])):
             df.loc[n_df.index] = n_df.assign(**configs[i].sim_config['M'])
