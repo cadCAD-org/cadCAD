@@ -1,5 +1,4 @@
 from typing import Any, Callable, Dict, List, Tuple
-from copy import deepcopy
 from functools import reduce
 from funcy import curry
 
@@ -115,7 +114,7 @@ class Executor:
     ) -> List[Dict[str, Any]]:
 
         # last_in_obj: Dict[str, Any] = MappingProxyType(sL[-1])
-        last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
+        last_in_obj: Dict[str, Any] = sL[-1].copy()
         _input: Dict[str, Any] = self.policy_update_exception(
             self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs, additional_objs)
         )
@@ -230,7 +229,7 @@ class Executor:
         def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, _run) -> List[Dict[str, Any]]:
             def generate_init_sys_metrics(genesis_states_list, sim_id, _subset_id, _run, _subset_window):
                 for D in genesis_states_list:
-                    d = deepcopy(D)
+                    d = D.copy()
                     d['simulation'], d['subset'], d['run'], d['substep'], d['timestep'] = \
                         sim_id, _subset_id, _run, 0, 0
                     yield d

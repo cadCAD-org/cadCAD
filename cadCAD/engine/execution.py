@@ -2,6 +2,7 @@ from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ThreadPool as TPool
 # from pathos.multiprocessing import ProcessPool as PPool
 from collections import Counter
+from tqdm.auto import tqdm
 
 from cadCAD.utils import flatten
 

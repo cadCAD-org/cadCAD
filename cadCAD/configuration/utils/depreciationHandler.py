@@ -15,7 +15,7 @@ def sanitize_config(config):
 
 
 def sanitize_partial_state_updates(partial_state_updates):
-    new_partial_state_updates = deepcopy(partial_state_updates)
+    new_partial_state_updates = partial_state_updates.copy()
     def rename_keys(d):
         if 'behaviors' in d:
             d['policies'] = d.pop('behaviors')

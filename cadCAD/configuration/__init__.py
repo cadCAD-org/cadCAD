@@ -1,7 +1,6 @@
 from typing import Dict, Callable, List, Tuple
 from pandas.core.frame import DataFrame
 from collections import deque
-from copy import deepcopy
 import pandas as pd
 
 from cadCAD import configs
@@ -82,12 +81,12 @@ class Experiment:
                     sim_config['run_id'] = n
                     sim_config['N'] = 1
                     # sim_config['N'] = n + 1
-                    new_sim_configs.append(deepcopy(sim_config))
+                    new_sim_configs.append((sim_config.copy()))
                 del sim_config
             else:
                 sim_config['simulation_id'] = simulation_id
                 sim_config['run_id'] = 0
-                new_sim_configs.append(deepcopy(sim_config))
+                new_sim_configs.append((sim_config.copy()))
                 # del sim_config
 
             sim_cnt += 1
@@ -102,7 +101,7 @@ class Experiment:
                 if run_id >= max_runs:
                     sim_config['N'] = run_id - (max_runs - 1)
 
-            self.exp_window = deepcopy(self.exp_window)
+            self.exp_window = self.exp_window.copy()
             config = Configuration(
                 sim_config=sim_config,
                 initial_state=initial_state,
