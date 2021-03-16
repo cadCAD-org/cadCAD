@@ -3,8 +3,8 @@
 ## Included tweaks
 
 - Using shallow copies instead of deepcopies. 
--   Massive performance and memory improvements on simulations with highly nested variables. 
--   Known side-effects: keeping track of the history of nested objects must be done manually. Eg, you must pass a `copy()` or a `deepcopy()` before mutating it.
+  - Massive performance and memory improvements on simulations with highly nested variables. 
+  - Known side-effects: keeping track of the history of nested objects must be done manually. Eg, you must pass a `copy()` or a `deepcopy()` before mutating it.
 - Multiprocessing pools instead of multi-threading pools. 
   - Will allow to make full use of the CPUs during the simulations  
   - Known side-effects: care must be taken when generating random numbers, else they can be all equal. Mitigate by generating the random state manually: `np.random.RandomState().random`
