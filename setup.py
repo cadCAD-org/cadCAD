@@ -20,8 +20,11 @@ under various conditions. Support for A/B testing policies, Monte Carlo analysis
 provided.
 """
 
-setup(name='cadCAD',
-      version='0.4.23',
+name = "cadCAD"
+version = "0.4.23"
+
+setup(name=name,
+      version=version,
       description=short_description,
       long_description=long_description,
       url='https://github.com/cadCAD-org/cadCAD',

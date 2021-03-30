@@ -1,8 +1,10 @@
 from cadCAD import logo
+from setup import version
 
 
 def print_exec_info(exec_context, configs):
     print(logo)
+    print(f'cadCAD Version: {version}')
     print(f'Execution Mode: {exec_context}')
     print(f'Configuration Count: {len(configs)}')
     first_sim = configs[0].sim_config
