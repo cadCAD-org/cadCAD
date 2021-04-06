@@ -10,6 +10,7 @@
 *.ipynb_checkpoints
 *.sqlite3
 *.pyc
+venv
 
 __pycache__
 Pipfile
