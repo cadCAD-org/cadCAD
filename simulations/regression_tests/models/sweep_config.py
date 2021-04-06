@@ -1,26 +1,19 @@
-import numpy as np
-from datetime import timedelta
-import pprint
-
-from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, time_step, psub_list
-
+from pprint import pprint
 from typing import Dict, List, Any
 
-from simulations.regression_tests.experiments import sweep_exp
+# from cadCAD.configuration import append_configs
+from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
+from simulations.regression_tests.experiments import param_sweep_exp, combo_exp
 
-pp = pprint.PrettyPrinter(indent=4)
 
-seeds = {
-    'z': np.random.RandomState(1),
-    'a': np.random.RandomState(2),
-    'b': np.random.RandomState(3),
-    'c': np.random.RandomState(3)
-}
+def some_function(x):
+    return x
 
 # Optional
+# dict must contain lists opf 2 distinct lengths
 g: Dict[str, List[Any]] = {
     'alpha': [1],
-    'beta': [2, 5],
+    'beta': [2, some_function],
     'gamma': [3, 4],
     'omega': [7]
 }
@@ -30,123 +23,82 @@ system_substeps = len(psu_steps)
 var_timestep_trigger = var_substep_trigger([0, system_substeps])
 env_timestep_trigger = env_trigger(system_substeps)
 env_process = {}
-psu_block = {k: {"policies": {}, "variables": {}} for k in psu_steps}
+
 
 # ['s1', 's2', 's3', 's4']
 # Policies per Mechanism
-def p1m1(_g, step, sL, s, **kwargs):
-    return {'param1': 1}
-psu_block['m1']['policies']['p1'] = p1m1
+def gamma(_g, step, sL, s, **kwargs):
+    return {'gamma': _g['gamma']}
 
-def p2m1(_g, step, sL, s, **kwargs):
-    return {'param2': 4}
-psu_block['m1']['policies']['p2'] = p2m1
 
-def p1m2(_g, step, sL, s, **kwargs):
-    return {'param1': 'a', 'param2': _g['beta']}
-psu_block['m2']['policies']['p1'] = p1m2
-
-def p2m2(_g, step, sL, s, **kwargs):
-    return {'param1': 'b', 'param2': 0}
-psu_block['m2']['policies']['p2'] = p2m2
-
-def p1m3(_g, step, sL, s, **kwargs):
-    return {'param1': np.array([10, 100])}
-psu_block['m3']['policies']['p1'] = p1m3
-
-def p2m3(_g, step, sL, s, **kwargs):
-    return {'param1': np.array([20, 200])}
-psu_block['m3']['policies']['p2'] = p2m3
+def omega(_g, step, sL, s, **kwargs):
+    return {'omega': _g['omega']}
 
 
 # Internal States per Mechanism
-def s1m1(_g, step, sL, s, _input, **kwargs):
-    return 's1', 0
-psu_block['m1']["variables"]['s1'] = s1m1
-
-def s2m1(_g, step, sL, s, _input, **kwargs):
-    return 's2', _g['beta']
-psu_block['m1']["variables"]['s2'] = s2m1
-
-def s1m2(_g, step, sL, s, _input, **kwargs):
-    return 's1', _input['param2']
-psu_block['m2']["variables"]['s1'] = s1m2
-
-def s2m2(_g, step, sL, s, _input, **kwargs):
-    return 's2', _input['param2']
-psu_block['m2']["variables"]['s2'] = s2m2
-
-def s1m3(_g, step, sL, s, _input, **kwargs):
-    return 's1', 0
-psu_block['m3']["variables"]['s1'] = s1m3
-
-def s2m3(_g, step, sL, s, _input, **kwargs):
-    return 's2', 0
-psu_block['m3']["variables"]['s2'] = s2m3
+def alpha(_g, step, sL, s, _input, **kwargs):
+    return 'alpha', _g['alpha']
 
 
-# Exogenous States
-def update_timestamp(_g, step, sL, s, _input, **kwargs):
-    y = 'timestamp'
-    return y, time_step(dt_str=s[y], dt_format='%Y-%m-%d %H:%M:%S', _timedelta=timedelta(days=0, minutes=0, seconds=1))
-for m in ['m1','m2','m3']:
-    # psu_block[m]["variables"]['timestamp'] = update_timestamp
-    psu_block[m]["variables"]['timestamp'] = var_timestep_trigger(y='timestamp', f=update_timestamp)
-    # psu_block[m]["variables"]['timestamp'] = var_trigger(
-    #     y='timestamp', f=update_timestamp, pre_conditions={'substep': [0, system_substeps]}, cond_op=lambda a, b: a and b
-    # )
-
-proc_one_coef = 0.7
-def es3(_g, step, sL, s, _input, **kwargs):
-    return 's3', s['s3'] + proc_one_coef
-# use `timestep_trigger` to update every ts
-for m in ['m1','m2','m3']:
-    psu_block[m]["variables"]['s3'] = var_timestep_trigger(y='s3', f=es3)
+def beta(_g, step, sL, s, _input, **kwargs):
+    return 'beta', _g['beta']
 
 
-def es4(_g, step, sL, s, _input, **kwargs):
-    return 's4', s['s4'] + _g['gamma']
-for m in ['m1','m2','m3']:
-    psu_block[m]["variables"]['s4'] = var_timestep_trigger(y='s4', f=es4)
+def policies(_g, step, sL, s, _input, **kwargs):
+    return 'policies', _input
+
+
+def sweeped(_g, step, sL, s, _input, **kwargs):
+    return 'sweeped', {'beta': _g['beta'], 'gamma': _g['gamma']}
+
+psu_block = {k: {"policies": {}, "variables": {}} for k in psu_steps}
+for m in psu_steps:
+    psu_block[m]['policies']['gamma'] = gamma
+    psu_block[m]['policies']['omega'] = omega
+    psu_block[m]["variables"]['alpha'] = alpha
+    psu_block[m]["variables"]['beta'] = beta
+    psu_block[m]['variables']['policies'] = policies
+    psu_block[m]["variables"]['sweeped'] = var_timestep_trigger(y='sweeped', f=sweeped)
+
 
 # Genesis States
 genesis_states = {
-    's1': 0.0,
-    's2': 0.0,
-    's3': 1.0,
-    's4': 1.0,
-    'timestamp': '2018-10-01 15:16:24'
+    'alpha': 0,
+    'beta': 0,
+    'policies': {},
+    'sweeped': {}
 }
 
-
 # Environment Process
-env_process["s3"] = [lambda _g, x: _g['beta'], lambda _g, x: x + 1]
-env_process["s4"] = env_timestep_trigger(trigger_field='timestep', trigger_vals=[5], funct_list=[lambda _g, x: _g['beta']])
+env_process['sweeped'] = env_timestep_trigger(trigger_field='timestep', trigger_vals=[5], funct_list=[lambda _g, x: _g['beta']])
 
 
-# config_sim Necessary
 sim_config = config_sim(
     {
-        "N": 5,
+        "N": 2,
         "T": range(2),
         "M": g, # Optional
     }
 )
+# print()
+# pprint(sim_config)
+# exit()
 
 # New Convention
 partial_state_update_blocks = psub_list(psu_block, psu_steps)
-sweep_exp.append_configs(
-    # user_id='user_a',
+# param_sweep_exp.append_configs(
+#     model_id='param_sweep',
+#     sim_configs=sim_config,
+#     initial_state=genesis_states,
+#     env_processes=env_process,
+#     partial_state_update_blocks=partial_state_update_blocks
+# )
+
+combo_exp.append_configs(
+    user_id='user_c',
+    # model_id='param_sweep',
     sim_configs=sim_config,
     initial_state=genesis_states,
-    seeds=seeds,
     env_processes=env_process,
     partial_state_update_blocks=partial_state_update_blocks
 )
-
-
-# print()
-# print("Partial State Update Block:")
-# pp.pprint(partial_state_update_blocks)
-# print()
-# print()
