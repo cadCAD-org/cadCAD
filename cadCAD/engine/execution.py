@@ -85,7 +85,6 @@ def parallelize_simulations(
                 configs_structs[count * highest_divisor: (count + 1) * highest_divisor]
             )
 
-
     def threaded_executor(params):
         if len_configs_structs > 1:
             tp = TPool(processes=len_configs_structs)
@@ -98,13 +97,7 @@ def parallelize_simulations(
             results = t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n)
         return results
 
-    # pp = PPool()
-    # results = flatten(list(pp.map(lambda params: threaded_executor(params), new_params)))
     results = flatten(list(map(lambda params: threaded_executor(params), new_params)))
-    # pp.close()
-    # pp.join()
-    # pp.clear()
-    # pp.restart()
 
     return results
 
