@@ -1,6 +1,6 @@
 from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ThreadPool as TPool
-# from pathos.multiprocessing import ProcessPool as PPool
+from pathos.multiprocessing import ProcessPool as PPool
 from collections import Counter
 
 from cadCAD.utils import flatten
@@ -85,19 +85,21 @@ def parallelize_simulations(
                 configs_structs[count * highest_divisor: (count + 1) * highest_divisor]
             )
 
-    def threaded_executor(params):
+    def process_executor(params):
         if len_configs_structs > 1:
-            tp = TPool(processes=len_configs_structs)
-            results = tp.map(
+            pp = PPool(processes=len_configs_structs)
+            results = pp.map(
                 lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n), params
             )
-            tp.close()
+            pp.close()
+            pp.join()
+            pp.clear()
         else:
             t = params[0]
             results = t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n)
         return results
 
-    results = flatten(list(map(lambda params: threaded_executor(params), new_params)))
+    results = flatten(list(map(lambda params: process_executor(params), new_params)))
 
     return results
 
