@@ -3,7 +3,7 @@ from typing import Dict, List, Any
 
 # from cadCAD.configuration import append_configs
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
-from simulations.regression_tests.experiments import param_sweep_exp, combo_exp
+from simulations.regression_tests.experiments import param_sweep_exp
 
 
 def some_function(x):
@@ -80,23 +80,10 @@ sim_config = config_sim(
         "M": g, # Optional
     }
 )
-# print()
-# pprint(sim_config)
-# exit()
 
 # New Convention
 partial_state_update_blocks = psub_list(psu_block, psu_steps)
-# param_sweep_exp.append_configs(
-#     model_id='param_sweep',
-#     sim_configs=sim_config,
-#     initial_state=genesis_states,
-#     env_processes=env_process,
-#     partial_state_update_blocks=partial_state_update_blocks
-# )
-
-combo_exp.append_configs(
-    user_id='user_c',
-    # model_id='param_sweep',
+param_sweep_exp.append_configs(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_process,
