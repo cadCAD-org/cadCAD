@@ -4,6 +4,7 @@ from copy import deepcopy
 from functools import reduce
 from funcy import curry
 import pandas as pd
+import numpy as np
 
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates
 from cadCAD.utils import dict_filter, contains_type, flatten_tabulated_dict, tabulate_dict
@@ -27,6 +28,7 @@ class TensorFieldReport:
 
 def configs_as_spec(configs):
     sim_ids = list(map(lambda x: x.simulation_id, configs))
+    # sim_ids = [config.simulation_id for config in configs]
     sim_id_counts = list(Counter(sim_ids).values())
     IDed_configs = list(zip(sim_ids, configs))
     del sim_ids
@@ -68,6 +70,8 @@ def configs_as_dataframe(configs):
 def state_update(y, x):
     return lambda var_dict, sub_step, sL, s, _input, **kwargs: (y, x)
 
+def policy(y, x):
+    return lambda _g, step, sL, s, **kwargs: {y: x}
 
 def bound_norm_random(rng, low, high):
     res = rng.normal((high+low)/2, (high-low)/6)
@@ -162,6 +166,9 @@ def config_sim(d):
         return flatten_tabulated_dict(tabulate_dict(d))
 
     if "M" in d:
+        M_lengths = len(list(set({key: len(value) for key, value in d["M"].items()}.values())))
+        if M_lengths > 2:
+            raise Exception('`M` values require up to a maximum of 2 distinct lengths')
         return [{"N": d["N"], "T": d["T"], "M": M} for M in process_variables(d["M"])]
     else:
         d["M"] = [{}]
@@ -224,13 +231,13 @@ def state_sweep_filter(raw_exogenous_states):
 def sweep_partial_states(_type, in_config):
     configs = []
     # filtered_mech_states
-    filtered_partial_states = partial_state_sweep_filter(_type, in_config.partial_state_updates)
+    filtered_partial_states = partial_state_sweep_filter(_type, in_config.partial_state_update_blocks)
     if len(filtered_partial_states) > 0:
         for partial_state, state_dict in filtered_partial_states.items():
             for state, state_funcs in state_dict.items():
                 for f in state_funcs:
                     config = deepcopy(in_config)
-                    config.partial_state_updates[partial_state][_type][state] = f
+                    config.partial_state_update_blocks[partial_state][_type][state] = f
                     configs.append(config)
                     del config
     else:
@@ -258,10 +265,3 @@ def sweep_states(state_type, states, in_config):
         configs = [in_config]
 
     return configs
-
-# @curried
-# def env_proc_trigger(timestep, f, time):
-#     if time == timestep:
-#         return f
-#     else:
-#         return lambda x: x

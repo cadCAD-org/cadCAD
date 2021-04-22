@@ -1,7 +1,7 @@
 import numpy as np
 from datetime import timedelta
 
-# from cadCAD import configs
+from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import bound_norm_random, config_sim, env_trigger, time_step
 from simulations.regression_tests.experiments import multi_exp
 
@@ -138,9 +138,19 @@ sim_config_dict = {
 
 
 sim_config = config_sim(sim_config_dict)
-multi_exp.append_configs(
+
+exp = Experiment()
+exp.append_model(
     # config_list=configs,
     user_id='user_b',
+    sim_configs=sim_config,
+    initial_state=genesis_states,
+    env_processes=env_processes,
+    partial_state_update_blocks=partial_state_update_block
+)
+
+multi_exp.append_model(
+    model_id='sys_model_2',
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_processes,

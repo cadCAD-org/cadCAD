@@ -122,6 +122,7 @@ def local_simulations(
     print(f'Ns       : {Ns}')
     print(f'ExpIDs   : {ExpIDs}')
     config_amt = len(configs_structs)
+
     try:
         _params = None
         if config_amt == 1: # and configured_n != 1

@@ -1,5 +1,4 @@
-from cadCAD import logo
-from setup import version
+from cadCAD import logo, version
 
 
 def print_exec_info(exec_context, configs):

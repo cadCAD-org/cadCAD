@@ -152,9 +152,18 @@ sim_config_dict = {
 
 sim_config = config_sim(sim_config_dict)
 
-multi_exp.append_configs(
-    # config_list=configs,
+exp = Experiment()
+exp.append_model(
     user_id='user_a',
+    sim_configs=sim_config,
+    initial_state=genesis_states,
+    env_processes=env_processes,
+    partial_state_update_blocks=partial_state_update_block,
+    policy_ops=[lambda a, b: a + b]
+)
+
+multi_exp.append_model(
+    model_id='sys_model_1',
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_processes,
