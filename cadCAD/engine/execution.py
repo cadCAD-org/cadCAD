@@ -117,10 +117,6 @@ def local_simulations(
         SubsetWindows,
         configured_n
     ):
-    print(f'SimIDs   : {SimIDs}')
-    print(f'SubsetIDs: {SubsetIDs}')
-    print(f'Ns       : {Ns}')
-    print(f'ExpIDs   : {ExpIDs}')
     config_amt = len(configs_structs)
 
     try:
