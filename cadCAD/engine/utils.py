@@ -30,8 +30,3 @@ def engine_exception(ErrorType, error_message, exception_function, try_function)
     except ErrorType:
         print(error_message)
         return exception_function
-
-
-# @curried
-# def fit_param(param, x):
-#     return x + param

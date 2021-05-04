@@ -1,8 +1,7 @@
+from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import config_sim
 
 # Policies per Mechanism
-from simulations.regression_tests.experiments import policy_exp
-
 def p1m1(_g, step, sL, s, **kwargs):
     return {'policy1': 1}
 def p2m1(_g, step, sL, s, **kwargs):
@@ -74,7 +73,9 @@ sim_config = config_sim(
 
 # Aggregation == Reduce Map / Reduce Map Aggregation
 # using env functions (include in reg test using / for env proc)
-policy_exp.append_configs(
+exp = Experiment()
+exp.append_model(
+    model_id='sys_model_1',
     sim_configs=sim_config,
     initial_state=genesis_states,
     partial_state_update_blocks=partial_state_update_block,
