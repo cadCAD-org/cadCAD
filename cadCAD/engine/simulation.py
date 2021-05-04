@@ -220,14 +220,11 @@ class Executor:
         # remote_ind
         additional_objs=None
     ):
+        run += 1
         subset_window.appendleft(subset_id)
         latest_subset_id, previous_subset_id = tuple(subset_window)
 
-        if remote_dict['metrics'] is None:
-            run += 1
-            if configured_N == 1 and latest_subset_id > previous_subset_id:
-                run -= 1
-        else:
+        if remote_dict['metrics'] is not None:
             simulation_id = remote_dict['metrics']['sim_id']
             subset_id = remote_dict['metrics']['subset_id']
             run = remote_dict['metrics']['run']

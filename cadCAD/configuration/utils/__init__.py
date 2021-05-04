@@ -1,10 +1,10 @@
+import pandas as pd
+import numpy as np
 from datetime import datetime, timedelta
 from collections import Counter
 from copy import deepcopy
 from functools import reduce
 from funcy import curry
-import pandas as pd
-import numpy as np
 
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates
 from cadCAD.utils import dict_filter, contains_type, flatten_tabulated_dict, tabulate_dict
