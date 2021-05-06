@@ -7,6 +7,7 @@
         * Multi - System Model simulation results will no longer return truncated results (exclude the results of the last 
         `cadCAD.configuration.Configuration` appended to `cadCAD.configs`).
         * Issue: [#195](https://github.com/cadCAD-org/cadCAD/issues/195)
+    * Parameter Sweep value `M` (Params) requires up to a maximum of 2 distinct lengths
 
 
 ### August 5, 2020

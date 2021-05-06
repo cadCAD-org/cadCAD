@@ -11,7 +11,9 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - run: pip install cadcad
+      - run: pip install -r requirements.txt
+      - run: python setup.py sdist bdist_wheel
+      - run: pip install dist/*.whl
       - run:
           command: python testing/tests/param_sweep.py
           name: Parameter sweep
