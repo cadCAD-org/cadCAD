@@ -1,40 +1,25 @@
 import unittest
 import pandas as pd
+from tabulate import tabulate
 
+from testing.models import policy_aggregation as policy_agg
+from testing.results_comparison import dataframe_difference, compare_results
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from testing.generic_test import make_generic_test
-from testing.models import policy_aggregation
-from cadCAD import configs
 
 exec_mode = ExecutionMode()
 exec_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=exec_ctx, configs=configs)
+run = Executor(exec_context=exec_ctx, configs=policy_agg.exp.configs)
 
-raw_result, tensor_field, _ = run.execute()
-result = pd.DataFrame(raw_result)
+raw_result, _, _ = run.execute()
+result_df = pd.DataFrame(raw_result)
 
-expected_results = {
-    (0, 1, 0, 0): {'policies': {}, 's1': 0},
-    (0, 1, 1, 1): {'policies': {'policy1': 2, 'policy2': 4}, 's1': 1}, # 'policy1': 2
-    (0, 1, 1, 2): {'policies': {'policy1': 8, 'policy2': 8}, 's1': 2},
-    (0, 1, 1, 3): {'policies': {'policy1': 4, 'policy2': 8, 'policy3': 12}, 's1': 3},
-    (0, 1, 2, 1): {'policies': {'policy1': 2, 'policy2': 4}, 's1': 4},
-    (0, 1, 2, 2): {'policies': {'policy1': 8, 'policy2': 8}, 's1': 5},
-    (0, 1, 2, 3): {'policies': {'policy1': 4, 'policy2': 8, 'policy3': 12}, 's1': 6},
-    (0, 1, 3, 1): {'policies': {'policy1': 2, 'policy2': 4}, 's1': 7},
-    (0, 1, 3, 2): {'policies': {'policy1': 8, 'policy2': 8}, 's1': 8},
-    (0, 1, 3, 3): {'policies': {'policy1': 4, 'policy2': 8, 'policy3': 12}, 's1': 9}
-}
+expected_df = pd.read_pickle("./expected_results/policy_agg.pkl")
+result_diff = dataframe_difference(result_df, expected_df)
+# result_diff = dataframe_difference(result_df, result_df)
+print(tabulate(result_diff, headers='keys', tablefmt='psql'))
 
 
-def row(a, b):
-    return a == b
-
-
-params = [["policy_aggregation", result, expected_results, ['policies', 's1'], [row]]]
-
-
-class GenericTest(make_generic_test(params)):
+class PolicyAggTest(compare_results(result_diff)):
     pass
 
 
