@@ -60,7 +60,6 @@ class Executor:
         self.state_update_exception = state_update_exception
         self.policy_update_exception = policy_update_exception
 
-    @profile
     def get_policy_input(
         self,
         sweep_dict: Dict[str, List[Any]],
