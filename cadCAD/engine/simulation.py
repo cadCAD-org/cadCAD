@@ -72,7 +72,7 @@ class Executor:
                 return policy_scope_tuner(additional_objs, f)
 
             # Return list containing all policies results
-            return map(execute_policy, funcs)
+            return list(map(execute_policy, funcs))
 
         def compose(init_reduction_funct: Aggregator,
                     funct_list: List[Aggregator],
