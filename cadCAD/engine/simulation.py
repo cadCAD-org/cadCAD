@@ -18,6 +18,36 @@ PolicyFunction = Callable[[Parameters,
 Aggregator = Callable[[object, object], object]
 
 
+def policy_scope_tuner(args: tuple,
+                       additional_objs: object,
+                       f: PolicyFunction) -> dict:
+    """
+    Execute cadCAD policy function.
+    """
+    (sweep_dict, sub_step, sL, s) = args
+    if additional_objs is None:
+        return f(sweep_dict, sub_step, sL, s)
+    else:
+        return f(sweep_dict, sub_step, sL, s, additional_objs)
+
+
+def compose(init_reduction_funct: Aggregator,
+            funct_list: List[Aggregator],
+            val_list: dict) -> object:
+    """
+    Reduce the nested policy input dict into a simple one.
+    """
+    result, i = None, 0
+    def composition(x): return [reduce(
+        init_reduction_funct, x.values())] + funct_list
+    for g in composition(val_list):
+        if i == 0:
+            result = g
+            i = 1
+        else:
+            result = g(result)
+    return result
+
 class Executor:
     def __init__(
         self,
@@ -30,6 +60,7 @@ class Executor:
         self.state_update_exception = state_update_exception
         self.policy_update_exception = policy_update_exception
 
+    @profile
     def get_policy_input(
         self,
         sweep_dict: Dict[str, List[Any]],
@@ -52,63 +83,25 @@ class Executor:
 
         ops = self.policy_ops
 
-        def get_col_results(sweep_dict: Parameters,
-                            sub_step: Substep,
-                            sL: StateHistory,
-                            s: State,
-                            funcs: List[PolicyFunction]) -> list:
-
-            def policy_scope_tuner(additional_objs: object,
-                                   f: PolicyFunction) -> dict:
-                """
-                Execute cadCAD policy function.
-                """
-                if additional_objs is None:
-                    return f(sweep_dict, sub_step, sL, s)
-                else:
-                    return f(sweep_dict, sub_step, sL, s, additional_objs)
-
-            def execute_policy(f: PolicyFunction) -> dict:
-                return policy_scope_tuner(additional_objs, f)
-
-            # Return list containing all policies results
-            return list(map(execute_policy, funcs))
-
-        def compose(init_reduction_funct: Aggregator,
-                    funct_list: List[Aggregator],
-                    val_list: dict) -> object:
-            """
-            Reduce the nested policy input dict into a simple one.
-            """
-            result, i = None, 0
-            def composition(x): return [reduce(
-                init_reduction_funct, x)] + funct_list
-            for g in composition(val_list):
-                if i == 0:
-                    result = g
-                    i = 1
-                else:
-                    result = g(result)
-            return result
-
         # Execute and retrieve policies results
-        col_results: List[dict] = get_col_results(
-            sweep_dict, sub_step, sL, s, funcs)
 
-        # Get set of all policy input labels
-        label_sets = [set(el.keys())
-                      for el in col_results]
-        label_set = set.union(*label_sets)
+        args = (sweep_dict, sub_step, sL, s)
+        def execute_policy(f: PolicyFunction) -> dict:
+            return policy_scope_tuner(args, additional_objs, f)
 
-        # Container for all the policy input result set
-        new_dict = {k: [] for k in label_set}
+        col_results = map(execute_policy, funcs)
 
-        # Create a nested dict containing all results combinations
-        # Where 'k' is a policy input label,
-        # and 'd' is a ordinal for aggregation
-        for d in col_results:
-            for k in d.keys():
-                new_dict[k].append(d[k])
+
+        # Create a nested dict containing all results combination
+        # new_dict[policy_input][policy_ordinal] = policy_input_value
+        new_dict: dict = {}
+        for i, col_result in enumerate(col_results):
+            for label, value in col_result.items():
+                if label not in new_dict.keys():
+                    new_dict[label] = {}
+                else:
+                    pass
+                new_dict[label][i] = value
 
         # Aggregator functions
         ops_head, *ops_tail = ops
