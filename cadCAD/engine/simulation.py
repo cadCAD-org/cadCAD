@@ -1,11 +1,21 @@
 from typing import Any, Callable, Dict, List, Tuple
 from functools import reduce
 from funcy import curry
+from funcy.decorators import Call
 
 from cadCAD.utils import flatten
 from cadCAD.engine.utils import engine_exception
 
 id_exception: Callable = curry(engine_exception)(KeyError)(KeyError)(None)
+
+Parameters = Dict[str, object]
+Substep = int
+StateHistory = List[Dict[str, object]]
+State = Dict[str, object]
+PolicyInput = Dict[str, object]
+PolicyFunction = Callable[[Parameters,
+                           Substep, StateHistory, State], PolicyInput]
+Aggregator = Callable[[object, object], object]
 
 
 class Executor:
@@ -29,20 +39,50 @@ class Executor:
         funcs: List[Callable],
         additional_objs
     ) -> Dict[str, Any]:
+        """
+        Retrieves the Policy Input for usage on State Update Functions
+
+        Arguments:
+            sweep_dict - System Parameters
+            sub_step - Execution order in regards to PSUBs
+            sL - History of the variables state
+            s - Current variables state
+            funcs - List of cadCAD Policies to be executed
+        """
 
         ops = self.policy_ops
 
-        def get_col_results(sweep_dict, sub_step, sL, s, funcs):
-            def policy_scope_tuner(additional_objs, f):
+        def get_col_results(sweep_dict: Parameters,
+                            sub_step: Substep,
+                            sL: StateHistory,
+                            s: State,
+                            funcs: List[PolicyFunction]) -> list:
+
+            def policy_scope_tuner(additional_objs: object,
+                                   f: PolicyFunction) -> dict:
+                """
+                Execute cadCAD policy function.
+                """
                 if additional_objs is None:
                     return f(sweep_dict, sub_step, sL, s)
                 else:
                     return f(sweep_dict, sub_step, sL, s, additional_objs)
-            return list(map(lambda f: policy_scope_tuner(additional_objs, f), funcs))
 
-        def compose(init_reduction_funct, funct_list, val_list):
+            def execute_policy(f: PolicyFunction) -> dict:
+                return policy_scope_tuner(additional_objs, f)
+
+            # Return list containing all policies results
+            return map(execute_policy, funcs)
+
+        def compose(init_reduction_funct: Aggregator,
+                    funct_list: List[Aggregator],
+                    val_list: dict) -> object:
+            """
+            Reduce the nested policy input dict into a simple one.
+            """
             result, i = None, 0
-            composition = lambda x: [reduce(init_reduction_funct, x)] + funct_list
+            def composition(x): return [reduce(
+                init_reduction_funct, x)] + funct_list
             for g in composition(val_list):
                 if i == 0:
                     result = g
@@ -51,21 +91,42 @@ class Executor:
                     result = g(result)
             return result
 
-        col_results = get_col_results(sweep_dict, sub_step, sL, s, funcs)
-        key_set = list(set(list(reduce(lambda a, b: a + b, list(map(lambda x: list(x.keys()), col_results))))))
-        new_dict = {k: [] for k in key_set}
+        # Execute and retrieve policies results
+        col_results: List[dict] = get_col_results(
+            sweep_dict, sub_step, sL, s, funcs)
+
+        # Get set of all policy input labels
+        label_sets = [set(el.keys())
+                      for el in col_results]
+        label_set = set.union(*label_sets)
+
+        # Container for all the policy input result set
+        new_dict = {k: [] for k in label_set}
+
+        # Create a nested dict containing all results combinations
+        # Where 'k' is a policy input label,
+        # and 'd' is a ordinal for aggregation
         for d in col_results:
             for k in d.keys():
                 new_dict[k].append(d[k])
 
+        # Aggregator functions
         ops_head, *ops_tail = ops
-        return {
-            k: compose(
-                init_reduction_funct=ops_head,
-                funct_list=ops_tail,
-                val_list=val_list
-            ) for k, val_list in new_dict.items()
-        }
+
+        # Function for aggregating a combination of policy inputs
+        # for the same signal
+        def f(val_list):
+            return compose(init_reduction_funct=ops_head,
+                           funct_list=ops_tail,
+                           val_list=val_list)
+
+        # Generate dict to be consumed by SUFs
+        policy_input = {
+            label: f(val_list)
+            for label, val_list
+            in new_dict.items()}
+
+        return policy_input
 
     def apply_env_proc(
         self,
@@ -87,9 +148,11 @@ class Executor:
 
             return target_value
 
-        filtered_state_dict = {k: v for k, v in state_dict.items() if k in env_processes.keys()}
+        filtered_state_dict = {
+            k: v for k, v in state_dict.items() if k in env_processes.keys()}
         env_proc_dict = {
-            target_field: env_composition(target_field, state_dict, target_value)
+            target_field: env_composition(
+                target_field, state_dict, target_value)
             for target_field, target_value in filtered_state_dict.items()
         }
 
@@ -116,7 +179,8 @@ class Executor:
         # last_in_obj: Dict[str, Any] = MappingProxyType(sL[-1])
         last_in_obj: Dict[str, Any] = sL[-1].copy()
         _input: Dict[str, Any] = self.policy_update_exception(
-            self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs, additional_objs)
+            self.get_policy_input(sweep_dict, sub_step, sH,
+                                  last_in_obj, policy_funcs, additional_objs)
         )
 
         def generate_record(state_funcs):
@@ -136,8 +200,10 @@ class Executor:
             del source
             return destination
 
-        last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, dict(generate_record(state_funcs)))
-        last_in_copy: Dict[str, Any] = self.apply_env_proc(sweep_dict, env_processes, last_in_copy)
+        last_in_copy: Dict[str, Any] = transfer_missing_fields(
+            last_in_obj, dict(generate_record(state_funcs)))
+        last_in_copy: Dict[str, Any] = self.apply_env_proc(
+            sweep_dict, env_processes, last_in_copy)
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
 
         sL.append(last_in_copy)
@@ -235,7 +301,8 @@ class Executor:
                     yield d
 
             states_list_copy: List[Dict[str, Any]] = list(
-                generate_init_sys_metrics(tuple(states_list), simulation_id, subset_id, run, subset_window)
+                generate_init_sys_metrics(
+                    tuple(states_list), simulation_id, subset_id, run, subset_window)
             )
 
             first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(
@@ -246,7 +313,8 @@ class Executor:
             return first_timestep_per_run
 
         pipe_run = flatten(
-            [execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run)]
+            [execute_run(sweep_dict, states_list, configs,
+                         env_processes, time_seq, run)]
         )
 
         return pipe_run
