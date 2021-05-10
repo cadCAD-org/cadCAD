@@ -1,7 +1,7 @@
 from typing import Callable, List, Dict, Tuple, Union, NamedTuple
 
 StateVariable = object
-Parameter = List[object]
+Parameter = Tuple[object]
 
 Params = Dict[str, object]
 State = Dict[str, object]
@@ -27,7 +27,7 @@ class Param(NamedTuple):
 
 
 class ParamSweep(NamedTuple):
-    value: List[object]
+    value: Tuple[object]
     type: type
 
 
