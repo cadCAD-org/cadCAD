@@ -13,7 +13,7 @@ run = Executor(exec_context=exec_ctx, configs=param_sweep.exp.configs)
 raw_result, _, _ = run.execute()
 result_df = pd.DataFrame(raw_result)
 
-expected_df = pd.read_pickle("./expected_results/param_sweep_4.pkl")
+expected_df = pd.read_pickle("expected_results/param_sweep_4.pkl")
 
 result_diff = dataframe_difference(result_df, expected_df)
 # result_diff = dataframe_difference(result_df, result_df)
