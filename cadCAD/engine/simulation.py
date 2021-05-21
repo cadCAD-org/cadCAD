@@ -222,7 +222,6 @@ class Executor:
     ):
         run += 1
         subset_window.appendleft(subset_id)
-        latest_subset_id, previous_subset_id = tuple(subset_window)
 
         if remote_dict['metrics'] is not None:
             simulation_id = remote_dict['metrics']['sim_id']
