@@ -165,6 +165,15 @@ def config_sim(d):
     def process_variables(d):
         return flatten_tabulated_dict(tabulate_dict(d))
 
+    if "N" in d:
+        if d["N"] <= 0:
+            raise ValueError("'N' must be > 0")
+    else:
+        raise KeyError("The 'sim_configs' dictionary must contain the key 'N'")
+
+    if "T" not in d:
+        raise KeyError("The 'sim_configs' dictionary must contain the key 'T'")
+
     if "M" in d:
         M_lengths = len(list(set({key: len(value) for key, value in d["M"].items()}.values())))
         if M_lengths > 2:
