@@ -1,5 +1,18 @@
 # Changelog:
 
+### May 21, 2021
+* **ver. ≥ `0.4.24`:**
+    * **Hot-Fixes:** 
+        * [#257](https://github.com/cadCAD-org/cadCAD/issues/257)
+            * The `append_model` method of `cadCAD.configuration.Experiment` will no longer throw mis-leading error message 
+              during simulation execution.
+        * [#242](https://github.com/cadCAD-org/cadCAD/issues/242)
+            * Parallelized simulations re-enabled with the re-inclusion of `ProcessPool`.
+        * [#250](https://github.com/cadCAD-org/cadCAD/issues/250)
+            * First Partial State Update Block at first timestep no longer equals to 0 instead of the expected 1 in simulation 
+              output.
+
+
 ### September 22, 2020
 ##### [Multi - System Model Execution](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/Simulation_Execution.md#multiple-simulation-execution)
 * **ver. ≥ `0.4.23`:**

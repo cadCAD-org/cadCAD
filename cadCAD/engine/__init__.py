@@ -125,7 +125,7 @@ class Executor:
             flat_simulations = flatten(flat_timesteps)
             if config_amt == 1:
                 return simulations, tensor_fields, sessions
-            elif config_amt > 1: # and (config_amt < remote_threshold):
+            elif config_amt > 1:
                 return flat_simulations, tensor_fields, sessions
 
         remote_threshold = 100
@@ -135,13 +135,11 @@ class Executor:
             try:
                 if config_amt == 1:
                     return ExecutionMode.single_mode, single_proc_exec
-                elif (config_amt > 1): # and (config_amt < remote_threshold):
+                elif (config_amt > 1):
                     return ExecutionMode.multi_mode, parallelize_simulations
             except AttributeError:
                 if config_amt < 1:
                     raise ValueError('N must be >= 1!')
-                # elif config_amt > remote_threshold:
-                #     print('Remote Threshold is N=100. Use ExecutionMode.dist_proc if N >= 100')
 
         final_result = None
         original_N = len(configs_as_dicts(self.configs))
