@@ -38,5 +38,5 @@ setup(name=name,
             "fn",
             "funcy"
       ],
-      python_requires='>=3.6.8'
+      python_requires='>=3.6.13'
 )

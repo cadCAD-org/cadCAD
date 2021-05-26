@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from cadCAD.configuration.utils import bound_norm_random, config_sim, time_step, env_trigger
 from cadCAD.configuration import Experiment
+from documentation.examples import system_model_AB_exp
 
 seeds = {
     'z': np.random.RandomState(1),
@@ -149,7 +150,17 @@ sim_config = config_sim(
 )
 
 exp = Experiment()
-exp.append_configs(
+exp.append_model(
+    model_id='sys_model_A',
+    sim_configs=sim_config,
+    initial_state=genesis_states,
+    env_processes=env_processes,
+    partial_state_update_blocks=psubs,
+    policy_ops=[lambda a, b: a + b]
+)
+
+system_model_AB_exp.append_model(
+    model_id='sys_model_A',
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_processes,

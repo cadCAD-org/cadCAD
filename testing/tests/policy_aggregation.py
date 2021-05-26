@@ -14,6 +14,7 @@ raw_result, _, _ = run.execute()
 result_df = pd.DataFrame(raw_result)
 
 expected_df = pd.read_pickle("expected_results/policy_agg_4.pkl")
+
 result_diff = dataframe_difference(result_df, expected_df)
 # result_diff = dataframe_difference(result_df, result_df)
 print(tabulate(result_diff, headers='keys', tablefmt='psql'))

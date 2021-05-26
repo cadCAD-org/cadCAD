@@ -4,9 +4,9 @@
 
 See [CHANGELOG](CHANGELOG.md)
 
-The `configs` (System Model Configurations) `list` has been **temporarily** flattened to contain single run 
-`Configuration` objects to support elastic workloads. This functionality will be restored in a subsequent release by a 
-class that returns `configs`'s original representation in ver. `0.3.1`.
+The `cadCAD.configuration.Experiment().configs` (System Model Configurations) `list` has been flattened 
+to contain single run `Configuration` objects. This functionality will be restored in a 
+subsequent release by a class that returns the original representation in ver. `0.3.1`.
 * The conversion utilities have been provided to restore its original representation of configurations with 
 runs >= 1
     * System Configuration Conversions:
@@ -28,8 +28,9 @@ Example:
 * `Configuration` objects at `0x10790e470` and `0x1143dd630` are reconstituted into objects at `0x10790e7b8` 
 and `0x116268908` respectively.
 ```python
-from cadCAD import configs
-flattened_configs = configs
+from ... import exp # import of an instantiated `cadCAD.configuration.Experiment` object 
+
+flattened_configs = exp.configs
          
 print('Flattened Format: Temporary')  
 pprint(flattened_configs)
