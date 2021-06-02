@@ -13,7 +13,7 @@ except ValueError:
     val_error_indicator = True
 
 
-class MultiModelTest(unittest.TestCase):
+class RunExceptionTest(unittest.TestCase):
     def test_multi_model(self):
         self.assertEqual(val_error_indicator, True, "ValueError raised when runs (N) < 1")
 

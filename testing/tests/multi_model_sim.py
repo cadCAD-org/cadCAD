@@ -1,10 +1,4 @@
-import unittest
-from copy import deepcopy
-from pprint import pprint
-
-import pandas as pd
-from tabulate import tabulate
-
+import unittest, pandas as pd
 from cadCAD.configuration import Experiment
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from testing.models import param_sweep, policy_aggregation
@@ -34,8 +28,6 @@ exp.append_model(
     partial_state_update_blocks=policy_aggregation.partial_state_update_block,
     policy_ops=[lambda a, b: a + b, lambda y: y * 2] # Default: lambda a, b: a + b
 )
-
-
 
 simulation = 3
 model_A_sweeps = len(param_sweep.sim_config)
@@ -70,11 +62,7 @@ local_mode_ctx = ExecutionContext(context=exec_mode.local_mode)
 simulation = Executor(exec_context=local_mode_ctx, configs=exp.configs)
 raw_results, _, _ = simulation.execute()
 
-# print(model_C_rows)
-# exit()
 results_df = pd.DataFrame(raw_results)
-# print(tabulate(df, headers='keys', tablefmt='psql'))
-
 param_sweep_df = pd.read_pickle("expected_results/param_sweep_4.pkl")
 policy_agg_df = pd.read_pickle("expected_results/policy_agg_4.pkl")
 param_sweep_df_rows = len(param_sweep_df.index)
@@ -85,28 +73,19 @@ expected_rows_from_api = model_A_rows + model_B_rows + model_C_rows
 result_rows = len(results_df.index)
 
 
-# print(model_A_rows == param_sweep_df_rows)
-# print(model_B_rows == param_sweep_df_rows)
-# print(model_C_rows == policy_agg_df_rows)
-#
-# exit()
-
-# pprint(model_A_rows)
-# pprint(model_B_rows)
-# pprint(model_C_rows)
-# print()
-# pprint(expected_rows)
-# pprint(expected_rows_from_api)
-# pprint(result_rows)
-
 class MultiModelTest(unittest.TestCase):
-    def test_multi_model(self):
+    def test_row_count(self):
         equal_row_count = expected_rows == expected_rows_from_api == result_rows
         self.assertEqual(equal_row_count, True, "Row Count Mismatch between Expected and Multi-Model simulation results")
+    def test_row_count_from_api(self):
         self.assertEqual(expected_rows == expected_rows_from_api, True, "API not producing Expected simulation results")
+    def test_row_count_from_results(self):
         self.assertEqual(expected_rows == result_rows, True, "Engine not producing Expected simulation results")
+    def test_row_count_from_sys_model_A(self):
         self.assertEqual(model_A_rows == param_sweep_df_rows, True, f"{sys_model_A_id}: Row Count Mismatch with Expected results")
+    def test_row_count_from_sys_model_B(self):
         self.assertEqual(model_B_rows == param_sweep_df_rows, True, f"{sys_model_B_id}: Row Count Mismatch with Expected results")
+    def test_row_count_from_sys_model_C(self):
         self.assertEqual(model_C_rows == policy_agg_df_rows, True, f"{sys_model_C_id}: Row Count Mismatch with Expected results")
 
 
