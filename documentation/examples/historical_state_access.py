@@ -4,7 +4,6 @@ from tabulate import tabulate
 from cadCAD.configuration.utils import config_sim, access_block
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from cadCAD.configuration import Experiment
-from cadCAD import configs
 
 policies, variables = {}, {}
 exclusion_list = ['nonexsistant', 'last_x', '2nd_to_last_x', '3rd_to_last_x', '4th_to_last_x']
@@ -88,7 +87,8 @@ sim_config = config_sim(
 )
 
 exp = Experiment()
-exp.append_configs(
+exp.append_model(
+    model_id='hist_state_access',
     sim_configs=sim_config,
     initial_state=genesis_states,
     partial_state_update_blocks=psubs
@@ -96,7 +96,7 @@ exp.append_configs(
 
 exec_mode = ExecutionMode()
 local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=local_proc_ctx, configs=configs)
+run = Executor(exec_context=local_proc_ctx, configs=exp.configs)
 
 raw_result, tensor_field, sessions = run.execute()
 result = pd.DataFrame(raw_result)

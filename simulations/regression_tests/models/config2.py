@@ -1,9 +1,8 @@
 import numpy as np
 from datetime import timedelta
 
-from cadCAD import configs
+from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import bound_norm_random, config_sim, env_trigger, time_step
-from simulations.regression_tests.experiments import config2_exp
 
 seeds = {
     'z': np.random.RandomState(1),
@@ -138,9 +137,10 @@ sim_config_dict = {
 
 
 sim_config = config_sim(sim_config_dict)
-config2_exp.append_configs(
-    config_list=configs,
-    user_id='user_b',
+
+exp = Experiment()
+exp.append_model(
+    model_id='sys_model_1',
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_processes,

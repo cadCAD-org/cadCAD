@@ -3,6 +3,7 @@ from copy import deepcopy
 from functools import reduce
 from funcy import curry
 
+from cadCAD import remote_dict
 from cadCAD.utils import flatten
 from cadCAD.engine.utils import engine_exception
 
@@ -199,7 +200,6 @@ class Executor:
             pipe_run: List[Dict[str, Any]] = self.state_update_pipeline(
                 sweep_dict, simulation_list, configs, env_processes, time_step, run, additional_objs
             )
-
             _, *pipe_run = pipe_run
             simulation_list.append(pipe_run)
 
@@ -221,12 +221,12 @@ class Executor:
         additional_objs=None
     ):
         run += 1
-
         subset_window.appendleft(subset_id)
-        latest_subset_id, previous_subset_id = tuple(subset_window)
 
-        if configured_N == 1 and latest_subset_id > previous_subset_id:
-            run -= 1
+        if remote_dict['metrics'] is not None:
+            simulation_id = remote_dict['metrics']['sim_id']
+            subset_id = remote_dict['metrics']['subset_id']
+            run = remote_dict['metrics']['run']
 
         def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, _run) -> List[Dict[str, Any]]:
             def generate_init_sys_metrics(genesis_states_list, sim_id, _subset_id, _run, _subset_window):

@@ -9,33 +9,36 @@ system is described by a set of [State Variables](#State-Variables). The dynamic
 [Policy Functions](#Policy-Functions) and [State Update Functions](#State-Update-Functions), which are evaluated by 
 cadCAD according to the definitions set by the user in [Partial State Update Blocks](#Partial-State-Update-Blocks).
 
-A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of 
-[Simulation Properties](#Simulation-Properties).
+A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of [Simulation Properties](#Simulation-Properties).
 
-`Experiment`'s `append_configs`, stores a **Simulation Configuration** to be [Executed](Simulation_Execution.md) by cadCAD
+### Experiments
+`cadCAD.configuration.Experiment` is a unique representation of an experiment of one or more configured System Models. 
+The `append_model` method of `Experiment` appends a System Model configurations, each representing a single `run`.
 
 ```python
 from cadCAD.configuration import Experiment
 
 exp = Experiment()
-exp.append_configs(
-    user_id = ..., # OPTIONAL: cadCAD Session User ID
+exp.append_model(
+    model_id = ..., # System Model
     initial_state = ..., # System Model
     partial_state_update_blocks = ..., # System Model
     policy_ops = ..., # System Model
-    sim_configs = ... # Simulation Properties
+    sim_configs = ..., # Simulation Properties
+    user_id = ..., # OPTIONAL: Configuration User ID
 )
 ```
-Parameters:
-* **user_id** : str - OPTIONAL: cadCAD Session User ID
+Parameters: `append_model`
+* **model_id** : str - System Model Identification
 * **initial_state** : _dict_ - [State Variables](#State-Variables) and their initial values
 * **partial_state_update_blocks** : List[dict[dict]] - List of [Partial State Update Blocks](#Partial-State-Update-Blocks)
 * **policy_ops** : List[functions] - See [Policy Aggregation](Policy_Aggregation.md) 
 * **sim_configs** - See [System Model Parameter Sweep](System_Model_Parameter_Sweep.md)
+* **user_id** : str - OPTIONAL: Configuration User ID
 
 ## Simulation Properties
 
-Simulation properties are passed to `append_configs` in the `sim_configs` parameter. To construct this parameter, we 
+Simulation properties are passed to `append_model` in the `sim_configs` parameter. To construct this parameter, we 
 use the `config_sim` function in `cadCAD.configuration.utils`
 
 ```python
@@ -51,7 +54,7 @@ sim_config_dict = {
 c = config_sim(sim_config_dict)
 
 exp = Experiment()
-exp.append_configs(
+exp.append_model(
     ...
     sim_configs = c # Simulation Properties
 )
@@ -98,7 +101,7 @@ absence of any external forces affecting the system. ([source: Wikipedia](https:
 cadCAD can handle state variables of any Python data type, including custom classes. It is up to the user of cadCAD to 
 determine the state variables needed to **sufficiently and accurately** describe the system they are interested in.
 
-State Variables are passed to `append_configs` along with its initial values, as a Python `dict` where the `dict_keys` 
+State Variables are passed to `append_model` along with its initial values, as a Python `dict` where the `dict_keys` 
 are the names of the variables and the `dict_values` are their initial values.
 
 ```python
@@ -112,7 +115,7 @@ genesis_states = {
 }
 
 exp = Experiment()
-exp.append_configs(
+exp.append_model(
     initial_state = genesis_states,
     ...
 )
@@ -200,7 +203,7 @@ impact the State Update Functions and Policy Functions in that PSUB - only those
 
 ![](https://i.imgur.com/9rlX9TG.png)
 
-Partial State Update Blocks are passed to `append_configs` as a List of Python `dicts` where the `dict_keys` are named 
+Partial State Update Blocks are passed to `append_model` as a List of Python `dicts` where the `dict_keys` are named 
 `"policies"` and `"variables"` and the values are also Python `dicts` where the keys are the names of the policy and 
 state update functions and the values are the functions.
 
@@ -226,7 +229,7 @@ PSUBs = [
 ]
 
 exp = Experiment()
-exp.append_configs(
+exp.append_model(
     ...
     partial_state_update_blocks = PSUBs,
     ...

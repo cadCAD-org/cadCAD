@@ -1,10 +1,7 @@
 import unittest
-from pprint import pprint
-
-from parameterized import parameterized
 from functools import reduce
-
 from tabulate import tabulate
+from parameterized import parameterized
 
 
 def generate_assertions_df(df, expected_results, target_cols, evaluations):
@@ -31,8 +28,6 @@ def generate_assertions_df(df, expected_results, target_cols, evaluations):
 
 def make_generic_test(params):
     class TestSequence(unittest.TestCase):
-        # pprint(params)
-
         def generic_test(self, tested_df, expected_reults, test_name):
             erroneous = tested_df[(tested_df[test_name] == False)]
             print(tabulate(tested_df, headers='keys', tablefmt='psql'))

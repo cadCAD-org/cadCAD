@@ -20,8 +20,11 @@ under various conditions. Support for A/B testing policies, Monte Carlo analysis
 provided.
 """
 
-setup(name='cadCAD',
-      version='0.4.21',
+name = "cadCAD"
+version = "0.4.24"
+
+setup(name=name,
+      version=version,
       description=short_description,
       long_description=long_description,
       url='https://github.com/cadCAD-org/cadCAD',
@@ -35,5 +38,5 @@ setup(name='cadCAD',
             "fn",
             "funcy"
       ],
-      python_requires='>=3.6'
+      python_requires='>=3.6.13'
 )

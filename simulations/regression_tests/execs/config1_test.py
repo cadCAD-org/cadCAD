@@ -4,12 +4,11 @@ from tabulate import tabulate
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from simulations.regression_tests.models import config1
-from cadCAD import configs
 
 exec_mode = ExecutionMode()
 
 local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=local_proc_ctx, configs=configs)
+run = Executor(exec_context=local_proc_ctx, configs=config1.exp.configs)
 
 raw_result, tensor_fields, sessions = run.execute()
 result = pd.DataFrame(raw_result)

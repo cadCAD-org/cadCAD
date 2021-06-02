@@ -1,9 +1,9 @@
 import pprint
-from typing import Dict, List
+from typing import Dict, List, Any
 
 # from cadCAD.configuration import append_configs
+from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
-from testing.experiments import exp_param_sweep
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -12,12 +12,10 @@ def some_function(x):
 
 # Optional
 # dict must contain lists opf 2 distinct lengths
-g: Dict[str, List[int]] = {
+g: Dict[str, List[Any]] = {
     'alpha': [1],
     'beta': [2, some_function],
     'gamma': [3, 4],
-    # 'beta': [1],
-    # 'gamma': [4],
     'omega': [7]
 }
 
@@ -84,9 +82,11 @@ sim_config = config_sim(
     }
 )
 
-# New Convention
 partial_state_update_blocks = psub_list(psu_block, psu_steps)
-exp_param_sweep.append_configs(
+
+exp = Experiment()
+exp.append_model(
+    model_id='sys_model_1',
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_process,
