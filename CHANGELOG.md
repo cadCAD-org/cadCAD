@@ -3,7 +3,7 @@
 ### May 21, 2021
 
 ### New Features:
-* **ver. ≥ `0.4.24`:**
+* **ver. ≥ `0.4.25`:**
     * ##### [Experiments](documentation#experiments)
         * ##### [System Model Configurations]
           * Configurations (`cadCAD.utils.Configuration`'s) as are no longer a part of the `cadCAD` module 
