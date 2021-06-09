@@ -1,10 +1,7 @@
 import os, dill
 
 name = "cadCAD"
-version = "0.4.24"
-
-sys_job_metrics = None
-remote_dict = {'metrics': sys_job_metrics}
+version = "0.4.25"
 
 if os.name == 'nt':
     dill.settings['recurse'] = True

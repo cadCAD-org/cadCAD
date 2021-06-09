@@ -3,9 +3,7 @@ from pandas.core.frame import DataFrame
 from datetime import datetime
 from collections import deque
 from copy import deepcopy
-from funcy import curry
 import pandas as pd
-import dill
 
 from cadCAD.utils import key_filter
 from cadCAD.configuration.utils import exo_update_per_ts, configs_as_objs
@@ -49,11 +47,9 @@ class Experiment(object):
     def __init__(self):
         self.exp_creation_ts = str(datetime.utcnow())
         self.configs = []
-        self.ser_configs = []
         self.sys_configs = []
 
         self.model_job_map, self.model_job_counts = {}, {}
-        self.model_ser_job_map, self.model_ser_job_counts = {}, {}
         self.model_ids = list(self.model_job_map.keys())
         self.model_id_queue = []
 
@@ -63,9 +59,6 @@ class Experiment(object):
         self.exp_window = deque([self.exp_id, None], 2)
         self.subset_window = deque([self.subset_id, None], 2)
 
-        # self.sys_job_metrics = None
-        # self.remote_dict = {'metrics': self.sys_job_metrics}
-        # Metric counters sent over network within `Configurations`
 
     def append_model(
             self,
@@ -104,14 +97,12 @@ class Experiment(object):
                     sim_config['simulation_id'] = self.simulation_id
                     sim_config['run_id'] = n
                     sim_config['N'] = 1
-                    # sim_config['N'] = n + 1
                     new_sim_configs.append(deepcopy(sim_config))
                 del sim_config
             else:
                 sim_config['simulation_id'] = self.simulation_id
                 sim_config['run_id'] = 0
                 new_sim_configs.append(deepcopy(sim_config))
-                # del sim_config
 
             sim_cnt_local += 1
 
@@ -177,10 +168,8 @@ class Experiment(object):
 
         for model_id, job in list(zip(new_model_ids, new_configs)):
             self.model_job_map[model_id].append(job)
-            self.model_ser_job_map[model_id] = []
 
         self.model_job_counts = dict([(k, len(v)) for k, v in self.model_job_map.items()])
-        self.model_ser_job_counts = self.model_job_counts
 
     append_configs = append_model
 
