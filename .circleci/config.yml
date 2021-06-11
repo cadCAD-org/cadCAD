@@ -13,8 +13,8 @@ jobs:
       - python/save-cache
       - run: pip install cadCAD==0.4.23
       - run:
-        command: python testing/tests/a_b_tests/multi_model_row_count_0_4_23.py
-        name: Multi Model Row Count (ver. 0.4.23)
+          command: python testing/tests/a_b_tests/multi_model_row_count_0_4_23.py
+          name: Multi Model Row Count (ver. 0.4.23)
       - run: pip install -r requirements.txt --force-reinstall
       - run: python setup.py bdist_wheel
       - run: pip install dist/*.whl --force-reinstall
