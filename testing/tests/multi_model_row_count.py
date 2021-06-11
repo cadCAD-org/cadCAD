@@ -100,7 +100,7 @@ class RowCountTest(unittest.TestCase):
     def test_a_b_row_count(self):
         # file_dir = pathlib.Path(__file__).parent.absolute()
         print(os.getcwd())
-        file_path = f'./a_b_tests/0_4_23_record_count.json'
+        file_path = f'{os.getcwd()}/testing/tests/a_b_tests/0_4_23_record_count.json'
         record_count_0_4_23 = json.load(open(file_path))['record_count']
         record_count_0_4_24 = result_rows
         self.assertEqual(record_count_0_4_24 == record_count_0_4_23, True, "Invalid Row Count for current version")
