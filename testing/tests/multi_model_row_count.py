@@ -97,8 +97,8 @@ class RowCountTest(unittest.TestCase):
     def test_row_count_from_sys_model_C(self):
         self.assertEqual(model_C_rows == policy_agg_df_rows, True, f"{sys_model_C_id}: Row Count Mismatch with Expected results")
     def test_a_b_row_count(self):
-        file_dir = pathlib.Path(__file__).parent.absolute()
-        file_path = f'{file_dir}/0_4_23_record_count.json'
+        # file_dir = pathlib.Path(__file__).parent.absolute()
+        file_path = f'./a_b_tests/0_4_23_record_count.json'
         record_count_0_4_23 = json.load(open(file_path))['record_count']
         record_count_0_4_24 = result_rows
         self.assertEqual(record_count_0_4_24 == record_count_0_4_23, True, "Invalid Row Count for current version")
