@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
-
+  python3.9.5: cimg/python:3.9.5
 jobs:
   test:
     executor: python/default
@@ -36,11 +36,25 @@ jobs:
       - run:
           command: python testing/tests/run1psub0.py
           name: Run Starts at 1 for PSUB 0
+#      - run:
+#          command: python -m unittest discover -s testing/tests -p "*_test.py"
+#          name: Test Suite
+  jupyterServerTest:
+    executor: python3.9.5/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run: pip install -r requirements.txt --force-reinstall
+      - run: python setup.py bdist_wheel
+      - run: pip install dist/*.whl --force-reinstall
       - run:
-          command: python -m unittest discover -s testing/tests -p "*_test.py"
-          name: Test Suite
+          command: python testing/tests/import_cadCAD_test.py
+          name: cadCAD importable by Jupyter Server
 
 workflows:
   main:
     jobs:
       - test
+      - jupyterServerTest

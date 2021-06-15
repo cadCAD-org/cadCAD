@@ -74,13 +74,6 @@ expected_rows = param_sweep_df_rows + param_sweep_df_rows + policy_agg_df_rows
 expected_rows_from_api = model_A_rows + model_B_rows + model_C_rows
 result_rows = len(results_df.index)
 
-# file_dir = pathlib.Path(__file__).parent.absolute()
-# file_path = f'{file_dir}/0_4_24_record_count.json'
-
-# with open(file_path, 'w') as json_file:
-#     record_count_0_4_24 = {'record_count': result_rows}
-#     json.dump(record_count_0_4_24, json_file)
-
 
 class RowCountTest(unittest.TestCase):
     def test_row_count(self):
