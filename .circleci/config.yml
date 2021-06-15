@@ -43,11 +43,11 @@ jobs:
       - image: cimg/python:3.9.5
     steps:
       - checkout
-#      - python/load-cache
-#      - python/install-deps
-#      - python/save-cache
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
       - run: python --version
-      - run: pip install -r requirements.txt --force-reinstall
+      - run: pip install -r requirements.txt
       - run: python setup.py bdist_wheel
       - run: pip install dist/*.whl --force-reinstall
       - run:
