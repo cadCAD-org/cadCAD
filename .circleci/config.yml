@@ -39,8 +39,9 @@ jobs:
 #          command: python -m unittest discover -s testing/tests -p "*_test.py"
 #          name: Test Suite
   jupyterServerTest:
-    docker:
-      - image: cimg/python:3.9.5
+#    docker:
+#      - image: cimg/python:3.9.5
+    executor: python/default
     steps:
       - checkout
       - python/load-cache
@@ -60,4 +61,5 @@ workflows:
   main:
     jobs:
       - test
-      - jupyterServerTest
+      - jupyterServerTest:
+          tag: '3.9.5'
