@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
+  python3_9_5: circleci/python:3.9.5
 jobs:
   test:
     executor: python/default
@@ -41,7 +42,7 @@ jobs:
   jupyterServerTest:
 #    docker:
 #      - image: cimg/python:3.9.5
-    executor: python/default
+    executor: python3_9_5/default
     steps:
       - checkout
       - python/load-cache
@@ -61,8 +62,4 @@ workflows:
   main:
     jobs:
       - test
-      - python/default:
-          tag: '3.9.5'
-      - jupyterServerTest:
-          requires:
-            - python/default
+      - jupyterServerTest
