@@ -13,7 +13,6 @@ pathos==0.2.6
 plotly==4.10.0
 pyarrow>=1.0.1
 pytest==6.0.2
-scipy>=0.19.1
 scikit-learn==0.23.2
 scipy==1.5.2
 seaborn==0.11.0
