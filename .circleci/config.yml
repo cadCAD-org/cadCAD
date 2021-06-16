@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
-  python3_9_5: circleci/python:3.9.5
 jobs:
   test:
     executor: python/default
@@ -41,7 +40,7 @@ jobs:
 #          name: Test Suite
   jupyterServerTest:
     docker:
-      - image: circleci/python:3.9.5
+      - image: cimg/python:3.9.5
 #    executor: python3_9_5/default
     steps:
       - checkout
