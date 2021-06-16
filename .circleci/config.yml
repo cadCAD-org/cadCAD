@@ -40,9 +40,9 @@ jobs:
 #          command: python -m unittest discover -s testing/tests -p "*_test.py"
 #          name: Test Suite
   jupyterServerTest:
-#    docker:
-#      - image: cimg/python:3.9.5
-    executor: python3_9_5/default
+    docker:
+      - image: circleci/python:3.9.5
+#    executor: python3_9_5/default
     steps:
       - checkout
       - python/load-cache
