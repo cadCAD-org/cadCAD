@@ -61,5 +61,8 @@ workflows:
   main:
     jobs:
       - test
-      - jupyterServerTest:
+      - python/default:
           tag: '3.9.5'
+      - jupyterServerTest:
+          requires:
+            - python/default
