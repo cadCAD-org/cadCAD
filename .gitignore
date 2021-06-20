@@ -31,6 +31,7 @@ monkeytype
 venv
 notes.*
 announcement.md
+testing/tests/a_b_tests/venv_0_4_23
 
 
 simulations/tickets

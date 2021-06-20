@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
-
 jobs:
   test:
     executor: python/default
@@ -11,18 +10,22 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - run: pip install -r requirements.txt
-      - run: python setup.py sdist bdist_wheel
-      - run: pip install dist/*.whl
+      - run: pip install cadCAD==0.4.23
+      - run:
+          command: python testing/tests/a_b_tests/multi_model_row_count_0_4_23.py
+          name: Multi Model Row Count (ver. 0.4.23)
+      - run: pip install -r requirements.txt --force-reinstall
+      - run: python setup.py bdist_wheel
+      - run: pip install dist/*.whl --force-reinstall
+      - run:
+          command: python testing/tests/multi_model_row_count.py
+          name: Multi Model Row Count
       - run:
           command: python testing/tests/param_sweep.py
           name: Parameter sweep
       - run:
           command: python testing/tests/policy_aggregation.py
           name: Policy Aggregation
-      - run:
-          command: python testing/tests/multi_model_sim.py
-          name: Multi Model Simulation
       - run:
           command: python testing/tests/timestep1psub0.py
           name: Timestep equals 1 instead of 0 for 1st PSUB
@@ -32,11 +35,30 @@ jobs:
       - run:
           command: python testing/tests/run1psub0.py
           name: Run Starts at 1 for PSUB 0
+#      - run:
+#          command: python -m unittest discover -s testing/tests -p "*_test.py"
+#          name: Test Suite
+  jupyterServerTest:
+    docker:
+      - image: cimg/python:3.9.5
+#    executor: python3_9_5/default
+    steps:
+      - checkout
+      - python/load-cache
+#      - python/install-deps
+#      - python/save-cache
+      - run: python --version
+      - run: pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - python/save-cache
+      - run: python setup.py bdist_wheel
+      - run: pip install dist/*.whl --force-reinstall
       - run:
-          command: python -m unittest discover -s testing/tests -p "*_test.py"
-          name: Test Suite
+          command: python testing/tests/import_cadCAD_test.py
+          name: cadCAD importable by Jupyter Server
 
 workflows:
   main:
     jobs:
       - test
+      - jupyterServerTest

@@ -1,3 +1,5 @@
+import json
+import os
 import unittest, pandas as pd
 from cadCAD.configuration import Experiment
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
@@ -73,7 +75,7 @@ expected_rows_from_api = model_A_rows + model_B_rows + model_C_rows
 result_rows = len(results_df.index)
 
 
-class MultiModelTest(unittest.TestCase):
+class RowCountTest(unittest.TestCase):
     def test_row_count(self):
         equal_row_count = expected_rows == expected_rows_from_api == result_rows
         self.assertEqual(equal_row_count, True, "Row Count Mismatch between Expected and Multi-Model simulation results")
@@ -87,6 +89,11 @@ class MultiModelTest(unittest.TestCase):
         self.assertEqual(model_B_rows == param_sweep_df_rows, True, f"{sys_model_B_id}: Row Count Mismatch with Expected results")
     def test_row_count_from_sys_model_C(self):
         self.assertEqual(model_C_rows == policy_agg_df_rows, True, f"{sys_model_C_id}: Row Count Mismatch with Expected results")
+    def test_a_b_row_count(self):
+        file_path = f'{os.getcwd()}/testing/tests/a_b_tests/0_4_23_record_count.json'
+        record_count_0_4_23 = json.load(open(file_path))['record_count']
+        record_count_0_4_24 = result_rows
+        self.assertEqual(record_count_0_4_24 > record_count_0_4_23, True, "Invalid Row Count for current version")
 
 
 if __name__ == '__main__':
