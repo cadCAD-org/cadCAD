@@ -49,13 +49,14 @@ jobs:
 #      - python/save-cache
       - run: python --version
       - run: pip install --upgrade pip
-      - run: pip install -r requirements.txt
-      - python/save-cache
-      - run: python setup.py bdist_wheel
-      - run: pip install dist/*.whl --force-reinstall
-      - run:
-          command: python testing/tests/import_cadCAD_test.py
-          name: cadCAD importable by Jupyter Server
+      - run: pip install numpy==1.5.2
+#      - run: pip install -r requirements.txt
+#      - python/save-cache
+#      - run: python setup.py bdist_wheel
+#      - run: pip install dist/*.whl --force-reinstall
+#      - run:
+#          command: python testing/tests/import_cadCAD_test.py
+#          name: cadCAD importable by Jupyter Server
 
 workflows:
   main:
