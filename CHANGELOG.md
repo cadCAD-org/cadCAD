@@ -1,16 +1,32 @@
 # Changelog:
 
 ### May 21, 2021
-* **ver. ≥ `0.4.24`:**
-    * **Hot-Fixes:** 
-        * [#257](https://github.com/cadCAD-org/cadCAD/issues/257)
-            * The `append_model` method of `cadCAD.configuration.Experiment` will no longer throw mis-leading error message 
-              during simulation execution.
-        * [#242](https://github.com/cadCAD-org/cadCAD/issues/242)
-            * Parallelized simulations re-enabled with the re-inclusion of `ProcessPool`.
-        * [#250](https://github.com/cadCAD-org/cadCAD/issues/250)
-            * First Partial State Update Block at first timestep no longer equals to 0 instead of the expected 1 in simulation 
-              output.
+
+### New Features:
+* **ver. ≥ `0.4.25`:**
+    * ##### [Experiments](documentation#experiments)
+        * ##### [System Model Configurations]
+          * Configurations (`cadCAD.utils.Configuration`'s) as are no longer a part of the `cadCAD` module 
+            (as `cadCAD.configs`) and are now accessed via the `configs` member of `cadCAD.configuration.Experiment`.
+            [Example:](documentation#experiments) `cadCAD.configuration.Experiment().configs`
+        * `cadCAD.configuration.Experiment` is unique representation of an experiment of one or more configured System 
+        Models. An `Experiment`'s `append_model` method stores multiple system model `Configuration`'s for simulation 
+        execution.
+            * The `Experiment`'s `append_model` method requires a `model_id` parameter that is auto-created as `'sys_model_#'`.
+            * **Requirements:** 
+              * Users must use different `model_id`'s when appending multiple System Model Configurations.
+              * Users can no longer use the `config_list` method of `cadCAD.configuration.Experiment`
+            * **Backwards Compatibility:** The `append_model` method of `cadCAD.configuration.Experiment` can also be used as 
+              the `append_configs` method.
+* **Hot-Fixes:** 
+    * [#257](https://github.com/cadCAD-org/cadCAD/issues/257)
+        * The `append_model` method of `cadCAD.configuration.Experiment` will no longer throw mis-leading error message 
+          during simulation execution.
+    * [#242](https://github.com/cadCAD-org/cadCAD/issues/242)
+        * Parallelized simulations re-enabled with the re-inclusion of `ProcessPool`.
+    * [#250](https://github.com/cadCAD-org/cadCAD/issues/250)
+        * First Partial State Update Block at first timestep no longer equals to 0 instead of the expected 1 in simulation 
+          output.
 
 
 ### September 22, 2020

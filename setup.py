@@ -21,7 +21,7 @@ provided.
 """
 
 name = "cadCAD"
-version = "0.4.24"
+version = "0.4.25"
 
 setup(name=name,
       version=version,
@@ -38,5 +38,5 @@ setup(name=name,
             "fn",
             "funcy"
       ],
-      python_requires='>=3.6.8'
+      python_requires='>=3.6.13'
 )

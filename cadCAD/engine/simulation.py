@@ -3,7 +3,6 @@ from copy import deepcopy
 from functools import reduce
 from funcy import curry
 
-from cadCAD import remote_dict
 from cadCAD.utils import flatten
 from cadCAD.engine.utils import engine_exception
 
@@ -222,11 +221,6 @@ class Executor:
     ):
         run += 1
         subset_window.appendleft(subset_id)
-
-        if remote_dict['metrics'] is not None:
-            simulation_id = remote_dict['metrics']['sim_id']
-            subset_id = remote_dict['metrics']['subset_id']
-            run = remote_dict['metrics']['run']
 
         def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, _run) -> List[Dict[str, Any]]:
             def generate_init_sys_metrics(genesis_states_list, sim_id, _subset_id, _run, _subset_window):
