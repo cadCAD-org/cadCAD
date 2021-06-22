@@ -54,6 +54,7 @@ jobs:
       - python/save-cache
       - run: python setup.py bdist_wheel
       - run: pip install dist/*.whl --force-reinstall
+      - run: ls
       - run:
           command: python testing/tests/import_cadCAD_test.py
           name: cadCAD importable by Jupyter Server
