@@ -5,7 +5,7 @@ class JupyterServerTest(unittest.TestCase):
         command = 'jupyter nbconvert --to=notebook --ExecutePreprocessor.enabled=True import_cadCAD.ipynb'
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         process.communicate()
-        json_path = f'{os.getcwd()}/testing/tests/expected_results/cadCAD_memory_address.json'
+        json_path = f'/testing/tests/expected_results/cadCAD_memory_address.json'
         memory_address = json.load(open(json_path))['memory_address']
         self.assertEqual(type(memory_address) == str, True, "cadCAD is not importable by jupyter server")
 
