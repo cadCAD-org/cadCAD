@@ -41,16 +41,11 @@ jobs:
   jupyterServerTest:
     docker:
       - image: cimg/python:3.9.5
-#    executor: python3_9_5/default
     steps:
       - checkout
       - python/load-cache
-#      - python/install-deps
-#      - python/save-cache
-#      - run: python --version
-      - run: ls testing/tests
+      - run: python --version
       - run: pip install --upgrade pip
-#      - run: pip install -r requirements.txt
       - run: pip install jupyter
       - python/save-cache
       - run: python setup.py bdist_wheel
