@@ -48,7 +48,7 @@ jobs:
 #      - python/install-deps
 #      - python/save-cache
 #      - run: python --version
-      - run: ls testing/test
+      - run: ls testing/tests
       - run: pip install --upgrade pip
 #      - run: pip install -r requirements.txt
       - run: pip install jupyter
