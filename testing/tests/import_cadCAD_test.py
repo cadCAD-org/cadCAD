@@ -2,7 +2,7 @@ import unittest, os, subprocess, json
 
 class JupyterServerTest(unittest.TestCase):
     def test_row_count(self):
-        command = 'jupyter nbconvert --to=notebook --ExecutePreprocessor.enabled=True import_cadCAD.ipynb'
+        command = f'jupyter nbconvert --to=notebook --ExecutePreprocessor.enabled=True {os.getcwd()}/import_cadCAD.ipynb'
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         process.communicate()
         json_path = f'{os.getcwd()}/cadCAD_memory_address.json'
