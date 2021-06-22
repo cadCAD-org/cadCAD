@@ -48,14 +48,12 @@ jobs:
 #      - python/install-deps
 #      - python/save-cache
 #      - run: python --version
-#      - run: pip install --upgrade pip
+      - run: pip install --upgrade pip
 #      - run: pip install -r requirements.txt
-#      - run: pip install jupyter
-#      - python/save-cache
-#      - run: python setup.py bdist_wheel
-#      - run: pip install dist/*.whl --force-reinstall
-      - run: ls testing
-      - run: ls testing/expected_results
+      - run: pip install jupyter
+      - python/save-cache
+      - run: python setup.py bdist_wheel
+      - run: pip install dist/*.whl --force-reinstall
       - run:
           command: python testing/tests/import_cadCAD_test.py
           name: cadCAD importable by Jupyter Server
