@@ -80,7 +80,7 @@ in the simulation. In other words, for how long do they want to simulate the sys
 
 cadCAD facilitates running multiple simulations of the same system sequentially, reporting the results of all those 
 runs in a single dataset. This is especially helpful for running 
-[Monte Carlo Simulations](../tutorials/robot-marbles-part-4/robot-marbles-part-4.ipynb).
+[Monte Carlo Simulations](https://github.com/cadCAD-org/demos/blob/master/tutorials/robots_and_marbles/robot-marbles-part-4/robot-marbles-part-4.ipynb).
 
 ### M - Parameters of the System
 
@@ -149,7 +149,7 @@ cadCAD relies on in order to run the simulation according to the specifications.
 ### Policy Functions
 A Policy Function computes one or more signals to be passed to [State Update Functions](#State-Update-Functions) 
 (via the _\_input_ parameter). Read 
-[this article](../tutorials/robot-marbles-part-2/robot-marbles-part-2.ipynb) 
+[this article](https://github.com/cadCAD-org/demos/blob/master/tutorials/robots_and_marbles/robot-marbles-part-2/robot-marbles-part-2.ipynb) 
 for details on why and when to use policy functions.
 
 <!-- We would then expand the tutorials with these kind of concepts
