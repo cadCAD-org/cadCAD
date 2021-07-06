@@ -4,6 +4,7 @@ from typing import Dict, List, Any
 # from cadCAD.configuration import append_configs
 from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
+from simulations.regression_tests.experiments import multi_exp
 
 
 def some_function(x):
@@ -86,6 +87,13 @@ partial_state_update_blocks = psub_list(psu_block, psu_steps)
 exp = Experiment()
 exp.append_model(
     model_id='sys_model_1',
+    sim_configs=sim_config,
+    initial_state=genesis_states,
+    env_processes=env_process,
+    partial_state_update_blocks=partial_state_update_blocks
+)
+multi_exp.append_model(
+    model_id='sys_model_2',
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_process,

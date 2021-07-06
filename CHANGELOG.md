@@ -1,9 +1,8 @@
 # Changelog:
 
-### May 21, 2021
-
-### New Features:
-* **ver. ≥ `0.4.25`:**
+### July 1, 2021
+#### New Features:
+* **ver. ≥ `0.4.26`:**
     * ##### [Experiments](documentation#experiments)
         * ##### [System Model Configurations]
           * Configurations (`cadCAD.utils.Configuration`'s) as are no longer a part of the `cadCAD` module 
@@ -18,17 +17,20 @@
               * Users can no longer use the `config_list` method of `cadCAD.configuration.Experiment`
             * **Backwards Compatibility:** The `append_model` method of `cadCAD.configuration.Experiment` can also be used as 
               the `append_configs` method.
-* **Hot-Fixes:** 
-    * [#257](https://github.com/cadCAD-org/cadCAD/issues/257)
-        * The `append_model` method of `cadCAD.configuration.Experiment` will no longer throw mis-leading error message 
-          during simulation execution.
+    * ##### [Upgrade Guide:](documentation#cadCAD-v0.4.26-Model-Upgrade-Guide.md) specific to feature changes / additions
+* **Fixes:** 
+    * [#248](https://github.com/cadCAD-org/cadCAD/issues/248)
+        * The previous release was returning partial results. An A/B test for this has been included and will be for 
+          future releases
     * [#242](https://github.com/cadCAD-org/cadCAD/issues/242)
-        * Parallelized simulations re-enabled with the re-inclusion of `ProcessPool`.
-    * [#250](https://github.com/cadCAD-org/cadCAD/issues/250)
-        * First Partial State Update Block at first timestep no longer equals to 0 instead of the expected 1 in simulation 
-          output.
+        * Parallelized simulations enabled with the re-inclusion of `ProcessPool`.
+    * [#257](https://github.com/cadCAD-org/cadCAD/issues/257)
+        * ValueError for runs accepted by the `cadCAD.configuration.Experiment().append_model` via the `sim_configs` no
+          longer gives mis-leading error message if catching a non-related ValueError
+    * [#252](https://github.com/cadCAD-org/cadCAD/issues/252)
+        * Jupyter lab and Jupyter notebook recognises cadCAD module
 
-
+    
 ### September 22, 2020
 ##### [Multi - System Model Execution](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/Simulation_Execution.md#multiple-simulation-execution)
 * **ver. ≥ `0.4.23`:**
