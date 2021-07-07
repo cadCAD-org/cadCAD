@@ -21,7 +21,7 @@ provided.
 """
 
 name = "cadCAD"
-version = "0.4.26"
+version = "0.4.27"
 
 setup(name=name,
       version=version,
