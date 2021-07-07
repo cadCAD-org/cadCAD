@@ -47,16 +47,16 @@ $
 ## 1. Installation: 
 Requires [>= Python 3.6](https://www.python.org/downloads/) 
 
-**Option A: Install Using [pip](https://pypi.org/project/cadCAD/)** 
+**Option A: Install Using **[pip](https://test.pypi.org/project/cadCAD/0.4.27/)** 
 ```bash
-$ pip3 install cadCAD
+pip3 install -i https://test.pypi.org/simple/ cadCAD==0.4.27
 ```
 
 **Option B:** Build From Source
 ```
-$ pip3 install -r requirements.txt
-$ python3 setup.py sdist bdist_wheel
-$ pip3 install dist/*.whl
+pip3 install -r requirements.txt
+python3 setup.py sdist bdist_wheel
+pip3 install dist/*.whl
 ```
 
 ## 2. Documentation:
