@@ -4,7 +4,7 @@
             Feature
         </th>
         <th>
-            ver. 0.4.26
+            ver. 0.4.27
         </th>
       <th>
             ver. 0.4.23
