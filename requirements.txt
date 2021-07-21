@@ -6,7 +6,7 @@ funcy==1.14
 matplotlib==3.3.2
 networkx==2.5
 numba==0.51.2
-numpy==1.19.2
+numpy==1.19.5
 pandas==1.1.2
 parameterized==0.7.4
 pathos==0.2.6
