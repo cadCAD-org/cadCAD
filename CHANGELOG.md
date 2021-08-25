@@ -17,7 +17,7 @@
               * Users can no longer use the `config_list` method of `cadCAD.configuration.Experiment`
             * **Backwards Compatibility:** The `append_model` method of `cadCAD.configuration.Experiment` can also be used as 
               the `append_configs` method.
-    * ##### [Upgrade Guide:](https://github.com/cadCAD-org/cadCAD/blob/staging/documentation/cadCAD-v0.4.27-Model-Upgrade-Guide.md) specific to feature changes / additions
+    * ##### [Upgrade Guide:](https://github.com/cadCAD-org/cadCAD/blob/main/documentation/cadCAD-v0.4.27-Model-Upgrade-Guide.md) specific to feature changes / additions
 * **Fixes:** 
     * [#248](https://github.com/cadCAD-org/cadCAD/issues/248)
         * The previous release was returning partial results. An A/B test for this has been included and will be for 

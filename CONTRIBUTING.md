@@ -31,14 +31,14 @@ Contributing to an existing feature:
 7. PR is queued for review
 8. PR Reviewed (Update necessary if rejected)
 9. PR Approved (There may be circumstances delaying the merge.)
-10. Your contribution merged into next feature release on `org:master`
+10. Your contribution merged into next feature release on `org:main`
 
 ### Recommended Strategy: [Rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
 1. Add cadCAD-org/cadCAD as remote within you forked project locally.
-2. `git checkout remote/master`
-3. `git pull remote master`
+2. `git checkout remote/main`
+3. `git pull remote main`
 4. `git checkout your_branch`
-5. `git rebase master`
+5. `git rebase main`
 6. Resolve merge conflicts (while leveraging rebase commands)
 7. `git push fork your_branch`
 
