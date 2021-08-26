@@ -1,6 +1,6 @@
 # Changelog:
 
-### July 7, 2021
+### August 25, 2021
 #### New Features:
 * **ver. ≥ `0.4.27`:**
     * ##### [Experiments](documentation#experiments)
@@ -17,7 +17,8 @@
               * Users can no longer use the `config_list` method of `cadCAD.configuration.Experiment`
             * **Backwards Compatibility:** The `append_model` method of `cadCAD.configuration.Experiment` can also be used as 
               the `append_configs` method.
-    * ##### [Upgrade Guide:](https://github.com/cadCAD-org/cadCAD/blob/main/documentation/cadCAD-v0.4.27-Model-Upgrade-Guide.md) specific to feature changes / additions
+    * Removed [Nix](https://nixos.org/)
+    * ##### [Upgrade Guide:](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/cadCAD-v0.4.27-Model-Upgrade-Guide.md) specific to feature changes / additions
 * **Fixes:** 
     * [#248](https://github.com/cadCAD-org/cadCAD/issues/248)
         * The previous release was returning partial results. An A/B test for this has been included and will be for 
