@@ -1,17 +1,9 @@
 -i https://pypi.org/simple
 
-wheel>=0.35
-fn==0.4.3
-funcy==1.14
 matplotlib==3.3.2
 networkx==2.5
-numba==0.51.2
-numpy==1.19.2
-pandas==1.1.2
 parameterized==0.7.4
-pathos==0.2.6
 plotly==4.10.0
-pyarrow>=1.0.1
 pytest==6.0.2
 scikit-learn==0.23.2
 scipy>=1.5.2
@@ -19,4 +11,11 @@ seaborn==0.11.0
 tabulate==0.8.7
 xarray==0.16.0
 wheel==0.36.2
-pytz==2019.3
+pandas==1.1.5
+fn==0.4.3
+funcy==1.16
+dill==0.3.4
+pathos==0.2.8
+numpy==1.19.5
+pytz==2021.1
+six>=1.11.0
