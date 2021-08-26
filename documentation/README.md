@@ -133,7 +133,7 @@ Parameters:
 * **_params** : _dict_ - [System parameters](System_Model_Parameter_Sweep.md)
 * **substep** : _int_ - Current [substep](#Substep)
 * **sH** : _list[list[dict_]] - Historical values of all state variables for the simulation. See 
-[Historical State Access](Historically_State_Access.md) for details
+[Historical State Access (DEPRECATED)](Historically_State_Access.md) for details
 * **s** : _dict_ - Current state of the system, where the `dict_keys` are the names of the state variables and the 
 `dict_values` are their current values.
 * **_input** : _dict_ - Aggregation of the signals of all policy functions in the current 
@@ -176,7 +176,7 @@ Parameters:
 * **_params** : _dict_ - [System parameters](System_Model_Parameter_Sweep.md)
 * **substep** : _int_ - Current [substep](#Substep)
 * **sH** : _list[list[dict_]] - Historical values of all state variables for the simulation. See 
-[Historical State Access](Historically_State_Access.md) for details
+[Historical State Access (DEPRECATED)](Historically_State_Access.md) for details
 * **s** : _dict_ - Current state of the system, where the `dict_keys` are the names of the state variables and the 
 `dict_values` are their current values.
 * **\*\*kwargs** - Policy Update feature extensions 
