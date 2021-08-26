@@ -12,13 +12,13 @@ params = {
     'omega': [7]
 }
 ```
-The parameters above produce 2 simulations.
-* Simulation 1: 
+The parameters above produce 2 Runs per Simulation.
+* Run 1: 
     * `alpha = 1`
     * `beta = 2`
     * `gamma = 3`
     * `omega = 7`
-* Simulation 2:
+* Run 2:
     * `alpha = 1`
     * `beta = 5`
     * `gamma = 4`
