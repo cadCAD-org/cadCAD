@@ -1,8 +1,7 @@
 import os, dill
 
 name = "cadCAD"
-configs = []
-global experiment_count
+version = "0.4.27"
 
 if os.name == 'nt':
     dill.settings['recurse'] = True

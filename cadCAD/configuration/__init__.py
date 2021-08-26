@@ -1,98 +1,113 @@
 from typing import Dict, Callable, List, Tuple
 from pandas.core.frame import DataFrame
+from datetime import datetime
 from collections import deque
 from copy import deepcopy
 import pandas as pd
 
-from cadCAD import configs
 from cadCAD.utils import key_filter
-from cadCAD.configuration.utils import exo_update_per_ts
+from cadCAD.configuration.utils import exo_update_per_ts, configs_as_objs
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates, sanitize_config
 
 
-class Configuration(object):
-    def __init__(self, user_id, subset_id, subset_window, sim_config={}, initial_state={}, seeds={}, env_processes={},
+class Configuration():
+    def __init__(self, user_id, model_id, subset_id, subset_window, sim_config={}, initial_state={}, seeds={}, env_processes={},
                  exogenous_states={}, partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b],
-                 session_id=0, simulation_id=0, run_id=1, experiment_id=0, exp_window=deque([0, None], 2), **kwargs
+                 session_id=0, simulation_id=0, run_id=1, experiment_id=0, exp_window=deque([0, None], 2),
+                 exp_creation_ts=None, **kwargs
     ) -> None:
         self.sim_config = sim_config
         self.initial_state = initial_state
         self.seeds = seeds
         self.env_processes = env_processes
         self.exogenous_states = exogenous_states
-        self.partial_state_updates = partial_state_update_blocks
+        self.partial_state_update_blocks = partial_state_update_blocks
         self.policy_ops = policy_ops
         self.kwargs = kwargs
 
-        self.user_id = user_id
-        self.session_id = session_id # essentially config id
-        self.simulation_id = simulation_id
-        self.run_id = run_id
+        self.session_id = session_id  # essentially config id
+
         self.experiment_id = experiment_id
-        self.exp_window = exp_window
+        self.user_id = user_id
+        self.model_id = model_id
+        self.exp_creation_ts = exp_creation_ts
+
+        self.labeled_jobs = {}
+        self.simulation_id = simulation_id
         self.subset_id = subset_id
+        self.run_id = run_id
+
+        self.exp_window = exp_window
         self.subset_window = subset_window
 
         sanitize_config(self)
 
 
-class Experiment:
+class Experiment(object):
     def __init__(self):
+        self.exp_creation_ts = str(datetime.utcnow())
+        self.configs = []
+        self.sys_configs = []
+
+        self.model_job_map, self.model_job_counts = {}, {}
+        self.model_ids = list(self.model_job_map.keys())
+        self.model_id_queue = []
+
         self.exp_id = 0
+        self.simulation_id = -1
         self.subset_id = 0
         self.exp_window = deque([self.exp_id, None], 2)
         self.subset_window = deque([self.subset_id, None], 2)
 
-    def append_configs(
+
+    def append_model(
             self,
             user_id='cadCAD_user',
+            model_id='sys_model_#',
             sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
-            partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True,
-            config_list=configs
+            partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True, **kwargs
+            # config_list=deepcopy(global_configs)
     ) -> None:
+        _sim_configs = deepcopy(sim_configs)
+        # self.configs = config_list
+        self.simulation_id += 1
 
         try:
-            max_runs = sim_configs[0]['N']
+            max_runs = _sim_configs[0]['N']
         except KeyError:
-            max_runs = sim_configs['N']
+            max_runs = _sim_configs['N']
 
         if _exo_update_per_ts is True:
             exogenous_states = exo_update_per_ts(raw_exogenous_states)
         else:
             exogenous_states = raw_exogenous_states
 
-        if isinstance(sim_configs, dict):
-            sim_configs = [sim_configs]
+        if isinstance(_sim_configs, dict):
+            _sim_configs = [_sim_configs]
 
-        simulation_id = 0
-        if len(config_list) > 0:
-            last_config = config_list[-1]
-            simulation_id = last_config.simulation_id + 1
-
-        sim_cnt = 0
+        sim_cnt_local = 0
         new_sim_configs = []
-        for subset_id, t in enumerate(list(zip(sim_configs, list(range(len(sim_configs)))))):
+        for subset_id, t in enumerate(list(zip(_sim_configs, list(range(len(_sim_configs)))))):
             sim_config = t[0]
             sim_config['subset_id'] = subset_id
             sim_config['subset_window'] = self.subset_window
             N = sim_config['N']
             if N > 1:
                 for n in range(N):
-                    sim_config['simulation_id'] = simulation_id + sim_cnt
+                    sim_config['simulation_id'] = self.simulation_id
                     sim_config['run_id'] = n
                     sim_config['N'] = 1
-                    # sim_config['N'] = n + 1
                     new_sim_configs.append(deepcopy(sim_config))
                 del sim_config
             else:
-                sim_config['simulation_id'] = simulation_id
+                sim_config['simulation_id'] = self.simulation_id
                 sim_config['run_id'] = 0
                 new_sim_configs.append(deepcopy(sim_config))
-                # del sim_config
 
-            sim_cnt += 1
+            sim_cnt_local += 1
 
         run_id = 0
+        new_model_ids, new_configs = [], []
         for sim_config in new_sim_configs:
             subset_id = sim_config['subset_id']
             sim_config['N'] = run_id + 1
@@ -104,6 +119,8 @@ class Experiment:
 
             self.exp_window = deepcopy(self.exp_window)
             config = Configuration(
+                exp_creation_ts=self.exp_creation_ts,
+
                 sim_config=sim_config,
                 initial_state=initial_state,
                 seeds=seeds,
@@ -114,19 +131,47 @@ class Experiment:
 
                 # session_id=session_id,
                 user_id=user_id,
+                model_id=model_id,
                 session_id=f"{user_id}={sim_config['simulation_id']}_{sim_config['run_id']}",
-                simulation_id=sim_config['simulation_id'],
-                run_id=sim_config['run_id'],
 
                 experiment_id=self.exp_id,
-                exp_window=self.exp_window,
+                simulation_id=self.simulation_id,
                 subset_id=subset_id,
+                run_id=sim_config['run_id'],
+
+                exp_window=self.exp_window,
                 subset_window=self.subset_window
             )
-            configs.append(config)
+
+            # self.configs.append(config)
+            new_configs.append(config)
+            new_model_ids.append(model_id)
             run_id += 1
+        self.configs += new_configs
+        self.model_id_queue += new_model_ids
         self.exp_id += 1
         self.exp_window.appendleft(self.exp_id)
+        self.sys_configs += configs_as_objs(new_configs)
+
+        unique_new_model_ids = list(set(new_model_ids))
+        new_model_job_list = [(model_id, []) for model_id in unique_new_model_ids]
+        for model_id, v in new_model_job_list:
+            if model_id not in self.model_ids:
+                self.model_job_map[model_id] = v
+                self.model_ids.append(model_id)
+            else:
+                except_str = f"""
+                    Error: Duplicate model_id in Experiment - \'{model_id}\' in {self.model_ids} 
+                    -- Specify unique model_id for each use of `.append_config` per `Experiment()`
+                """
+                raise Exception(except_str)
+
+        for model_id, job in list(zip(new_model_ids, new_configs)):
+            self.model_job_map[model_id].append(job)
+
+        self.model_job_counts = dict([(k, len(v)) for k, v in self.model_job_map.items()])
+
+    append_configs = append_model
 
 
 class Identity:

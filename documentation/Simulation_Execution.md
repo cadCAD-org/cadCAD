@@ -8,11 +8,11 @@ Configurations. There are multiple simulation Execution Modes and Execution Cont
 `cadCAD` executes a process per System Model Configuration and a thread per System Simulation.
 #### Class: `cadCAD.engine.ExecutionMode`
 #### Attributes:
-* **Local Mode (Default):** Automatically selects Single Threaded or Multi-Process/Threaded Modes (Example: 
+* **Local Mode (Default):** Automatically selects Single Threaded or Multi-Process Modes (Example: 
 `cadCAD.engine.ExecutionMode().local_mode`).
 * **Single Threaded Mode:** A single threaded Execution Mode for a single System Model Configuration (Example: 
 `cadCAD.engine.ExecutionMode().single_mode`).
-* **Multi-Process/Threaded Mode:** Execution Mode for System Model Simulations which executes Multiple threads within 
+* **Multi-Process Mode:** Execution Mode for System Model Simulations which executes Multiple processes within 
 multiple processes per given System Model Configuration (Example: `cadCAD.engine.ExecutionMode().multi_mode`).
 
 ### 2. *Create Execution Context using Execution Mode*
@@ -25,8 +25,8 @@ local_mode_ctx = ExecutionContext(context=exec_mode.local_mode)
 ### 3. *Create Simulation Executor*
 ```python
 from cadCAD.engine import Executor
-from cadCAD import configs
-simulation = Executor(exec_context=local_mode_ctx, configs=configs)
+from ... import exp # import of an instantiated of an `cadCAD.configuration.Experiment` object 
+simulation = Executor(exec_context=local_mode_ctx, configs=exp.configs)
 ```
 
 ### 4. *Execute Simulation & Produce System Event Dataset*
@@ -86,14 +86,14 @@ import pandas as pd
 from tabulate import tabulate
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from documentation.examples import sys_model_A
-from cadCAD import configs
+from documentation.examples.sys_model_A import exp
 
 exec_mode = ExecutionMode()
 
 # Single Process Execution using a Single System Model Configuration:
 # sys_model_A
 local_mode_ctx = ExecutionContext(context=exec_mode.local_mode)
-sys_model_A_simulation = Executor(exec_context=local_mode_ctx, configs=configs)
+sys_model_A_simulation = Executor(exec_context=local_mode_ctx, configs=exp.configs)
 
 sys_model_A_raw_result, sys_model_A_tensor_field, sessions = sys_model_A_simulation.execute()
 sys_model_A_result = pd.DataFrame(sys_model_A_raw_result)
@@ -119,15 +119,14 @@ import pandas as pd
 from tabulate import tabulate
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from documentation.examples import sys_model_A, sys_model_B
-from cadCAD import configs
+from documentation.examples import sys_model_A, sys_model_B, system_model_AB_exp
 
 exec_mode = ExecutionMode()
 
 # # Multiple Processes Execution using Multiple System Model Configurations:
 # # sys_model_A & sys_model_B
 local_mode_ctx = ExecutionContext(context=exec_mode.local_mode)
-sys_model_AB_simulation = Executor(exec_context=local_mode_ctx, configs=configs)
+sys_model_AB_simulation = Executor(exec_context=local_mode_ctx, configs=system_model_AB_exp.configs)
 
 sys_model_AB_raw_result, sys_model_AB_tensor_field, sessions = sys_model_AB_simulation.execute()
 sys_model_AB_result = pd.DataFrame(sys_model_AB_raw_result)
@@ -148,11 +147,11 @@ from tabulate import tabulate
 
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from documentation.examples import param_sweep
-from cadCAD import configs
+from documentation.examples.param_sweep import exp
 
 exec_mode = ExecutionMode()
 local_mode_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=local_mode_ctx, configs=configs)
+run = Executor(exec_context=local_mode_ctx, configs=exp.configs)
 
 raw_result, tensor_field, sessions = run.execute()
 result = pd.DataFrame(raw_result)

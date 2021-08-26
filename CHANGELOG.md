@@ -1,5 +1,36 @@
 # Changelog:
 
+### July 7, 2021
+#### New Features:
+* **ver. ≥ `0.4.27`:**
+    * ##### [Experiments](documentation#experiments)
+        * ##### [System Model Configurations]
+          * Configurations (`cadCAD.utils.Configuration`'s) as are no longer a part of the `cadCAD` module 
+            (as `cadCAD.configs`) and are now accessed via the `configs` member of `cadCAD.configuration.Experiment`.
+            [Example:](documentation#experiments) `cadCAD.configuration.Experiment().configs`
+        * `cadCAD.configuration.Experiment` is unique representation of an experiment of one or more configured System 
+        Models. An `Experiment`'s `append_model` method stores multiple system model `Configuration`'s for simulation 
+        execution.
+            * The `Experiment`'s `append_model` method requires a `model_id` parameter that is auto-created as `'sys_model_#'`.
+            * **Requirements:** 
+              * Users must use different `model_id`'s when appending multiple System Model Configurations.
+              * Users can no longer use the `config_list` method of `cadCAD.configuration.Experiment`
+            * **Backwards Compatibility:** The `append_model` method of `cadCAD.configuration.Experiment` can also be used as 
+              the `append_configs` method.
+    * ##### [Upgrade Guide:](documentation#cadCAD-v0.4.27-Model-Upgrade-Guide.md) specific to feature changes / additions
+* **Fixes:** 
+    * [#248](https://github.com/cadCAD-org/cadCAD/issues/248)
+        * The previous release was returning partial results. An A/B test for this has been included and will be for 
+          future releases
+    * [#242](https://github.com/cadCAD-org/cadCAD/issues/242)
+        * Parallelized simulations enabled with the re-inclusion of `ProcessPool`.
+    * [#257](https://github.com/cadCAD-org/cadCAD/issues/257)
+        * ValueError for runs accepted by the `cadCAD.configuration.Experiment().append_model` via the `sim_configs` no
+          longer gives mis-leading error message if catching a non-related ValueError
+    * [#252](https://github.com/cadCAD-org/cadCAD/issues/252)
+        * Jupyter lab and Jupyter notebook recognises cadCAD module
+
+    
 ### September 22, 2020
 ##### [Multi - System Model Execution](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/Simulation_Execution.md#multiple-simulation-execution)
 * **ver. ≥ `0.4.23`:**

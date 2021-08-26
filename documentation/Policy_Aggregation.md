@@ -49,7 +49,7 @@ def p2_psu3(_params, step, sH, s, **kwargs):
 from cadCAD.configuration import Experiment
 
 exp = Experiment()
-exp.append_configs(
+exp.append_model(
     sim_configs=???,
     initial_state=???,
     partial_state_update_blocks=???,

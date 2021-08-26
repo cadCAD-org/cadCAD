@@ -220,12 +220,7 @@ class Executor:
         additional_objs=None
     ):
         run += 1
-
         subset_window.appendleft(subset_id)
-        latest_subset_id, previous_subset_id = tuple(subset_window)
-
-        if configured_N == 1 and latest_subset_id > previous_subset_id:
-            run -= 1
 
         def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, _run) -> List[Dict[str, Any]]:
             def generate_init_sys_metrics(genesis_states_list, sim_id, _subset_id, _run, _subset_window):

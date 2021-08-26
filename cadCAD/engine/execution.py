@@ -1,6 +1,5 @@
 from typing import Callable, Dict, List, Any, Tuple
-from pathos.multiprocessing import ThreadPool as TPool
-# from pathos.multiprocessing import ProcessPool as PPool
+from pathos.multiprocessing import ProcessPool as PPool
 from collections import Counter
 
 from cadCAD.utils import flatten
@@ -85,26 +84,21 @@ def parallelize_simulations(
                 configs_structs[count * highest_divisor: (count + 1) * highest_divisor]
             )
 
-
-    def threaded_executor(params):
+    def process_executor(params):
         if len_configs_structs > 1:
-            tp = TPool()
-            results = tp.map(
+            pp = PPool(processes=len_configs_structs)
+            results = pp.map(
                 lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n), params
             )
-            tp.close()
+            pp.close()
+            pp.join()
+            pp.clear()
         else:
             t = params[0]
             results = t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n)
         return results
 
-    # pp = PPool()
-    # results = flatten(list(pp.map(lambda params: threaded_executor(params), new_params)))
-    results = flatten(list(map(lambda params: threaded_executor(params), new_params)))
-    # pp.close()
-    # pp.join()
-    # pp.clear()
-    # pp.restart()
+    results = flatten(list(map(lambda params: process_executor(params), new_params)))
 
     return results
 
@@ -123,25 +117,19 @@ def local_simulations(
         SubsetWindows,
         configured_n
     ):
-    print(f'SimIDs   : {SimIDs}')
-    print(f'SubsetIDs: {SubsetIDs}')
-    print(f'Ns       : {Ns}')
-    print(f'ExpIDs   : {ExpIDs}')
     config_amt = len(configs_structs)
-    try:
-        _params = None
-        if config_amt == 1: # and configured_n != 1
-            _params = var_dict_list[0]
-            return single_proc_exec(
-                simulation_execs, _params, states_lists, configs_structs, env_processes_list,
-                Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
-            )
-        elif config_amt > 1: # and configured_n != 1 # and config_amt < remote_threshold
-            _params = var_dict_list
-            return parallelize_simulations(
-                simulation_execs, _params, states_lists, configs_structs, env_processes_list,
-                Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
-            )
+
+    _params = None
+    if config_amt == 1: # and configured_n != 1
+        _params = var_dict_list[0]
+        return single_proc_exec(
+            simulation_execs, _params, states_lists, configs_structs, env_processes_list,
+            Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
+        )
+    elif config_amt > 1: # and configured_n != 1
+        _params = var_dict_list
+        return parallelize_simulations(
+            simulation_execs, _params, states_lists, configs_structs, env_processes_list,
+            Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
+        )
         # elif config_amt > 1 and configured_n == 1:
-    except ValueError:
-        raise ValueError("\'sim_configs\' N must > 0")
