@@ -1,6 +1,7 @@
 import pprint
 from typing import Dict, List
 
+from cadCAD import experiment
 from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
 
@@ -88,6 +89,12 @@ partial_state_update_blocks = psub_list(psu_block, psu_steps)
 
 exp = Experiment()
 exp.append_model(
+    sim_configs=sim_config,
+    initial_state=genesis_states,
+    env_processes=env_process,
+    partial_state_update_blocks=partial_state_update_blocks
+)
+experiment.append_model(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_process,
