@@ -59,11 +59,10 @@ class Experiment(object):
         self.exp_window = deque([self.exp_id, None], 2)
         self.subset_window = deque([self.subset_id, None], 2)
 
-
     def append_model(
             self,
             user_id='cadCAD_user',
-            model_id='sys_model_#',
+            model_id=None,
             sim_configs={}, initial_state={}, seeds={}, raw_exogenous_states={}, env_processes={},
             partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True, **kwargs
             # config_list=deepcopy(global_configs)
@@ -105,6 +104,18 @@ class Experiment(object):
                 new_sim_configs.append(deepcopy(sim_config))
 
             sim_cnt_local += 1
+
+        if model_id == None:
+            new_model_id = str(len(self.model_ids))
+            if new_model_id in self.model_ids:
+                model_id = f"model@{len(self.model_ids)}"
+            else:
+                model_id = str(new_model_id)
+        elif model_id != None:
+            if model_id in self.model_ids:
+                model_id = f"{model_id}@{len(self.model_ids)}"
+            else:
+                model_id = str(model_id)
 
         run_id = 0
         new_model_ids, new_configs = [], []
@@ -161,8 +172,8 @@ class Experiment(object):
                 self.model_ids.append(model_id)
             else:
                 except_str = f"""
-                    Error: Duplicate model_id in Experiment - \'{model_id}\' in {self.model_ids} 
-                    -- Specify unique model_id for each use of `.append_config` per `Experiment()`
+                    Error: Duplicate model_id in Experiment - \'{model_id}\' in {self.model_ids}
+                    -- Specify unique model_id for each use of `.append_model` per `Experiment()`
                 """
                 raise Exception(except_str)
 
