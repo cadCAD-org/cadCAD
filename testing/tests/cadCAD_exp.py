@@ -2,11 +2,12 @@ import unittest, pandas as pd
 from tabulate import tabulate
 from testing.models import param_sweep
 from testing.results_comparison import dataframe_difference, compare_results
+from cadCAD import configs
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 
 exec_mode = ExecutionMode()
 exec_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=exec_ctx, configs=param_sweep.experiment.configs)
+run = Executor(exec_context=exec_ctx, configs=configs)
 raw_result, _, _ = run.execute()
 
 result_df = pd.DataFrame(raw_result)
