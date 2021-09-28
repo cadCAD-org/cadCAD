@@ -2,7 +2,7 @@ import os, dill
 from cadCAD.configuration import Experiment
 
 name = "cadCAD"
-version = "0.4.27"
+version = "0.4.28"
 experiment = Experiment()
 configs = experiment.configs
 
