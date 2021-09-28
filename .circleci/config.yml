@@ -35,6 +35,12 @@ jobs:
       - run:
           command: python testing/tests/run1psub0.py
           name: Run Starts at 1 for PSUB 0
+      - run:
+          command: python testing/tests/append_mod_test.py
+          name: Auto Append Model ID
+      - run:
+          command: python testing/tests/cadCAD_exp.py
+          name: Package Root Experiment and configs object
 #      - run:
 #          command: python -m unittest discover -s testing/tests -p "*_test.py"
 #          name: Test Suite
