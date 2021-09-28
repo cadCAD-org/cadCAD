@@ -22,7 +22,7 @@ from cadCAD.configuration import Experiment
 
 exp = Experiment()
 exp.append_model(
-    model_id = 'sys_model_1', # System Model
+    model_id = 'sys_model_1', # System Model - OPTIONAL
     initial_state = ..., # System Model
     partial_state_update_blocks = ..., # System Model
     policy_ops = ..., # System Model
