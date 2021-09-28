@@ -12,7 +12,7 @@ cadCAD according to the definitions set by the user in [Partial State Update Blo
 A Simulation Configuration is comprised of a [System Model](#System-Model) and a set of [Simulation Properties](#Simulation-Properties).
 
 ### Experiments
-`cadCAD.configuration.Experiment` is a unique representation of an experiment of one or more configured System Models. 
+`cadCAD.configuration.Experiment` is a unique representation of an experiment of one or more configured System Models.
 The `append_model` method of `Experiment` appends a System Model configurations, each representing a single `run`.
 
 ```python
@@ -20,7 +20,7 @@ from cadCAD.configuration import Experiment
 
 exp = Experiment()
 exp.append_model(
-    model_id = ..., # System Model
+    model_id = ..., # OPTIONAL: System Model label
     initial_state = ..., # System Model
     partial_state_update_blocks = ..., # System Model
     policy_ops = ..., # System Model
@@ -29,7 +29,7 @@ exp.append_model(
 )
 ```
 Parameters: `append_model`
-* **model_id** : str - System Model Identification
+* **model_id** : str - OPTIONAL: System Model label
 * **initial_state** : _dict_ - [State Variables](#State-Variables) and their initial values
 * **partial_state_update_blocks** : List[dict[dict]] - List of [Partial State Update Blocks](#Partial-State-Update-Blocks)
 * **policy_ops** : List[functions] - See [Policy Aggregation](Policy_Aggregation.md) 

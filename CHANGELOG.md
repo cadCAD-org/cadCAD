@@ -1,22 +1,50 @@
 # Changelog:
+### September 28, 2021
+#### New Features:
+* **ver. ≥ `0.4.28`:**
+    * ##### [Experiments](documentation#experiments)
+        * ##### System Model Configuration
+          * Configurations (`cadCAD.utils.Configuration`'s) are now accessed via the `configs` member of `cadCAD.configuration.Experiment`.
+            [Example:](documentation#experiments) `cadCAD.configuration.Experiment().configs`
+          * `cadCAD.configs` has been re-included for backwards compatibility and has been assigned `cadCAD.experiment.configs`
+        * ##### Experiments
+          * `cadCAD.configuration.Experiment()` is unique representation of an experiment of one or more configured System 
+          Models.
+            * The `cadCAD` module now contains a default Experiment object `cadCAD.experiment` as an instantiation of 
+                `cadCAD.configuration.Experiment()`
+          * An `Experiment`'s `append_model` method stores multiple system model `Configuration`'s for simulation 
+          execution within `cadCAD.configuration.Experiment().configs`.
+          `cadCAD.configuration.Experiment().model_ids` contains system model labels and/or indexes for 
+          `cadCAD.configuration.Experiment().configs`
+              * The `Experiment`'s `append_model` method is defined with `model_id` parameter that accepts a system model 
+              label.
+                * If duplicate `model_id`'s are specified, an index is appended to the label after the `@` symbol.
+                (Example: `cadCAD.configuration.Experiment().model_ids = ['sys_model', 'sys_model@1', 'sys_model@2', ...]`) 
+                * If `model_id`'s are not specified or duplicate, the label is auto-generated as a string indicating the 
+                system model index within `cadCAD.configuration.Experiment().configs`.
+                (Example of unspecified system models at indexes 1, 3, and 4: 
+                `cadCAD.configuration.Experiment().model_ids = ['sys_model', '1', 'sys_model@2', '3', '4', ...]`)
+    * ##### [Upgrade Guide:](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/cadCAD-v0.4.28-Model-Upgrade-Guide.md) specific to feature changes / additions
+
 
 ### August 25, 2021
 #### New Features:
 * **ver. ≥ `0.4.27`:**
     * ##### [Experiments](documentation#experiments)
-        * ##### [System Model Configurations]
+        * ##### System Model Configurations
           * Configurations (`cadCAD.utils.Configuration`'s) as are no longer a part of the `cadCAD` module 
             (as `cadCAD.configs`) and are now accessed via the `configs` member of `cadCAD.configuration.Experiment`.
             [Example:](documentation#experiments) `cadCAD.configuration.Experiment().configs`
-        * `cadCAD.configuration.Experiment` is unique representation of an experiment of one or more configured System 
-        Models. An `Experiment`'s `append_model` method stores multiple system model `Configuration`'s for simulation 
-        execution.
-            * The `Experiment`'s `append_model` method requires a `model_id` parameter that is auto-created as `'sys_model_#'`.
-            * **Requirements:** 
-              * Users must use different `model_id`'s when appending multiple System Model Configurations.
-              * Users can no longer use the `config_list` method of `cadCAD.configuration.Experiment`
-            * **Backwards Compatibility:** The `append_model` method of `cadCAD.configuration.Experiment` can also be used as 
-              the `append_configs` method.
+        * ##### Experiments
+          * `cadCAD.configuration.Experiment` is unique representation of an experiment of one or more configured System 
+          Models. An `Experiment`'s `append_model` method stores multiple system model `Configuration`'s for simulation 
+          execution.
+              * The `Experiment`'s `append_model` method requires a `model_id` parameter that is auto-created as `'sys_model_#'`.
+              * **Requirements:** 
+                * Users must use different `model_id`'s when appending multiple System Model Configurations.
+                * Users can no longer use the `config_list` method of `cadCAD.configuration.Experiment`
+              * **Backwards Compatibility:** The `append_model` method of `cadCAD.configuration.Experiment` can also be used as 
+                the `append_configs` method.
     * Removed [Nix](https://nixos.org/)
     * ##### [Upgrade Guide:](https://github.com/cadCAD-org/cadCAD/blob/master/documentation/cadCAD-v0.4.27-Model-Upgrade-Guide.md) specific to feature changes / additions
 * **Fixes:** 
