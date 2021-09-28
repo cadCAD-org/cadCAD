@@ -7,7 +7,7 @@
           * Configurations (`cadCAD.utils.Configuration`'s) are now accessed via the `configs` member of `cadCAD.configuration.Experiment`.
             [Example:](documentation#experiments) `cadCAD.configuration.Experiment().configs`
           * `cadCAD.configs` has been re-included for backwards compatibility and has been assigned `cadCAD.experiment.configs`
-        * ##### [Experiments](documentation#experiments)
+        * ##### Experiments
           * `cadCAD.configuration.Experiment()` is unique representation of an experiment of one or more configured System 
           Models.
             * The `cadCAD` module now contains a default Experiment object `cadCAD.experiment` as an instantiation of 
@@ -31,11 +31,11 @@
 #### New Features:
 * **ver. ≥ `0.4.27`:**
     * ##### [Experiments](documentation#experiments)
-        * ##### [System Model Configurations]
+        * ##### System Model Configurations
           * Configurations (`cadCAD.utils.Configuration`'s) as are no longer a part of the `cadCAD` module 
             (as `cadCAD.configs`) and are now accessed via the `configs` member of `cadCAD.configuration.Experiment`.
             [Example:](documentation#experiments) `cadCAD.configuration.Experiment().configs`
-        * ##### [Experiments]
+        * ##### Experiments
           * `cadCAD.configuration.Experiment` is unique representation of an experiment of one or more configured System 
           Models. An `Experiment`'s `append_model` method stores multiple system model `Configuration`'s for simulation 
           execution.
