@@ -4,7 +4,7 @@
  / ___/ __` / __  / /   / /| | / / / /
 / /__/ /_/ / /_/ / /___/ ___ |/ /_/ /
 \___/\__,_/\__,_/\____/_/  |_/_____/
-by cadCAD                  ver. 0.4.27
+by cadCAD                  ver. 0.4.28
 ======================================
        Complex Adaptive Dynamics       
        o       i        e
@@ -20,7 +20,7 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 
 # Getting Started
 
-#### Change Log: [ver. 0.4.27](CHANGELOG.md)
+#### Change Log: [ver. 0.4.28](CHANGELOG.md)
 
 [Previous Stable Release (No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
 
@@ -47,7 +47,7 @@ $
 ## 1. Installation: 
 Requires [>= Python 3.6.13](https://www.python.org/downloads/) 
 
-**Option A: Install Using **[pip](https://pypi.org/project/cadCAD/0.4.27/)** 
+**Option A: Install Using **[pip](https://pypi.org/project/cadCAD/0.4.28/)** 
 ```bash
 pip3 install cadCAD
 ```
