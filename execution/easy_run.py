@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union
 from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import config_sim
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
@@ -20,34 +20,36 @@ def easy_run(state_variables,
              N_timesteps,
              N_samples,
              use_label=False,
-             assign_params=True,
+             assign_params: Union[bool, set]=True,
              drop_substeps=True) -> pd.DataFrame:
     """
     Run cadCAD simulations without headaches.
     """
 
+    # Set-up sim_config
     simulation_parameters = {
         'N': N_samples,
         'T': range(N_timesteps),
         'M': params
     }
-
     sim_config = config_sim(simulation_parameters)
 
-    from cadCAD import configs
-    del configs[:]
-
+    # Create a new experiment
     exp = Experiment()
     exp.append_configs(sim_configs=sim_config,
                        initial_state=state_variables,
                        partial_state_update_blocks=psubs)
-
-    from cadCAD import configs
+    configs = exp.configs
+    
+    # Set-up cadCAD executor
     exec_mode = ExecutionMode()
     exec_context = ExecutionContext(exec_mode.local_mode)
     executor = Executor(exec_context=exec_context, configs=configs)
+
+    # Execute the cadCAD experiment
     (records, tensor_field, _) = executor.execute()
 
+    # Parse the output as a pandas DataFrame
     df = pd.DataFrame(records)
 
     if drop_substeps == True:
@@ -64,6 +66,11 @@ def easy_run(state_variables,
     else:
         M_dict = configs[0].sim_config['M']
         params_set = set(M_dict.keys())
+        
+        if assign_params == True:
+            pass
+        else:
+            params_set &= assign_params
 
         # Logic for getting the assign params criteria
         if type(assign_params) is list:
