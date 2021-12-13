@@ -8,7 +8,7 @@ def sanitize_config(config):
         elif key == 'seed':
             config.seeds = value
         elif key == 'mechanisms':
-            config.partial_state_updates = value
+            config.partial_state_update_blocks = value
 
     if config.initial_state == {}:
         raise Exception('The initial conditions of the system have not been set')

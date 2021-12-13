@@ -1,14 +1,13 @@
 import pandas as pd
 from tabulate import tabulate
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
-from documentation.examples import sys_model_A, sys_model_B
-from cadCAD import configs
+from documentation.examples import sys_model_A, sys_model_B, system_model_AB_exp
 
 exec_mode = ExecutionMode()
 
 # Multiple Processes Execution using Multiple System Model Configurations:
 local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
-sys_model_AB_simulation = Executor(exec_context=local_proc_ctx, configs=configs)
+sys_model_AB_simulation = Executor(exec_context=local_proc_ctx, configs=system_model_AB_exp.configs)
 
 i = 0
 config_names = ['sys_model_A', 'sys_model_B']

@@ -7,7 +7,6 @@ from tabulate import tabulate
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
 from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from cadCAD.configuration import Experiment
-from cadCAD import configs
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -93,7 +92,8 @@ pp.pprint(psu_block)
 print()
 
 exp = Experiment()
-exp.append_configs(
+exp.append_model(
+    model_id='param_sweep',
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_process,
@@ -102,7 +102,7 @@ exp.append_configs(
 
 exec_mode = ExecutionMode()
 local_proc_ctx = ExecutionContext(context=exec_mode.local_mode)
-run = Executor(exec_context=local_proc_ctx, configs=configs)
+run = Executor(exec_context=local_proc_ctx, configs=exp.configs)
 
 raw_result, tensor_field, sessions = run.execute()
 result = pd.DataFrame(raw_result)

@@ -1,9 +1,9 @@
 import pprint
 from typing import Dict, List
 
-# from cadCAD.configuration import append_configs
+from cadCAD import experiment
+from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
-from testing.experiments import exp_param_sweep
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -54,14 +54,14 @@ def policies(_g, step, sL, s, _input, **kwargs):
 def sweeped(_g, step, sL, s, _input, **kwargs):
     return 'sweeped', {'beta': _g['beta'], 'gamma': _g['gamma']}
 
-psu_block = {k: {"policies": {}, "variables": {}} for k in psu_steps}
+psu_block = {k: {"policies": {}, "states": {}} for k in psu_steps}
 for m in psu_steps:
     psu_block[m]['policies']['gamma'] = gamma
     psu_block[m]['policies']['omega'] = omega
-    psu_block[m]["variables"]['alpha'] = alpha
-    psu_block[m]["variables"]['beta'] = beta
-    psu_block[m]['variables']['policies'] = policies
-    psu_block[m]["variables"]['sweeped'] = var_timestep_trigger(y='sweeped', f=sweeped)
+    psu_block[m]["states"]['alpha'] = alpha
+    psu_block[m]["states"]['beta'] = beta
+    psu_block[m]['states']['policies'] = policies
+    psu_block[m]["states"]['sweeped'] = var_timestep_trigger(y='sweeped', f=sweeped)
 
 
 # Genesis States
@@ -86,7 +86,15 @@ sim_config = config_sim(
 
 # New Convention
 partial_state_update_blocks = psub_list(psu_block, psu_steps)
-exp_param_sweep.append_configs(
+
+exp = Experiment()
+exp.append_model(
+    sim_configs=sim_config,
+    initial_state=genesis_states,
+    env_processes=env_process,
+    partial_state_update_blocks=partial_state_update_blocks
+)
+experiment.append_model(
     sim_configs=sim_config,
     initial_state=genesis_states,
     env_processes=env_process,

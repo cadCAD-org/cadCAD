@@ -6,8 +6,11 @@ long_description = """
 This is a tweaked version of cadCAD, use at your own peril.
 """
 
-setup(name='cadCAD_tweaked',
-      version='0.4.23',
+name = "cadCAD_tweaked"
+version = "0.4.28"
+
+setup(name=name,
+      version=version,
       description=short_description,
       long_description=long_description,
       url='https://github.com/danlessa/cadCAD-tweaked',
@@ -17,9 +20,13 @@ setup(name='cadCAD_tweaked',
       packages=find_packages(),
       install_requires=[
             "pandas",
-            "pathos",
             "fn",
-            "funcy"
+            "funcy",
+            "dill",
+            "pathos",
+            "numpy",
+            "pytz",
+            "six"
       ],
-      python_requires='>=3.6.8'
+      python_requires='>=3.6.13'
 )

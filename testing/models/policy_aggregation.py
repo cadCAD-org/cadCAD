@@ -1,10 +1,7 @@
+from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import config_sim
 
-
 # Policies per Mechanism
-from testing.experiments import exp_policy_agg
-
-
 def p1m1(_g, step, sL, s, **kwargs):
     return {'policy1': 1}
 def p2m1(_g, step, sL, s, **kwargs):
@@ -74,8 +71,8 @@ sim_config = config_sim(
     }
 )
 
-
-exp_policy_agg.append_configs(
+exp = Experiment()
+exp.append_model(
     sim_configs=sim_config,
     initial_state=genesis_states,
     partial_state_update_blocks=partial_state_update_block,

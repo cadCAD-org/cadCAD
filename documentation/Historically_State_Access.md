@@ -1,4 +1,4 @@
-Historical State Access (Alpha)
+Historical State Access (DEPRECATED)
 ==
 #### Motivation
 The current state (values of state variables) is accessed through the `s` list. When the user requires previous state 
