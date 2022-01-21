@@ -102,7 +102,7 @@ class Executor:
     # mech_step
     def partial_state_update(
         self,
-        sweep_dict: Dict[str, List[Any]],
+        sweep_dict: Dict[str, Any],
         sub_step: int,
         sL,
         sH,
