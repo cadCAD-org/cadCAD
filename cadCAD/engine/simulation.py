@@ -149,7 +149,7 @@ class Executor:
     # mech_pipeline - state_update_block
     def state_update_pipeline(
         self,
-        sweep_dict: Dict[str, List[Any]],
+        sweep_dicts: List[Dict[str, Any]],
         simulation_list,
         configs: List[Tuple[List[Callable], List[Callable]]],
         env_processes: Dict[str, Callable],
@@ -170,7 +170,7 @@ class Executor:
         states_list: List[Dict[str, Any]] = [genesis_states]
 
         sub_step += 1
-        for [s_conf, p_conf] in configs:
+        for [s_conf, p_conf], sweep_dict in zip(configs, sweep_dicts):
             states_list: List[Dict[str, Any]] = self.partial_state_update(
                 sweep_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run,
                 additional_objs
@@ -184,7 +184,7 @@ class Executor:
     # state_update_pipeline
     def run_pipeline(
         self,
-        sweep_dict: Dict[str, List[Any]],
+        sweep_dicts: List[Dict[str, Any]],
         states_list: List[Dict[str, Any]],
         configs: List[Tuple[List[Callable], List[Callable]]],
         env_processes: Dict[str, Callable],
@@ -197,7 +197,7 @@ class Executor:
 
         for time_step in time_seq:
             pipe_run: List[Dict[str, Any]] = self.state_update_pipeline(
-                sweep_dict, simulation_list, configs, env_processes, time_step, run, additional_objs
+                sweep_dicts, simulation_list, configs, env_processes, time_step, run, additional_objs
             )
             _, *pipe_run = pipe_run
             simulation_list.append(pipe_run)
@@ -206,7 +206,7 @@ class Executor:
 
     def simulation(
         self,
-        sweep_dict: Dict[str, List[Any]],
+        sweep_dicts: List[Dict[str, Any]],
         states_list: List[Dict[str, Any]],
         configs,
         env_processes: Dict[str, Callable],
@@ -222,7 +222,7 @@ class Executor:
         run += 1
         subset_window.appendleft(subset_id)
 
-        def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, _run) -> List[Dict[str, Any]]:
+        def execute_run(sweep_dicts, states_list, configs, env_processes, time_seq, _run) -> List[Dict[str, Any]]:
             def generate_init_sys_metrics(genesis_states_list, sim_id, _subset_id, _run, _subset_window):
                 for D in genesis_states_list:
                     d = deepcopy(D)
@@ -235,14 +235,14 @@ class Executor:
             )
 
             first_timestep_per_run: List[Dict[str, Any]] = self.run_pipeline(
-                sweep_dict, states_list_copy, configs, env_processes, time_seq, run, additional_objs
+                sweep_dicts, states_list_copy, configs, env_processes, time_seq, run, additional_objs
             )
             del states_list_copy
 
             return first_timestep_per_run
 
         pipe_run = flatten(
-            [execute_run(sweep_dict, states_list, configs, env_processes, time_seq, run)]
+            [execute_run(sweep_dicts, states_list, configs, env_processes, time_seq, run)]
         )
 
         return pipe_run
