@@ -25,7 +25,7 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 [Previous Stable Release (No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
 
 ## 0. Pre-installation Virtual Environments with [`venv`](https://docs.python.org/3/library/venv.html) (Optional):
-If you wish to create an easy to use virtual environment to install cadCAD within, please use python's the built in `venv` package.
+If you wish to create an easy to use virtual environment to install cadCAD within, please use python's built in `venv` package.
 
 ***Create** a virtual environment:*
 ```bash
@@ -47,7 +47,7 @@ $
 ## 1. Installation: 
 Requires [>= Python 3.6.13](https://www.python.org/downloads/) 
 
-**Option A: Install Using **[pip](https://pypi.org/project/cadCAD/0.4.28/)** 
+**Option A:** Install Using **[pip](https://pypi.org/project/cadCAD/0.4.28/)** 
 ```bash
 pip3 install cadCAD
 ```
@@ -65,8 +65,16 @@ pip3 install dist/*.whl
 * [Policy Aggregation](documentation/Policy_Aggregation.md)
 * [Parameter Sweep](documentation/System_Model_Parameter_Sweep.md)
 * [Display System Model Configurations](documentation/System_Configuration.md)
+* [cadCAD Education](https://www.cadcad.education/)
+
 
 ## 3. Connect:
-Find other cadCAD users at our [Discourse](https://community.cadcad.org/). We are a small but rapidly growing community.
+* Website: https://www.cadcad.org
+* Discord: https://discord.gg/DX9uH8m4qY
+* Twitter: twitter.com/cadcad_org
+* Forum: https://community.cadcad.org
+* Github: https://github.com/cadCAD-org
+* Telegram: t.me/cadcad_org
 
-## 4. [Contribute!](CONTRIBUTING.md)
+## 4. Contribute:
+Follow [this document](CONTRIBUTING.md) to start contributing!
