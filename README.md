@@ -71,10 +71,10 @@ pip3 install dist/*.whl
 ## 3. Connect:
 * Website: https://www.cadcad.org
 * Discord: https://discord.gg/DX9uH8m4qY
-* Twitter: twitter.com/cadcad_org
+* Twitter: htrps://twitter.com/cadcad_org
 * Forum: https://community.cadcad.org
 * Github: https://github.com/cadCAD-org
-* Telegram: t.me/cadcad_org
+* Telegram: https://t.me/cadcad_org
 
 ## 4. Contribute:
 Follow [this document](CONTRIBUTING.md) to start contributing!
