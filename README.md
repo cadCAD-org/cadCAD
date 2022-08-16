@@ -76,5 +76,5 @@ pip3 install dist/*.whl
 * Github: https://github.com/cadCAD-org
 * Telegram: https://t.me/cadcad_org
 
-## 4. Contribute:
+## 4. Contribute to this repository:
 Follow [this document](CONTRIBUTING.md) to start contributing!
