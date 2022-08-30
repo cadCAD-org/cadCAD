@@ -65,8 +65,6 @@ pip3 install dist/*.whl
 * [Policy Aggregation](documentation/Policy_Aggregation.md)
 * [Parameter Sweep](documentation/System_Model_Parameter_Sweep.md)
 * [Display System Model Configurations](documentation/System_Configuration.md)
-* [cadCAD Education](https://www.cadcad.education/)
-
 
 ## 3. Connect:
 * Website: https://www.cadcad.org
