@@ -13,15 +13,22 @@ from pandas import DataFrame
 class SilentDF(DataFrame):
     def __repr__(self):
         return str(hex(id(DataFrame)))
-        #"pandas.core.frame.DataFrame"
 
 
-def append_dict(dict, new_dict):
+def append_dict(dict: dict, new_dict: dict) -> dict:
+    """
+    >>> append_dict({1: 2, 3: 4}, {3: 5})
+    {1: 2, 3: 5}
+    """
     dict.update(new_dict)
     return dict
 
 
-def arrange_cols(df, reverse=False):
+def arrange_cols(df: DataFrame, reverse=False) -> DataFrame:
+    """
+    Reorders `df` columns so that the variable order is `session_metrics`
+    followed by `sys_metrics` and `results_cols`
+    """
     session_metrics = ['session_id', 'user_id', 'simulation_id', 'run_id']
     sys_metrics = ['run', 'timestep', 'substep']
     result_cols = list(set(df.columns) - set(session_metrics) - set(sys_metrics))
@@ -38,35 +45,45 @@ class IndexCounter:
         return self.i
 
 
-def compose(*functions):
+def compose(*functions: tuple[callable]) -> object:
     return reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
 
 
-def pipe(x):
+def pipe(x: object) -> object:
     return x
 
 
-def print_pipe(x):
+def print_pipe(x: object) -> object:
     print(x)
     return x
 
 
-def flattenDict(l):
-    def tupalize(k, vs):
-        l = []
-        if isinstance(vs, list):
-            for v in vs:
-                l.append((k, v))
-        else:
-            l.append((k, vs))
-        return l
+def tupalize(k: object, vs: list | object):
+    """
+    >>> tupalize(1, 1)
+    [(1, 1)]
+    >>> tupalize(1, [2, 3])
+    [(1, 2), (1, 3)]
+    """
+    l = []
+    if isinstance(vs, list):
+        for v in vs:
+            l.append((k, v))
+    else:
+        l.append((k, vs))
+    return l
 
+def flattenDict(l: dict) -> list:
+    """
+    >>> flattenDict({1: [1, 2, 3], 4: 5})
+    [{1: 1, 4: 5}, {1: 2, 4: 5}, {1: 3, 4: 5}]
+    """
     flat_list = [tupalize(k, vs) for k, vs in l.items()]
     flat_dict = [dict(items) for items in product(*flat_list)]
     return flat_dict
 
 
-def flatten(l):
+def flatten(l: list | dict):
     if isinstance(l, list):
         return functools.reduce(operator.iconcat, l, [])
     elif isinstance(l, dict):

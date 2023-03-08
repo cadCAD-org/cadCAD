@@ -136,7 +136,7 @@ class Executor:
         remote_threshold = 100
         config_amt = len(self.configs)
 
-        def auto_mode_switcher(config_amt):
+        def auto_mode_switcher(config_amt) -> tuple:
             try:
                 if config_amt == 1:
                     return ExecutionMode.single_mode, single_proc_exec

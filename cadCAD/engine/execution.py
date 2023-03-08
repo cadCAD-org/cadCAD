@@ -48,7 +48,7 @@ def parallelize_simulations(
     SimIDs,
     Ns: List[int],
     ExpIDs: List[int],
-    SubsetIDs,
+    SubsetIDs: list[int],
     SubsetWindows,
     configured_n
 ):
@@ -113,7 +113,7 @@ def local_simulations(
         SimIDs,
         Ns: List[int],
         ExpIDs: List[int],
-        SubsetIDs,
+        SubsetIDs: list[int],
         SubsetWindows,
         configured_n
     ):
