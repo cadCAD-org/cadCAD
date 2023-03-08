@@ -1,25 +1,24 @@
-from typing import Callable, Dict, List, Any, Tuple
 from pathos.multiprocessing import ProcessPool as PPool
 from collections import Counter
 
 from cadCAD.utils import flatten
 
-VarDictType = Dict[str, List[Any]]
-StatesListsType = List[Dict[str, Any]]
-ConfigsType = List[Tuple[List[Callable], List[Callable]]]
-EnvProcessesType = Dict[str, Callable]
+VarDictType = dict[str, list[object]]
+StatesListsType = list[dict[str, object]]
+ConfigsType = list[tuple[list[callable], list[callable]]]
+EnvProcessesType = dict[str, callable]
 
 
 def single_proc_exec(
-    simulation_execs: List[Callable],
-    var_dict_list: List[VarDictType],
-    states_lists: List[StatesListsType],
-    configs_structs: List[ConfigsType],
-    env_processes_list: List[EnvProcessesType],
-    Ts: List[range],
+    simulation_execs: list[callable],
+    var_dict_list: list[VarDictType],
+    states_lists: list[StatesListsType],
+    configs_structs: list[ConfigsType],
+    env_processes_list: list[EnvProcessesType],
+    Ts: list[range],
     SimIDs,
-    Ns: List[int],
-    ExpIDs: List[int],
+    Ns: list[int],
+    ExpIDs: list[int],
     SubsetIDs,
     SubsetWindows,
     configured_n
@@ -39,15 +38,15 @@ def single_proc_exec(
 
 
 def parallelize_simulations(
-    simulation_execs: List[Callable],
-    var_dict_list: List[VarDictType],
-    states_lists: List[StatesListsType],
-    configs_structs: List[ConfigsType],
-    env_processes_list: List[EnvProcessesType],
-    Ts: List[range],
+    simulation_execs: list[callable],
+    var_dict_list: list[VarDictType],
+    states_lists: list[StatesListsType],
+    configs_structs: list[ConfigsType],
+    env_processes_list: list[EnvProcessesType],
+    Ts: list[range],
     SimIDs,
-    Ns: List[int],
-    ExpIDs: List[int],
+    Ns: list[int],
+    ExpIDs: list[int],
     SubsetIDs: list[int],
     SubsetWindows,
     configured_n
@@ -104,15 +103,15 @@ def parallelize_simulations(
 
 
 def local_simulations(
-        simulation_execs: List[Callable],
-        var_dict_list: List[VarDictType],
-        states_lists: List[StatesListsType],
-        configs_structs: List[ConfigsType],
-        env_processes_list: List[EnvProcessesType],
-        Ts: List[range],
+        simulation_execs: list[callable],
+        var_dict_list: list[VarDictType],
+        states_lists: list[StatesListsType],
+        configs_structs: list[ConfigsType],
+        env_processes_list: list[EnvProcessesType],
+        Ts: list[range],
         SimIDs,
-        Ns: List[int],
-        ExpIDs: List[int],
+        Ns: list[int],
+        ExpIDs: list[int],
         SubsetIDs: list[int],
         SubsetWindows,
         configured_n

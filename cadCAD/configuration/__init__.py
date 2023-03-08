@@ -1,4 +1,3 @@
-from typing import Dict, Callable, List, Tuple
 from pandas.core.frame import DataFrame
 from datetime import datetime
 from collections import deque
@@ -187,27 +186,27 @@ class Experiment(object):
 
 
 class Identity:
-    def __init__(self, policy_id: Dict[str, int] = {'identity': 0}) -> None:
+    def __init__(self, policy_id: dict[str, int] = {'identity': 0}) -> None:
         self.beh_id_return_val = policy_id
 
     def p_identity(self, var_dict, sub_step, sL, s, **kwargs):
         return self.beh_id_return_val
 
-    def policy_identity(self, k: str) -> Callable:
+    def policy_identity(self, k: str) -> callable:
         return self.p_identity
 
     def no_state_identity(self, var_dict, sub_step, sL, s, _input, **kwargs):
         return None
 
-    def state_identity(self, k: str) -> Callable:
+    def state_identity(self, k: str) -> callable:
         return lambda var_dict, sub_step, sL, s, _input, **kwargs: (k, s[k])
 
     # state_identity = cloudpickle.dumps(state_identity)
 
     def apply_identity_funcs(self,
-                             identity: Callable,
+                             identity: callable,
                              df: DataFrame,
-                             cols: List[str]) -> DataFrame:
+                             cols: list[str]) -> DataFrame:
         """
         Apply the identity on each df column, using its self value as the
         argument.
@@ -240,7 +239,7 @@ class Processor:
             return pd.DataFrame({'empty': []})
 
     def generate_config(self, initial_state, partial_state_updates, exo_proc
-                       ) -> List[Tuple[List[Callable], List[Callable]]]:
+                       ) -> list[tuple[list[callable], list[callable]]]:
 
         def no_update_handler(bdf, sdf):
             if (bdf.empty == False) and (sdf.empty == True):
