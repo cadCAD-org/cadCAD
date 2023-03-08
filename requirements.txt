@@ -26,6 +26,6 @@ fn==0.4.3
 funcy==1.16
 dill==0.3.4
 pathos==0.2.8
-numpy==1.19.5
+numpy==1.22.0
 pytz==2021.1
 six>=1.11.0
