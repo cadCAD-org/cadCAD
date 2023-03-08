@@ -1,6 +1,3 @@
-from pprint import pprint
-from typing import Dict, List, Any
-
 # from cadCAD.configuration import append_configs
 from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
@@ -12,7 +9,7 @@ def some_function(x):
 
 # Optional
 # dict must contain lists opf 2 distinct lengths
-g: Dict[str, List[Any]] = {
+g: dict[str, list[object]] = {
     'alpha': [1],
     'beta': [2, some_function],
     'gamma': [3, 4],

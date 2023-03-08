@@ -212,16 +212,16 @@ as a 2 dimensional `list`
     +----+------------+-----------+----+---------------------+-----+---------+----------+
     ```
     
-* **Flattened Configuration List:** The `cadCAD.configs` (System Model Configuration) `list` has been **temporarily** 
+* **Flattened Configuration list:** The `cadCAD.configs` (System Model Configuration) `list` has been **temporarily** 
 flattened to contain single run `cadCAD.configuration.Configuration` objects to both fault-tolerant simulation and 
 elastic workloads. This functionality will be restored in a subsequent release by a class that returns 
 `cadCAD.configs`'s original representation in ver. `0.3.1`.
     * The conversion utilities have been provided to restore its original representation of configurations with 
     runs >= 1
         * [System Configuration Conversions](documentation/System_Configuration.md)
-            * Configuration as List of Configuration Objects (as in ver. `0.3.1`) 
+            * Configuration as list of Configuration Objects (as in ver. `0.3.1`) 
             * New: System Configuration as a Pandas DataFrame
-            * New: System Configuration as List of Dictionaries
+            * New: System Configuration as list of Dictionaries
             
 ###### Examples:
 * Notes:
