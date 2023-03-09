@@ -1,5 +1,10 @@
 # Changelog:
 
+### 0.4.29.1
+
+#### Changes
+- Parallel executor uses the context manager handling the Process Pool lifetime
+
 ### 0.4.29
 
 - Merged repo with the `cadCAD_tweaked`, which includes performance improvements
