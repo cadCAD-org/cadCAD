@@ -21,7 +21,8 @@ def easy_run(state_variables,
              N_samples,
              use_label=False,
              assign_params: Union[bool, set]=True,
-             drop_substeps=True) -> pd.DataFrame:
+             drop_substeps=True,
+             exec_mode='local') -> pd.DataFrame:
     """
     Run cadCAD simulations without headaches.
     """
@@ -42,8 +43,11 @@ def easy_run(state_variables,
     configs = exp.configs
     
     # Set-up cadCAD executor
-    exec_mode = ExecutionMode()
-    exec_context = ExecutionContext(exec_mode.local_mode)
+    if exec_mode == 'local':
+        _exec_mode = ExecutionMode().local_mode
+    elif exec_mode == 'single':
+        _exec_mode = ExecutionMode().single_mode
+    exec_context = ExecutionContext(_exec_mode)
     executor = Executor(exec_context=exec_context, configs=configs)
 
     # Execute the cadCAD experiment
