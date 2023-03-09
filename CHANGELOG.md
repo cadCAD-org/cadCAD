@@ -1,4 +1,9 @@
 # Changelog:
+
+### 0.4.29
+
+- Merged repo with the `cadCAD_tweaked`, which includes performance improvements
+- Python 3.10 compatible
 ### September 28, 2021
 #### New Features:
 * **ver. ≥ `0.4.28`:**

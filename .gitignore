@@ -39,3 +39,4 @@ simulations/validation
 simulations/poc/local/
 simulations/regression_tests/poc
 simulations/regression_tests/poc_configs
+dist/*

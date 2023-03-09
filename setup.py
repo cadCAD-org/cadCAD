@@ -6,14 +6,14 @@ long_description = """
 This is a tweaked version of cadCAD, use at your own peril.
 """
 
-name = "cadCAD_tweaked"
-version = "0.4.28"
+name = "cadCAD-legacy-devel"
+version = "0.4.29"
 
 setup(name=name,
       version=version,
       description=short_description,
       long_description=long_description,
-      url='https://github.com/danlessa/cadCAD-tweaked',
+      url='https://github.com/cadCAD-org/cadCAD-legacy-devel',
       author='Danilo Lessa Bernardineli',
       author_email='danilo.lessa@gmail.com',
       license='LICENSE.txt',
@@ -27,5 +27,5 @@ setup(name=name,
             "pytz",
             "six"
       ],
-      python_requires='>=3.6.13'
+      python_requires='>=3.10.0'
 )

@@ -1,4 +1,4 @@
-# WARNING! this is a tweaked version of cadCAD for optimizing performance!!!!
+# WARNING! this is a tweaked version of cadCAD for optimizing performance
 
 ## Included tweaks
 
