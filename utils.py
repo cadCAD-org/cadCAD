@@ -1,4 +1,4 @@
-from .types import Signal, StateUpdate, VariableUpdate
+from cadCAD_tools.types import Signal, StateUpdate, VariableUpdate
 
 def generic_suf(variable: str,
                 signal: str='') -> StateUpdate:
