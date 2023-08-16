@@ -1,4 +1,9 @@
 # Changelog:
+
+
+### February 15, 2023
+* **Fixes:** 
+    - Package has been cleaned-up for working with Python 3.10
 ### September 28, 2021
 #### New Features:
 * **ver. ≥ `0.4.28`:**
