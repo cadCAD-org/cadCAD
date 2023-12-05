@@ -9,8 +9,10 @@ from cadCAD.engine import ExecutionContext, ExecutionMode, Executor
 
 
 def describe_or_return(v: object) -> object:
-    if isinstance(v, types.LambdaType) and v.__name__ == '<lambda>':
-        return f'Lambda: {inspect.signature(v)}'
+    if isinstance(v, types.FunctionType):
+        return f'function: {v.__name__}'
+    elif isinstance(v, types.LambdaType) and v.__name__ == '<lambda>':
+        return f'lambda: {inspect.signature(v)}'
     else:
         return v
 
