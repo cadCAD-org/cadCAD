@@ -34,13 +34,11 @@ setup(name=name,
       packages=find_packages(),
       install_requires=[
             "pandas",
-            "fn",
             "funcy",
             "dill",
             "pathos",
             "numpy",
-            "pytz",
-            "six"
-      ],
+            "pytz"     
+             ],
       python_requires='>=3.6.13'
 )
