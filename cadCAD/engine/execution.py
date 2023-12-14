@@ -22,7 +22,8 @@ def single_proc_exec(
     ExpIDs: List[int],
     SubsetIDs: List[SubsetID],
     SubsetWindows: List[SubsetWindow],
-    configured_n: List[N_Runs]
+    configured_n: List[N_Runs],
+    additional_objs=None
 ):
     
     # HACK for making it run with N_Runs=1
@@ -38,7 +39,7 @@ def single_proc_exec(
         map(lambda x: x.pop(), raw_params)
     )
     result = simulation_exec(
-        var_dict_list, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, configured_n
+        var_dict_list, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, configured_n, additional_objs
     )
     return flatten(result)
 
@@ -58,7 +59,8 @@ def parallelize_simulations(
     ExpIDs: List[int],
     SubsetIDs: List[SubsetID],
     SubsetWindows: List[SubsetWindow],
-    configured_n: List[N_Runs]
+    configured_n: List[N_Runs],
+    additional_objs=None
 ):
 
     print(f'Execution Mode: parallelized')
@@ -96,7 +98,7 @@ def parallelize_simulations(
         if len_configs_structs > 1:
             pp = PPool(processes=len_configs_structs)
             results = pp.map(
-                lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n), params
+                lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n, additional_objs), params
             )
             pp.close()
             pp.join()
@@ -123,18 +125,19 @@ def local_simulations(
     ExpIDs: List[int],
     SubsetIDs: List[SubsetID],
     SubsetWindows: List[SubsetWindow],
-    configured_n: List[N_Runs]
+    configured_n: List[N_Runs],
+    additional_objs=None
     ):
     config_amt = len(configs_structs)
 
     if config_amt == 1: # and configured_n != 1
         return single_proc_exec(
             simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list,
-            Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
+            Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n, additional_objs
         )
     elif config_amt > 1: # and configured_n != 1
         return parallelize_simulations(
             simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list,
-            Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
+            Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n, additional_objs
         )
         # elif config_amt > 1 and configured_n == 1:

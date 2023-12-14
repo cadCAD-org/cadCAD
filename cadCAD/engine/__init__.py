@@ -1,5 +1,5 @@
 from time import time
-from typing import Callable, Dict, List, Any, Tuple
+from typing import Callable, Dict, List, Any, Tuple, Union
 
 from cadCAD.utils import flatten
 from cadCAD.utils.execution import print_exec_info
@@ -39,6 +39,7 @@ def auto_mode_switcher(config_amt: int):
 class ExecutionContext:
     def __init__(self, context=ExecutionMode.local_mode, method=None, additional_objs=None) -> None:
         self.name = context
+        self.additional_objs = additional_objs
         if context == 'local_proc':
             self.method = local_simulations
         elif context == 'single_proc':
@@ -74,6 +75,7 @@ class Executor:
         self.SimExecutor = SimExecutor
         self.exec_method = exec_context.method
         self.exec_context = exec_context.name
+        self.additional_objs = exec_context.additional_objs
         self.configs = configs
         self.empty_return = empty_return
 
@@ -174,7 +176,7 @@ class Executor:
             print("Execution Method: " + self.exec_method.__name__)
             simulations_results = self.exec_method(
                 sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs,
-                ExpIDs, SubsetIDs, SubsetWindows, original_N
+                ExpIDs, SubsetIDs, SubsetWindows, original_N, self.additional_objs
             )
 
             final_result = get_final_results(

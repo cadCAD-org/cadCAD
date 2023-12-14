@@ -25,7 +25,9 @@ class ConfigurationDict(TypedDict):
     M: Union[Parameters, SweepableParameters] # Parameters / List of Parameter to Sweep
 
 
-EnvProcesses = object
+TargetValue = object
+EnvProcess: Callable[[State, SweepableParameters, TargetValue], TargetValue]
+EnvProcesses = dict[str, Callable]
 TimeSeq = Iterator
 SimulationID = int
 Run = int
