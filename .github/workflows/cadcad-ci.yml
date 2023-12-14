@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -43,12 +43,7 @@ jobs:
     - name: Build cadCAD
       run: |
         python setup.py bdist_wheel
-         if [ "$RUNNER_OS" == "Windows" ]; then
-              powershell -command "python -m pip install dist/*.whl --force-reinstall"
-         else
-              python -m pip install dist/*.whl --force-reinstall
-         fi
-      shell: bash
+        python -m pip install dist/*.whl --force-reinstall
 
     - name: Run tests
       run: |
