@@ -1,7 +1,8 @@
-from typing import TypedDict, Callable, Union, Dict, List, Tuple
+from typing import TypedDict, Callable, Union, Dict, List, Tuple, Iterator
 
 State = Dict[str, object]
 Parameters = Dict[str, object]
+SweepableParameters = Dict[str, list[object]]
 Substep = int
 StateHistory = List[List[State]]
 PolicyOutput = Dict[str, object]
@@ -16,3 +17,8 @@ class StateUpdateBlock(TypedDict):
 
 
 StateUpdateBlocks = List[StateUpdateBlock]
+
+class ConfigurationDict(TypedDict):
+    T: Iterator # Generator for the timestep variable
+    N: int # Number of MC Runs
+    M: Union[Parameters, SweepableParameters] # Parameters / List of Parameter to Sweep
