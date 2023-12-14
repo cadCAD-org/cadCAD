@@ -6,6 +6,7 @@ from cadCAD.types import *
 import pandas as pd # type: ignore
 import types
 import inspect
+import pytest
 
 def describe_or_return(v: object) -> object:
     """
@@ -163,21 +164,32 @@ def create_experiment(N_RUNS=2, N_TIMESTEPS=3, params: dict=SWEEP_PARAMS):
 
 
 def test_mc_sweep_experiment():
-    experiment_assertions(create_experiment(N_RUNS=2, N_TIMESTEPS=2, params=SWEEP_PARAMS))
+    experiment_assertions(create_experiment(N_RUNS=2, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.local_mode)
+    experiment_assertions(create_experiment(N_RUNS=2, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.single_mode)
+    experiment_assertions(create_experiment(N_RUNS=2, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.multi_mode)
 
 def test_unique_sweep_experiment():
-    experiment_assertions(create_experiment(N_RUNS=1, N_TIMESTEPS=2, params=SWEEP_PARAMS))
+    experiment_assertions(create_experiment(N_RUNS=1, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.local_mode)
+    experiment_assertions(create_experiment(N_RUNS=1, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.single_mode)
+    experiment_assertions(create_experiment(N_RUNS=1, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.multi_mode)
 
 def test_mc_single_experiment():
-    experiment_assertions(create_experiment(N_RUNS=2, N_TIMESTEPS=2, params=SINGLE_PARAMS))
+    experiment_assertions(create_experiment(N_RUNS=2, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.local_mode)
+    experiment_assertions(create_experiment(N_RUNS=2, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.single_mode)
+    experiment_assertions(create_experiment(N_RUNS=2, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.multi_mode)
 
 def test_unique_single_experiment():
-    experiment_assertions(create_experiment(N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS))
+    experiment_assertions(create_experiment(N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.local_mode)
+    experiment_assertions(create_experiment(N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.single_mode)
+    with pytest.raises(ValueError) as e_info:
+        experiment_assertions(create_experiment(N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.multi_mode)
 
 
 
-def experiment_assertions(exp):
-    exec_context = ExecutionContext(ExecutionMode().single_mode)
+def experiment_assertions(exp, mode=None):
+    if mode == None:
+        mode = ExecutionMode().local_mode
+    exec_context = ExecutionContext(mode)
     executor = Executor(exec_context=exec_context, configs=exp.configs)
     (records, tensor_field, _) = executor.execute()
     df = drop_substeps(assign_params(pd.DataFrame(records), exp.configs))
