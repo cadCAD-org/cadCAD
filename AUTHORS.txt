@@ -1,30 +1,41 @@
 Authors
 =======
 
-cadCAD was implemented by Joshua E. Jodesty and designed by Michael Zargham, Markus B. Koch, and
-Matthew V. Barlin from 2018 to 2020.
+cadCAD was originally implemented by Joshua E. Jodesty and designed by Michael Zargham, Markus B. Koch, and
+Matthew V. Barlin in 2018. Since then, upgrades and improvements were further committed by Danilo L. Bernardineli, Tyler D. Mace
+and Emanuel Lima.
+ 
 
 
-Project Maintainers:
-- Joshua E. Jodesty <joshua@block.science>
-- Markus B. Koch <markus@block.science>
-- Michael Zargham <zargham@block.science>
+Current Project Maintainers:
+- Emanuel Lima <emanuel@block.science> @emanuellima1
+- Michael Zargham <zargham@block.science> @mzargham
 
 
-Original Contributors:
-- Joshua E. Jodesty
-- Markus B. Koch
-- Matthew V. Barlin
-- Michael Zargham
-- Zixuan Zhang
-- Charles Rice
+Active and Past Contributors:
+- Joshua E. Jodesty @JEJodesty
+- Markus B. Koch @markusbkoch
+- Matthew V. Barlin @matttyb80
+- Michael Zargham @mzargham
+- Danilo L. Bernardineli @danlessa
+- Tyler D. Mace @tylerdmace
+- Emanuel Lima @emanuellima1
+- Zixuan Zhang @zixuanzh
+- Charles Rice @charles-rice
+- Benjamin Scholz @BenSchZA
 
 
 We’d also like to thank:
-- Andrew Clark
-- Nick Hirannet
-- Jonathan Gabler
-- Harry Goodnight
+- Andrew Clark @aclarkData
+- Nick Hirannet @nick-phl-7
+- Jonathan Gabler 
+- Harry Goodnight @
 - Charlie Hoppes
 - Nikhil Jamdade
 - Chris Frazier
+- Griff Green @GriffGreen
+- Isaac @eenti
+- Jonny Dubowsky @jonnydubowsky
+- Sem Brestels @sembrestels
+- @fjribi
+- Andrea Maria Piana @cammellos

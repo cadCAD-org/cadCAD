@@ -24,7 +24,6 @@ class ConfigurationDict(TypedDict):
     N: int # Number of MC Runs
     M: Union[Parameters, SweepableParameters] # Parameters / List of Parameter to Sweep
 
-
 TargetValue = object
 EnvProcess: Callable[[State, SweepableParameters, TargetValue], TargetValue]
 EnvProcesses = dict[str, Callable]
