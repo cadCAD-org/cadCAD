@@ -39,8 +39,6 @@ class Executor:
             def policy_scope_tuner(additional_objs, f):
                 if additional_objs is None:
                     return f(sweep_dict, sub_step, sL, s)
-                elif type(additional_objs) == dict:
-                    return f(sweep_dict, sub_step, sL, s, **additional_objs)
                 else:
                     return f(sweep_dict, sub_step, sL, s, additional_objs)
             return list(map(lambda f: policy_scope_tuner(additional_objs, f), funcs))
@@ -121,6 +119,10 @@ class Executor:
         if type(additional_objs) == dict:
             if additional_objs.get('deepcopy_off', False) == True:
                 last_in_obj = MappingProxyType(sL[-1])
+                if len(additional_objs) == 1:
+                    additional_objs = None 
+                    # XXX: drop the additional objects if only used for deepcopy
+                    # toggling.
             else:
                 last_in_obj = deepcopy(sL[-1])
         else:
