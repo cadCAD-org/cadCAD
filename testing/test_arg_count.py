@@ -13,7 +13,7 @@ def test_sufs():
     psubs = [
         {
             'policies': {
-                'p_A': lambda _1, _2, _3, _4, _5: {}
+                'p_A': lambda _1, _2, _3, _4: {}
             },
             'variables': {
                 'v_A': lambda _1, _2, _3, _4, _5: ('v_a', None)
