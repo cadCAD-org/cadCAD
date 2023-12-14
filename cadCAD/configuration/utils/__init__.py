@@ -1,10 +1,11 @@
-import pandas as pd
-import numpy as np
+import pandas as pd # type: ignore
 from datetime import datetime, timedelta
 from collections import Counter
 from copy import deepcopy
 from functools import reduce
-from funcy import curry
+from funcy import curry # type: ignore
+from cadCAD.types import *
+from typing import Union, Dict, List
 
 from cadCAD.configuration.utils.depreciationHandler import sanitize_partial_state_updates
 from cadCAD.utils import dict_filter, contains_type, flatten_tabulated_dict, tabulate_dict
@@ -161,27 +162,40 @@ def env_trigger(end_substep):
         curry(trigger)(end_substep)(trigger_field)(trigger_vals)(funct_list)
 
 
-def config_sim(d):
-    def process_variables(d):
-        return flatten_tabulated_dict(tabulate_dict(d))
+def config_sim(config_dict: ConfigurationDict):
 
-    if "N" in d:
-        if d["N"] <= 0:
+    if "N" in config_dict:
+        if config_dict["N"] <= 0:
             raise ValueError("'N' must be > 0")
+        else:
+            pass
     else:
-        raise KeyError("The 'sim_configs' dictionary must contain the key 'N'")
+        raise KeyError("The 'sim_configs' dictionary must contain the key 'N' (# of Monte Carlo Runs)")
 
-    if "T" not in d:
-        raise KeyError("The 'sim_configs' dictionary must contain the key 'T'")
-
-    if "M" in d:
-        M_lengths = len(list(set({key: len(value) for key, value in d["M"].items()}.values())))
-        if M_lengths > 2:
-            raise Exception('`M` values require up to a maximum of 2 distinct lengths')
-        return [{"N": d["N"], "T": d["T"], "M": M} for M in process_variables(d["M"])]
+    if "T" not in config_dict:
+        raise KeyError("The 'sim_configs' dictionary must contain the key 'T' (Timestep Iterator)")
     else:
-        d["M"] = [{}]
-        return d
+        if "M" in config_dict:
+            params = config_dict['M']
+
+            param_values_length = {key: len(value) if type(value) == list else 0 
+                                for key, value in params.items()}
+            param_values_length_set = set(param_values_length.values())
+            distinct_param_value_lengths = len(param_values_length_set)
+
+            if distinct_param_value_lengths > 2:
+                raise Exception('When sweeping, `M` list lengths should either be 1 and/or equal. More than two distinct lengths are not allowed')
+            elif (distinct_param_value_lengths == 1) and (0 in param_values_length_set):
+                return config_dict
+            elif (1 in param_values_length_set):
+                return [{**config_dict, "M": M} 
+                        for M in flatten_tabulated_dict(tabulate_dict(params))]
+            else:
+                raise Exception('When sweeping, `M` list lengths should either be 1 and/or equal. ')
+
+        else:
+            config_dict["M"] = [{}]
+            return config_dict
 
 
 def psub_list(psu_block, psu_steps):

@@ -7,6 +7,7 @@ from cadCAD.configuration import Configuration, Processor
 from cadCAD.configuration.utils import TensorFieldReport, configs_as_objs, configs_as_dicts
 from cadCAD.engine.simulation import Executor as SimExecutor
 from cadCAD.engine.execution import single_proc_exec, parallelize_simulations, local_simulations
+from cadCAD.types import *
 
 VarDictType = Dict[str, List[Any]]
 StatesListsType = List[Dict[str, Any]]
@@ -24,6 +25,17 @@ class ExecutionMode:
     multi_proc = 'multi_proc'
 
 
+def auto_mode_switcher(config_amt: int):
+    try:
+        if config_amt == 1:
+            return ExecutionMode.single_mode, single_proc_exec
+        elif (config_amt > 1):
+            return ExecutionMode.multi_mode, parallelize_simulations
+    except AttributeError:
+        if config_amt < 1:
+            raise ValueError('N must be >= 1!')
+
+
 class ExecutionContext:
     def __init__(self, context=ExecutionMode.local_mode, method=None, additional_objs=None) -> None:
         self.name = context
@@ -39,7 +51,7 @@ class ExecutionContext:
                     ExpIDs,
                     SubsetIDs,
                     SubsetWindows,
-                    configured_n, # exec_method,
+                    configured_n,  # exec_method,
                     sc, additional_objs=additional_objs
             ):
                 return method(
@@ -47,7 +59,7 @@ class ExecutionContext:
                     ExpIDs,
                     SubsetIDs,
                     SubsetWindows,
-                    configured_n, # exec_method,
+                    configured_n,  # exec_method,
                     sc, additional_objs
                 )
 
@@ -56,8 +68,8 @@ class ExecutionContext:
 
 class Executor:
     def __init__(self,
-             exec_context: ExecutionContext, configs: List[Configuration], sc=None, empty_return=False
-    ) -> None:
+                 exec_context: ExecutionContext, configs: List[Configuration], sc=None, empty_return=False
+                 ) -> None:
         self.sc = sc
         self.SimExecutor = SimExecutor
         self.exec_method = exec_context.method
@@ -70,7 +82,8 @@ class Executor:
             return [], [], []
 
         config_proc = Processor()
-        create_tensor_field = TensorFieldReport(config_proc).create_tensor_field
+        create_tensor_field = TensorFieldReport(
+            config_proc).create_tensor_field
 
         sessions = []
         var_dict_list, states_lists = [], []
@@ -105,18 +118,30 @@ class Executor:
             var_dict_list.append(x.sim_config['M'])
             states_lists.append([x.initial_state])
             eps.append(list(x.exogenous_states.values()))
-            configs_structs.append(config_proc.generate_config(x.initial_state, x.partial_state_update_blocks, eps[config_idx]))
+            configs_structs.append(config_proc.generate_config(
+                x.initial_state, x.partial_state_update_blocks, eps[config_idx]))
             env_processes_list.append(x.env_processes)
             partial_state_updates.append(x.partial_state_update_blocks)
             sim_executors.append(SimExecutor(x.policy_ops).simulation)
 
             config_idx += 1
 
-        def get_final_dist_results(simulations, psus, eps, sessions):
-            tensor_fields = [create_tensor_field(psu, ep) for psu, ep in list(zip(psus, eps))]
+        remote_threshold = 100
+        config_amt = len(self.configs)
+
+        def get_final_dist_results(simulations: List[StateHistory],
+                                   psus: List[StateUpdateBlocks],
+                                   eps,
+                                   sessions: List[SessionDict]):
+            tensor_fields = [create_tensor_field(
+                psu, ep) for psu, ep in list(zip(psus, eps))]
             return simulations, tensor_fields, sessions
 
-        def get_final_results(simulations, psus, eps, sessions, remote_threshold):
+        def get_final_results(simulations: List[StateHistory],
+                              psus: List[StateUpdateBlocks],
+                              eps,
+                              sessions: List[SessionDict],
+                              remote_threshold: int):
             flat_timesteps, tensor_fields = [], []
             for sim_result, psu, ep in list(zip(simulations, psus, eps)):
                 flat_timesteps.append(flatten(sim_result))
@@ -128,25 +153,23 @@ class Executor:
             elif config_amt > 1:
                 return flat_simulations, tensor_fields, sessions
 
-        remote_threshold = 100
-        config_amt = len(self.configs)
-
-        def auto_mode_switcher(config_amt):
-            try:
-                if config_amt == 1:
-                    return ExecutionMode.single_mode, single_proc_exec
-                elif (config_amt > 1):
-                    return ExecutionMode.multi_mode, parallelize_simulations
-            except AttributeError:
-                if config_amt < 1:
-                    raise ValueError('N must be >= 1!')
-
         final_result = None
         original_N = len(configs_as_dicts(self.configs))
         if self.exec_context != ExecutionMode.distributed:
             # Consider Legacy Support
-            if self.exec_context != ExecutionMode.local_mode:
-                self.exec_context, self.exec_method = auto_mode_switcher(config_amt)
+            if self.exec_context == ExecutionMode.local_mode:
+                self.exec_context, self.exec_method = auto_mode_switcher(
+                    config_amt)
+            elif self.exec_context == ExecutionMode.single_mode or self.exec_context == ExecutionMode.single_proc:
+                self.exec_context, self.exec_method = ExecutionMode.single_mode, single_proc_exec
+            elif self.exec_context == ExecutionMode.multi_mode or self.exec_context == ExecutionMode.multi_proc:
+                if config_amt == 1:
+                    raise ValueError("Multi mode must have at least 2 configs")
+                else:
+                    self.exec_context, self.exec_method = ExecutionMode.multi_mode, parallelize_simulations
+            else:
+                raise ValueError("Invalid execution mode specified")
+
 
             print("Execution Method: " + self.exec_method.__name__)
             simulations_results = self.exec_method(
@@ -154,14 +177,16 @@ class Executor:
                 ExpIDs, SubsetIDs, SubsetWindows, original_N
             )
 
-            final_result = get_final_results(simulations_results, partial_state_updates, eps, sessions, remote_threshold)
+            final_result = get_final_results(
+                simulations_results, partial_state_updates, eps, sessions, remote_threshold)
         elif self.exec_context == ExecutionMode.distributed:
             print("Execution Method: " + self.exec_method.__name__)
             simulations_results = self.exec_method(
                 sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts,
                 SimIDs, RunIDs, ExpIDs, SubsetIDs, SubsetWindows, original_N, self.sc
             )
-            final_result = get_final_dist_results(simulations_results, partial_state_updates, eps, sessions)
+            final_result = get_final_dist_results(
+                simulations_results, partial_state_updates, eps, sessions)
 
         t2 = time()
         print(f"Total execution time: {t2 - t1 :.2f}s")

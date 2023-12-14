@@ -3,11 +3,14 @@ from typing import Dict, List
 from collections import defaultdict
 from itertools import product
 import warnings
+from typing import Union
+from cadCAD.types import *
+from typing import List, Dict, Union
 
 import functools
 import operator
 
-from pandas import DataFrame
+from pandas import DataFrame # type: ignore
 
 
 class SilentDF(DataFrame):
@@ -99,7 +102,7 @@ def tabulate_dict(d: Dict[str, List[int]]) -> Dict[str, List[int]]:
 
 def flatten_tabulated_dict(d: Dict[str, List[int]]) -> List[Dict[str, int]]:
     max_len = get_max_dict_val_len(d)
-    dl = [{} for i in range(max_len)]
+    dl: list[dict] = [{} for i in range(max_len)]
 
     for k, vl in d.items():
         for v, i in zip(vl, list(range(len(vl)))):

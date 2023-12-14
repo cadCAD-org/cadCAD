@@ -1,7 +1,7 @@
 from typing import Callable, Dict, List, Any, Tuple
-from pathos.multiprocessing import ProcessPool as PPool
+from pathos.multiprocessing import ProcessPool as PPool # type: ignore
 from collections import Counter
-
+from cadCAD.types import *
 from cadCAD.utils import flatten
 
 VarDictType = Dict[str, List[Any]]
@@ -11,26 +11,31 @@ EnvProcessesType = Dict[str, Callable]
 
 
 def single_proc_exec(
-    simulation_execs: List[Callable],
-    var_dict_list: List[VarDictType],
-    states_lists: List[StatesListsType],
-    configs_structs: List[ConfigsType],
-    env_processes_list: List[EnvProcessesType],
-    Ts: List[range],
-    SimIDs,
-    Ns: List[int],
+    simulation_execs: List[ExecutorFunction],
+    var_dict_list: List[Parameters],
+    states_lists: List[StateHistory],
+    configs_structs: List[StateUpdateBlocks],
+    env_processes_list: List[EnvProcesses],
+    Ts: List[TimeSeq],
+    SimIDs: List[SimulationID],
+    Ns: List[Run],
     ExpIDs: List[int],
-    SubsetIDs,
-    SubsetWindows,
-    configured_n
+    SubsetIDs: List[SubsetID],
+    SubsetWindows: List[SubsetWindow],
+    configured_n: List[N_Runs]
 ):
+    
+    # HACK for making it run with N_Runs=1
+    if type(var_dict_list) == list:
+        var_dict_list = var_dict_list[0]
+
     print(f'Execution Mode: single_threaded')
-    params = [
+    raw_params: List[List] = [
         simulation_execs, states_lists, configs_structs, env_processes_list,
         Ts, SimIDs, Ns, SubsetIDs, SubsetWindows
     ]
     simulation_exec, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window = list(
-        map(lambda x: x.pop(), params)
+        map(lambda x: x.pop(), raw_params)
     )
     result = simulation_exec(
         var_dict_list, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, configured_n
@@ -38,19 +43,22 @@ def single_proc_exec(
     return flatten(result)
 
 
+
+
+
 def parallelize_simulations(
-    simulation_execs: List[Callable],
-    var_dict_list: List[VarDictType],
-    states_lists: List[StatesListsType],
-    configs_structs: List[ConfigsType],
-    env_processes_list: List[EnvProcessesType],
-    Ts: List[range],
-    SimIDs,
-    Ns: List[int],
+    simulation_execs: List[ExecutorFunction],
+    var_dict_list: List[Parameters],
+    states_lists: List[StateHistory],
+    configs_structs: List[StateUpdateBlocks],
+    env_processes_list: List[EnvProcesses],
+    Ts: List[TimeSeq],
+    SimIDs: List[SimulationID],
+    Ns: List[Run],
     ExpIDs: List[int],
-    SubsetIDs,
-    SubsetWindows,
-    configured_n
+    SubsetIDs: List[SubsetID],
+    SubsetWindows: List[SubsetWindow],
+    configured_n: List[N_Runs]
 ):
 
     print(f'Execution Mode: parallelized')
@@ -104,32 +112,29 @@ def parallelize_simulations(
 
 
 def local_simulations(
-        simulation_execs: List[Callable],
-        var_dict_list: List[VarDictType],
-        states_lists: List[StatesListsType],
-        configs_structs: List[ConfigsType],
-        env_processes_list: List[EnvProcessesType],
-        Ts: List[range],
-        SimIDs,
-        Ns: List[int],
-        ExpIDs: List[int],
-        SubsetIDs,
-        SubsetWindows,
-        configured_n
+    simulation_execs: List[ExecutorFunction],
+    var_dict_list: List[Parameters],
+    states_lists: List[StateHistory],
+    configs_structs: List[StateUpdateBlocks],
+    env_processes_list: List[EnvProcesses],
+    Ts: List[TimeSeq],
+    SimIDs: List[SimulationID],
+    Ns: List[Run],
+    ExpIDs: List[int],
+    SubsetIDs: List[SubsetID],
+    SubsetWindows: List[SubsetWindow],
+    configured_n: List[N_Runs]
     ):
     config_amt = len(configs_structs)
 
-    _params = None
     if config_amt == 1: # and configured_n != 1
-        _params = var_dict_list[0]
         return single_proc_exec(
-            simulation_execs, _params, states_lists, configs_structs, env_processes_list,
+            simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list,
             Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
         )
     elif config_amt > 1: # and configured_n != 1
-        _params = var_dict_list
         return parallelize_simulations(
-            simulation_execs, _params, states_lists, configs_structs, env_processes_list,
+            simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list,
             Ts, SimIDs, Ns, ExpIDs, SubsetIDs, SubsetWindows, configured_n
         )
         # elif config_amt > 1 and configured_n == 1:
