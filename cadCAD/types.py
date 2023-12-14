@@ -24,15 +24,15 @@ class ConfigurationDict(TypedDict):
     N: int # Number of MC Runs
     M: Union[Parameters, SweepableParameters] # Parameters / List of Parameter to Sweep
 
-
-EnvProcesses = object
+TargetValue = object
+EnvProcess: Callable[[State, SweepableParameters, TargetValue], TargetValue]
+EnvProcesses = dict[str, Callable]
 TimeSeq = Iterator
 SimulationID = int
 Run = int
 SubsetID = int
 SubsetWindow = Iterator
 N_Runs = int
-
 
 ExecutorFunction = Callable[[Parameters, StateHistory, StateUpdateBlocks, EnvProcesses, TimeSeq, SimulationID, Run, SubsetID, SubsetWindow, N_Runs], object]
 ExecutionParameter = Tuple[ExecutorFunction, Parameters, StateHistory, StateUpdateBlocks, EnvProcesses, TimeSeq, SimulationID, Run, SubsetID, SubsetWindow, N_Runs]
