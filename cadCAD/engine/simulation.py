@@ -1,10 +1,12 @@
 from typing import Any, Callable, Dict, List, Tuple
 from copy import deepcopy
+from types import MappingProxyType
 from functools import reduce
-from funcy import curry
+from funcy import curry # type: ignore
 
 from cadCAD.utils import flatten
 from cadCAD.engine.utils import engine_exception
+from cadCAD.types import *
 
 id_exception: Callable = curry(engine_exception)(KeyError)(KeyError)(None)
 
@@ -37,6 +39,8 @@ class Executor:
             def policy_scope_tuner(additional_objs, f):
                 if additional_objs is None:
                     return f(sweep_dict, sub_step, sL, s)
+                elif type(additional_objs) == dict:
+                    return f(sweep_dict, sub_step, sL, s, **additional_objs)
                 else:
                     return f(sweep_dict, sub_step, sL, s, additional_objs)
             return list(map(lambda f: policy_scope_tuner(additional_objs, f), funcs))
@@ -102,20 +106,26 @@ class Executor:
     # mech_step
     def partial_state_update(
         self,
-        sweep_dict: Dict[str, List[Any]],
-        sub_step: int,
-        sL,
-        sH,
-        state_funcs: List[Callable],
-        policy_funcs: List[Callable],
-        env_processes: Dict[str, Callable],
+        sweep_dict: Parameters,
+        sub_step: Substep,
+        sL: list[State],
+        sH: StateHistory,
+        state_funcs: List[StateUpdateFunction],
+        policy_funcs: List[PolicyFunction],
+        env_processes: EnvProcesses,
         time_step: int,
         run: int,
         additional_objs
     ) -> List[Dict[str, Any]]:
 
-        # last_in_obj: Dict[str, Any] = MappingProxyType(sL[-1])
-        last_in_obj: Dict[str, Any] = deepcopy(sL[-1])
+        if type(additional_objs) == dict:
+            if additional_objs.get('deepcopy_off', False) == True:
+                last_in_obj = MappingProxyType(sL[-1])
+            else:
+                last_in_obj = deepcopy(sL[-1])
+        else:
+            last_in_obj = deepcopy(sL[-1])
+            
         _input: Dict[str, Any] = self.policy_update_exception(
             self.get_policy_input(sweep_dict, sub_step, sH, last_in_obj, policy_funcs, additional_objs)
         )
@@ -206,18 +216,18 @@ class Executor:
 
     def simulation(
         self,
-        sweep_dict: Dict[str, List[Any]],
-        states_list: List[Dict[str, Any]],
+        sweep_dict: SweepableParameters,
+        states_list: StateHistory,
         configs,
-        env_processes: Dict[str, Callable],
-        time_seq: range,
-        simulation_id: int,
+        env_processes: EnvProcesses,
+        time_seq: TimeSeq,
+        simulation_id: SimulationID,
         run: int,
-        subset_id,
-        subset_window,
-        configured_N,
+        subset_id: SubsetID,
+        subset_window: SubsetWindow,
+        configured_N: int,
         # remote_ind
-        additional_objs=None
+        additional_objs: Union[None, Dict]=None
     ):
         run += 1
         subset_window.appendleft(subset_id)
