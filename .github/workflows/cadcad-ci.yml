@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["pypy3.9", "pypy3.10", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     runs-on: ${{ matrix.os }}
@@ -38,12 +38,17 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install jupyter
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install -r requirements.txt
 
     - name: Build cadCAD
       run: |
         python setup.py bdist_wheel
-        python -m pip install dist/*.whl --force-reinstall
+         if [ "$RUNNER_OS" == "Windows" ]; then
+              powershell -command "python -m pip install dist/*.whl --force-reinstall"
+         else
+              python -m pip install dist/*.whl --force-reinstall
+         fi
+      shell: bash
 
     - name: Run tests
       run: |
