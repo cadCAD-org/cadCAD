@@ -60,7 +60,7 @@ def print_pipe(x: object) -> object:
     return x
 
 
-def tupalize(k: object, vs: list | object):
+def tupalize(k: object, vs: Union[list, dict]):
     """
     >>> tupalize(1, 1)
     [(1, 1)]
@@ -85,7 +85,7 @@ def flattenDict(l: dict) -> list:
     return flat_dict
 
 
-def flatten(l: list | dict):
+def flatten(l: Union[list, dict]):
     if isinstance(l, list):
         return functools.reduce(operator.iconcat, l, [])
     elif isinstance(l, dict):
