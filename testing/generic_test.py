@@ -1,7 +1,6 @@
 import unittest
 from functools import reduce
-from tabulate import tabulate # type: ignore
-from parameterized import parameterized
+from tabulate import tabulate
 
 def generate_assertions_df(df, expected_results, target_cols, evaluations):
     test_names = []

@@ -1,5 +1,4 @@
 import pprint
-from typing import Dict, List
 
 import pandas as pd
 from tabulate import tabulate
