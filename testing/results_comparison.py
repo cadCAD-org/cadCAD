@@ -2,7 +2,22 @@ import unittest
 import pandas as pd # type: ignore
 from tabulate import tabulate # type: ignore
 from pandas._testing import assert_frame_equal # type: ignore
+from testing.utils import assertEqual
 
+def compare_results_pytest(result_diff):
+    val_error_status_ind = False not in result_diff.val_error_status.tolist()
+    type_error_status_ind = False not in result_diff.type_error_status.tolist()
+    df_out = None
+    erroneous_indexes = None
+    select_result_diff = None
+
+    if (val_error_status_ind is False) or (type_error_status_ind is False):
+        erroneous_indexes = list(result_diff.index[result_diff["val_error_status"] == False])
+        select_result_diff = result_diff.iloc[erroneous_indexes]
+        df_out = tabulate(select_result_diff, headers='keys', tablefmt='psql')
+
+    assertEqual(val_error_status_ind, True, "Value Error")
+    assertEqual(type_error_status_ind, True, "Type Error")
 
 def compare_results(result_diff):
     class CompareResults(unittest.TestCase):
