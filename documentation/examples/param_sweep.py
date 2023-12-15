@@ -1,5 +1,4 @@
 import pprint
-from typing import Dict, List
 
 import pandas as pd
 from tabulate import tabulate
@@ -15,7 +14,7 @@ def some_function(x):
     return x
 
 
-g: Dict[str, List[int]] = {
+g: dict[str, list[int]] = {
     'alpha': [1],
     'beta': [2, 5],
     'gamma': [3, 4],

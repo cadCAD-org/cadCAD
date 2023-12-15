@@ -67,7 +67,7 @@ class Experiment(object):
             partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True, **kwargs
             # config_list=deepcopy(global_configs)
     ) -> None:
-        _sim_configs = deepcopy(sim_configs)
+        _sim_configs = sim_configs.copy()
         # self.configs = config_list
         self.simulation_id += 1
 
@@ -96,12 +96,14 @@ class Experiment(object):
                     sim_config['simulation_id'] = self.simulation_id
                     sim_config['run_id'] = n
                     sim_config['N'] = 1
-                    new_sim_configs.append(deepcopy(sim_config))
+                    # sim_config['N'] = n + 1
+                    new_sim_configs.append((sim_config.copy()))
                 del sim_config
             else:
                 sim_config['simulation_id'] = self.simulation_id
                 sim_config['run_id'] = 0
-                new_sim_configs.append(deepcopy(sim_config))
+                new_sim_configs.append((sim_config.copy()))
+                # del sim_config
 
             sim_cnt_local += 1
 
@@ -128,7 +130,7 @@ class Experiment(object):
                 if run_id >= max_runs:
                     sim_config['N'] = run_id - (max_runs - 1)
 
-            self.exp_window = deepcopy(self.exp_window)
+            self.exp_window = self.exp_window.copy()
             config = Configuration(
                 exp_creation_ts=self.exp_creation_ts,
 
@@ -186,27 +188,27 @@ class Experiment(object):
 
 
 class Identity:
-    def __init__(self, policy_id: Dict[str, int] = {'identity': 0}) -> None:
+    def __init__(self, policy_id: dict[str, int] = {'identity': 0}) -> None:
         self.beh_id_return_val = policy_id
 
     def p_identity(self, var_dict, sub_step, sL, s, **kwargs):
         return self.beh_id_return_val
 
-    def policy_identity(self, k: str) -> Callable:
+    def policy_identity(self, k: str) -> callable:
         return self.p_identity
 
     def no_state_identity(self, var_dict, sub_step, sL, s, _input, **kwargs):
         return None
 
-    def state_identity(self, k: str) -> Callable:
+    def state_identity(self, k: str) -> callable:
         return lambda var_dict, sub_step, sL, s, _input, **kwargs: (k, s[k])
 
     # state_identity = cloudpickle.dumps(state_identity)
 
     def apply_identity_funcs(self,
-                             identity: Callable,
+                             identity: callable,
                              df: DataFrame,
-                             cols: List[str]) -> DataFrame:
+                             cols: list[str]) -> DataFrame:
         """
         Apply the identity on each df column, using its self value as the
         argument.
@@ -239,7 +241,7 @@ class Processor:
             return pd.DataFrame({'empty': []})
 
     def generate_config(self, initial_state, partial_state_updates, exo_proc
-                       ) -> List[Tuple[List[Callable], List[Callable]]]:
+                       ) -> list[tuple[list[callable], list[callable]]]:
 
         def no_update_handler(bdf, sdf):
             if (bdf.empty == False) and (sdf.empty == True):
