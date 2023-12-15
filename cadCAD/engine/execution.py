@@ -1,5 +1,5 @@
 from typing import Callable, Dict, List, Any, Tuple
-from pathos.multiprocessing import ProcessPool as PPool # type: ignore
+from pathos.multiprocessing import ProcessPool # type: ignore
 from collections import Counter
 from cadCAD.types import *
 from cadCAD.utils import flatten
@@ -96,13 +96,10 @@ def parallelize_simulations(
 
     def process_executor(params):
         if len_configs_structs > 1:
-            pp = PPool(processes=len_configs_structs)
-            results = pp.map(
-                lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n, additional_objs), params
-            )
-            pp.close()
-            pp.join()
-            pp.clear()
+            with ProcessPool(processes=len_configs_structs) as pp:
+                results = pp.map(
+                    lambda t: t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n), params
+                )
         else:
             t = params[0]
             results = t[0](t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], configured_n)
