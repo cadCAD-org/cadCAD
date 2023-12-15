@@ -188,6 +188,7 @@ def config_sim(config_dict: ConfigurationDict):
                 return config_dict
             elif (1 in param_values_length_set):
                 return [{**config_dict, "M": M} 
+
                         for M in flatten_tabulated_dict(tabulate_dict(params))]
             else:
                 raise Exception('When sweeping, `M` list lengths should either be 1 and/or equal. ')
