@@ -14,7 +14,7 @@ MEASURING_BLOCK: StateUpdateBlock = {
     'variables': {
         'run_time': MEASURE_TIME_SUF
     }
-}
+} # type: ignore
 
 
 def profile_psubs(psubs: StateUpdateBlocks, profile_substeps=True) -> StateUpdateBlocks:

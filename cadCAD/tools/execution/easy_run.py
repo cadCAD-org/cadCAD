@@ -91,11 +91,11 @@ def easy_run(
         if assign_params == True:
             pass
         else:
-            params_set &= assign_params
+            params_set &= assign_params # type: ignore
 
         # Logic for getting the assign params criteria
         if type(assign_params) is list:
-            selected_params = set(assign_params) & params_set
+            selected_params = set(assign_params) & params_set # type: ignore
         elif type(assign_params) is set:
             selected_params = assign_params & params_set
         else:
