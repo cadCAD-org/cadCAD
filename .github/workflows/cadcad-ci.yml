@@ -47,15 +47,4 @@ jobs:
 
     - name: Run tests
       run: |
-        python testing/tests/multi_model_row_count.py
-        python testing/tests/param_sweep.py
-        python testing/tests/policy_aggregation.py
-        python testing/tests/timestep1psub0.py
-        python testing/tests/runs_not_zero.py
-        python testing/tests/run1psub0.py
-        python testing/tests/append_mod_test.py
-        python testing/tests/cadCAD_exp.py
-
-    - name: Run Jupyter test
-      run: |
-        python testing/tests/import_cadCAD_test.py
+        python -m pytest
