@@ -10,10 +10,10 @@ from cadCAD.engine.simulation import Executor as SimExecutor
 from cadCAD.engine.execution import single_proc_exec, parallelize_simulations, local_simulations
 from cadCAD.types import *
 
-VarDictType = dict[str, list[object]]
-StatesListsType = list[dict[str, object]]
-ConfigsType = list[tuple[list[callable], list[callable]]]
-EnvProcessesType = dict[str, callable]
+VarDictType = Dict[str, List[object]]
+StatesListsType = List[dict[str, object]]
+ConfigsType = List[tuple[list[callable], List[callable]]]
+EnvProcessesType = Dict[str, callable]
 
 
 class ExecutionMode:
@@ -80,7 +80,7 @@ class Executor:
         self.configs = configs
         self.empty_return = empty_return
 
-    def execute(self) -> tuple[object, object, dict[str, object]]:
+    def execute(self) -> Tuple[object, object, Dict[str, object]]:
         if self.empty_return is True:
             return [], [], []
 

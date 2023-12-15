@@ -3,7 +3,7 @@ from collections import deque
 
 State = Dict[str, object]
 Parameters = Dict[str, object]
-SweepableParameters = Dict[str, list[object]]
+SweepableParameters = Dict[str, List[object]]
 Substep = int
 StateHistory = List[List[State]]
 PolicyOutput = Dict[str, object]
@@ -26,7 +26,7 @@ class ConfigurationDict(TypedDict):
 
 TargetValue = object
 EnvProcess: Callable[[State, SweepableParameters, TargetValue], TargetValue]
-EnvProcesses = dict[str, Callable]
+EnvProcesses = Dict[str, Callable]
 TimeSeq = Iterator
 SimulationID = int
 Run = int

@@ -11,7 +11,7 @@ def some_function(x):
 
 # Optional
 # dict must contain lists opf 2 distinct lengths
-g: dict[str, list[int]] = {
+g: Dict[str, List[int]] = {
     'alpha': [1],
     'beta': [2, some_function],
     'gamma': [3, 4],

@@ -37,7 +37,7 @@ import pandas as pd
 raw_system_events, tensor_field, sessions = simulation.execute()
 
 # Simulation Result Types:
-# raw_system_events: list[dict] 
+# raw_system_events: List[dict] 
 # tensor_field: pd.DataFrame
 
 # Result System Events DataFrame

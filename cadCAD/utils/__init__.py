@@ -47,7 +47,7 @@ class IndexCounter:
         return self.i
 
 
-def compose(*functions: tuple[callable]) -> object:
+def compose(*functions: Tuple[callable]) -> object:
     return reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
 
 
@@ -100,11 +100,11 @@ def dict_filter(dictionary, condition):
     return dict([(k, v) for k, v in dictionary.items() if condition(v)])
 
 
-def get_max_dict_val_len(g: dict[str, list[int]]) -> int:
+def get_max_dict_val_len(g: Dict[str, List[int]]) -> int:
     return len(max(g.values(), key=len))
 
 
-def tabulate_dict(d: dict[str, list[int]]) -> dict[str, list[int]]:
+def tabulate_dict(d: Dict[str, List[int]]) -> Dict[str, List[int]]:
     max_len = get_max_dict_val_len(d)
     _d = {}
     for k, vl in d.items():
@@ -116,9 +116,9 @@ def tabulate_dict(d: dict[str, list[int]]) -> dict[str, list[int]]:
     return _d
 
 
-def flatten_tabulated_dict(d: dict[str, list[int]]) -> list[dict[str, int]]:
+def flatten_tabulated_dict(d: Dict[str, List[int]]) -> List[dict[str, int]]:
     max_len = get_max_dict_val_len(d)
-    dl: list[dict] = [{} for i in range(max_len)]
+    dl: List[dict] = [{} for i in range(max_len)]
 
     for k, vl in d.items():
         for v, i in zip(vl, list(range(len(vl)))):

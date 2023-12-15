@@ -4,10 +4,10 @@ from collections import Counter
 from cadCAD.types import *
 from cadCAD.utils import flatten
 
-VarDictType = dict[str, list[object]]
-StatesListsType = list[dict[str, object]]
-ConfigsType = list[tuple[list[callable], list[callable]]]
-EnvProcessesType = dict[str, callable]
+VarDictType = Dict[str, List[object]]
+StatesListsType = List[dict[str, object]]
+ConfigsType = List[tuple[list[callable], List[callable]]]
+EnvProcessesType = Dict[str, callable]
 
 
 def single_proc_exec(
