@@ -67,7 +67,7 @@ class Experiment(object):
             partial_state_update_blocks={}, policy_ops=[lambda a, b: a + b], _exo_update_per_ts: bool = True, **kwargs
             # config_list=deepcopy(global_configs)
     ) -> None:
-        _sim_configs = sim_configs.copy()
+        _sim_configs = deepcopy(sim_configs)
         # self.configs = config_list
         self.simulation_id += 1
 
@@ -90,21 +90,12 @@ class Experiment(object):
             sim_config = t[0]
             sim_config['subset_id'] = subset_id
             sim_config['subset_window'] = self.subset_window
-            N = sim_config['N']
-            if N > 1:
-                for n in range(N):
-                    sim_config['simulation_id'] = self.simulation_id
-                    sim_config['run_id'] = n
-                    sim_config['N'] = 1
-                    # sim_config['N'] = n + 1
-                    new_sim_configs.append((sim_config.copy()))
-                del sim_config
-            else:
+            N: int = sim_config['N']
+            for n in range(1, N + 1):
                 sim_config['simulation_id'] = self.simulation_id
-                sim_config['run_id'] = 0
+                sim_config['run_id'] = n
+                sim_config['N'] = 1
                 new_sim_configs.append((sim_config.copy()))
-                # del sim_config
-
             sim_cnt_local += 1
 
         if model_id == None:
