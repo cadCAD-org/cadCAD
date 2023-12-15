@@ -91,7 +91,7 @@ class Experiment(object):
             sim_config['subset_id'] = subset_id
             sim_config['subset_window'] = self.subset_window
             N: int = sim_config['N']
-            for n in range(1, N + 1):
+            for n in range(0, N):
                 sim_config['simulation_id'] = self.simulation_id
                 sim_config['run_id'] = n
                 sim_config['N'] = 1
