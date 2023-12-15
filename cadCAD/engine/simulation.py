@@ -77,24 +77,11 @@ class Executor:
 
         ops = self.policy_ops
 
-        # Execute and retrieve policies results
-
         args = (sweep_dict, sub_step, sL, s)
         def execute_policy(f: PolicyFunction) -> dict:
             return policy_scope_tuner(args, additional_objs, f)
 
-        col_results = map(execute_policy, funcs)
-        try:
-            reducer_arg = list(map(lambda x: list(x.keys()), col_results))
-        except:
-            raise ValueError("There is a Policy Function that has not properly returned a Dictionary")
-        reducer_function = lambda a, b: a + b
-        key_set = list(set(reduce(reducer_function, reducer_arg)))
-        new_dict = {k: [] for k in key_set}
-        for d in col_results:
-            for k in d.keys():
-                new_dict[k].append(d[k])
-
+        col_results: list[PolicyOutput] = map(execute_policy, funcs)
         # Create a nested dict containing all results combination
         # new_dict[policy_input][policy_ordinal] = policy_input_value
         new_dict: dict = {}
