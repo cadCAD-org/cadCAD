@@ -10,6 +10,9 @@ from cadCAD.types import *
 
 id_exception: callable = curry(engine_exception)(KeyError)(KeyError)(None)
 
+Aggregator = Callable[[object, object], object]
+
+
 def policy_scope_tuner(args: tuple,
                        additional_objs: object,
                        f: PolicyFunction) -> dict:
@@ -81,8 +84,6 @@ class Executor:
             return policy_scope_tuner(args, additional_objs, f)
 
         col_results = map(execute_policy, funcs)
-
-        col_results = get_col_results(sweep_dict, sub_step, sL, s, funcs)
         try:
             reducer_arg = list(map(lambda x: list(x.keys()), col_results))
         except:
