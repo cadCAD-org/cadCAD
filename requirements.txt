@@ -11,3 +11,4 @@ pathos>=0.2.8
 numpy>=1.22.0
 pytz>=2021.1
 setuptools>=69.0.2
+graphviz>=0.20.1
