@@ -2,13 +2,16 @@ import inspect
 import types
 from typing import Dict, Union
 
-import pandas as pd
+import pandas as pd # type: ignore
 from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import config_sim
 from cadCAD.engine import ExecutionContext, ExecutionMode, Executor
 
 
 def describe_or_return(v: object) -> object:
+    """
+    Thanks @LinuxIsCool!
+    """
     if isinstance(v, types.FunctionType):
         return f'function: {v.__name__}'
     elif isinstance(v, types.LambdaType) and v.__name__ == '<lambda>':
@@ -18,6 +21,9 @@ def describe_or_return(v: object) -> object:
 
 
 def select_M_dict(M_dict: Dict[str, object], keys: set) -> Dict[str, object]:
+    """
+    Thanks @LinuxIsCool!
+    """
     return {k: describe_or_return(v) for k, v in M_dict.items() if k in keys}
 
 
@@ -42,7 +48,7 @@ def easy_run(
 
     # Set-up sim_config
     simulation_parameters = {'N': N_samples, 'T': range(N_timesteps), 'M': params}
-    sim_config = config_sim(simulation_parameters)
+    sim_config = config_sim(simulation_parameters) # type: ignore
 
     # Create a new experiment
     exp = Experiment()
@@ -85,11 +91,11 @@ def easy_run(
         if assign_params == True:
             pass
         else:
-            params_set &= assign_params
+            params_set &= assign_params # type: ignore
 
         # Logic for getting the assign params criteria
         if type(assign_params) is list:
-            selected_params = set(assign_params) & params_set
+            selected_params = set(assign_params) & params_set # type: ignore
         elif type(assign_params) is set:
             selected_params = assign_params & params_set
         else:

@@ -1,1 +1,1 @@
-from cadCAD_tools.execution.easy_run import easy_run
+from cadCAD.tools.execution.easy_run import easy_run

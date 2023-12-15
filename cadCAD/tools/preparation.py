@@ -1,12 +1,13 @@
 from typing import Mapping
-from cadCAD_tools.execution import easy_run
-from pandas import DataFrame
-from cadCAD_tools.types import Param, SystemParameters, InitialState, List, ParamSweep, TimestepBlock
+from cadCAD.tools.execution import easy_run
+from pandas import DataFrame # type: ignore
+from cadCAD.types import *
+from cadCAD.tools.types import *
 from itertools import product
 from dataclasses import dataclass
 
 
-def sweep_cartesian_product(sweep_params: Mapping[str, tuple]) -> Mapping[str, tuple]:
+def sweep_cartesian_product(sweep_params: SweepableParameters) -> SweepableParameters:
     """
     Makes a cartesian product from dictionary values.
     This is useful for plugging inside the sys_params dict, like:
@@ -35,7 +36,7 @@ def prepare_params(params: SystemParameters,
                      for k, v in params.items()
                      if type(v) is Param}
 
-    sweep_params: Mapping = {k: v.value
+    sweep_params: SweepableParameters = {k: v.value
                              for k, v in params.items()
                              if type(v) is ParamSweep}
     if cartesian_sweep is True:
@@ -57,7 +58,7 @@ def prepare_state(state: InitialState) -> Mapping[str, object]:
 class ConfigurationWrapper():
     initial_state: InitialState
     params: SystemParameters
-    timestep_block: TimestepBlock
+    timestep_block: StateUpdateBlocks
     timesteps: int
     samples: int
 

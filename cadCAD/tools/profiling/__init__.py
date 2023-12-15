@@ -1,1 +1,1 @@
-from cadCAD_tools.profiling.profile_run import profile_run
+from cadCAD.tools.profiling.profile_run import profile_run
