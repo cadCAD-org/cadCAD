@@ -31,8 +31,8 @@ exp.append_model(
 Parameters: `append_model`
 * **model_id** : str - OPTIONAL: System Model label
 * **initial_state** : _dict_ - [State Variables](#State-Variables) and their initial values
-* **partial_state_update_blocks** : list[dict[dict]] - list of [Partial State Update Blocks](#Partial-State-Update-Blocks)
-* **policy_ops** : list[functions] - See [Policy Aggregation](Policy_Aggregation.md) 
+* **partial_state_update_blocks** : List[dict[dict]] - list of [Partial State Update Blocks](#Partial-State-Update-Blocks)
+* **policy_ops** : List[functions] - See [Policy Aggregation](Policy_Aggregation.md) 
 * **sim_configs** - See [System Model Parameter Sweep](System_Model_Parameter_Sweep.md)
 * **user_id** : str - OPTIONAL: Configuration User ID
 

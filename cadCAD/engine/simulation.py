@@ -27,7 +27,7 @@ def policy_scope_tuner(args: tuple,
 
 
 def compose(init_reduction_funct: Aggregator,
-            funct_list: list[Aggregator],
+            funct_list: List[Aggregator],
             val_list: dict) -> object:
     """
     Reduce the nested policy input dict into a simple one.
@@ -57,13 +57,13 @@ class Executor:
 
     def get_policy_input(
         self,
-        sweep_dict: dict[str, list[object]],
+        sweep_dict: Dict[str, List[object]],
         sub_step: int,
-        sL: list[dict[str, object]],
-        s: dict[str, object],
-        funcs: list[callable],
+        sL: List[dict[str, object]],
+        s: Dict[str, object],
+        funcs: List[callable],
         additional_objs
-    ) -> dict[str, object]:
+    ) -> Dict[str, object]:
         """
         Retrieves the Policy Input for usage on State Update Functions
 
@@ -81,7 +81,7 @@ class Executor:
         def execute_policy(f: PolicyFunction) -> dict:
             return policy_scope_tuner(args, additional_objs, f)
 
-        col_results: list[PolicyOutput] = map(execute_policy, funcs)
+        col_results: List[PolicyOutput] = map(execute_policy, funcs)
         # Create a nested dict containing all results combination
         # new_dict[policy_input][policy_ordinal] = policy_input_value
         new_dict: dict = {}
@@ -114,9 +114,9 @@ class Executor:
     def apply_env_proc(
         self,
         sweep_dict,
-        env_processes: dict[str, callable],
-        state_dict: dict[str, object]
-    ) -> dict[str, object]:
+        env_processes: Dict[str, callable],
+        state_dict: Dict[str, object]
+    ) -> Dict[str, object]:
 
         def env_composition(target_field, state_dict, target_value):
             function_type = type(lambda x: x)
@@ -149,7 +149,7 @@ class Executor:
         self,
         sweep_dict: Parameters,
         sub_step: Substep,
-        sL: list[State],
+        sL: List[State],
         sH: StateHistory,
         state_funcs: List[StateUpdateFunction],
         policy_funcs: List[PolicyFunction],
@@ -157,7 +157,7 @@ class Executor:
         time_step: int,
         run: int,
         additional_objs
-    ) -> list[dict[str, object]]:
+    ) -> List[dict[str, object]]:
 
         if type(additional_objs) == dict:
             if additional_objs.get('deepcopy_off', False) == True:
@@ -210,29 +210,29 @@ class Executor:
     # mech_pipeline - state_update_block
     def state_update_pipeline(
         self,
-        sweep_dict: dict[str, list[object]],
+        sweep_dict: Dict[str, List[object]],
         simulation_list,
-        configs: list[tuple[list[callable], list[callable]]],
-        env_processes: dict[str, callable],
+        configs: List[tuple[list[callable], List[callable]]],
+        env_processes: Dict[str, callable],
         time_step: int,
         run: int,
         additional_objs
-    ) -> list[dict[str, object]]:
+    ) -> List[dict[str, object]]:
 
         sub_step = 0
-        states_list_copy: list[dict[str, object]] = tuple(simulation_list[-1])
-        genesis_states: dict[str, object] = states_list_copy[-1].copy()
-#         genesis_states: dict[str, object] = states_list_copy[-1]
+        states_list_copy: List[dict[str, object]] = tuple(simulation_list[-1])
+        genesis_states: Dict[str, object] = states_list_copy[-1].copy()
+#         genesis_states: Dict[str, object] = states_list_copy[-1]
 
         if len(states_list_copy) == 1:
             genesis_states['substep'] = sub_step
 
         del states_list_copy
-        states_list: list[dict[str, object]] = [genesis_states]
+        states_list: List[dict[str, object]] = [genesis_states]
 
         sub_step += 1
         for [s_conf, p_conf] in configs:
-            states_list: list[dict[str, object]] = self.partial_state_update(
+            states_list: List[dict[str, object]] = self.partial_state_update(
                 sweep_dict, sub_step, states_list, simulation_list, s_conf, p_conf, env_processes, time_step, run,
                 additional_objs
             )
@@ -245,19 +245,19 @@ class Executor:
     # state_update_pipeline
     def run_pipeline(
         self,
-        sweep_dict: dict[str, list[object]],
-        states_list: list[dict[str, object]],
-        configs: list[tuple[list[callable], list[callable]]],
-        env_processes: dict[str, callable],
+        sweep_dict: Dict[str, List[object]],
+        states_list: List[dict[str, object]],
+        configs: List[tuple[list[callable], List[callable]]],
+        env_processes: Dict[str, callable],
         time_seq: range,
         run: int,
         additional_objs
-    ) -> list[list[dict[str, object]]]:
-        time_seq: list[int] = [x + 1 for x in time_seq]
-        simulation_list: list[list[dict[str, object]]] = [states_list]
+    ) -> List[list[dict[str, object]]]:
+        time_seq: List[int] = [x + 1 for x in time_seq]
+        simulation_list: List[list[dict[str, object]]] = [states_list]
 
         for time_step in time_seq:
-            pipe_run: list[dict[str, object]] = self.state_update_pipeline(
+            pipe_run: List[dict[str, object]] = self.state_update_pipeline(
                 sweep_dict, simulation_list, configs, env_processes, time_step, run, additional_objs
             )
             _, *pipe_run = pipe_run
@@ -283,7 +283,7 @@ class Executor:
         run += 1
         subset_window.appendleft(subset_id)
 
-        def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, _run) -> list[dict[str, object]]:
+        def execute_run(sweep_dict, states_list, configs, env_processes, time_seq, _run) -> List[dict[str, object]]:
             def generate_init_sys_metrics(genesis_states_list, sim_id, _subset_id, _run, _subset_window):
                 for D in genesis_states_list:
                     d = D.copy()
@@ -291,12 +291,12 @@ class Executor:
                         sim_id, _subset_id, _run, 0, 0
                     yield d
 
-            states_list_copy: list[dict[str, object]] = list(
+            states_list_copy: List[dict[str, object]] = list(
                 generate_init_sys_metrics(
                     tuple(states_list), simulation_id, subset_id, run, subset_window)
             )
 
-            first_timestep_per_run: list[dict[str, object]] = self.run_pipeline(
+            first_timestep_per_run: List[dict[str, object]] = self.run_pipeline(
                 sweep_dict, states_list_copy, configs, env_processes, time_seq, run, additional_objs
             )
             del states_list_copy

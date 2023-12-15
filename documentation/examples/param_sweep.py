@@ -14,7 +14,7 @@ def some_function(x):
     return x
 
 
-g: dict[str, list[int]] = {
+g: Dict[str, List[int]] = {
     'alpha': [1],
     'beta': [2, 5],
     'gamma': [3, 4],

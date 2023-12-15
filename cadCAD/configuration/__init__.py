@@ -179,7 +179,7 @@ class Experiment(object):
 
 
 class Identity:
-    def __init__(self, policy_id: dict[str, int] = {'identity': 0}) -> None:
+    def __init__(self, policy_id: Dict[str, int] = {'identity': 0}) -> None:
         self.beh_id_return_val = policy_id
 
     def p_identity(self, var_dict, sub_step, sL, s, **kwargs):
@@ -199,7 +199,7 @@ class Identity:
     def apply_identity_funcs(self,
                              identity: callable,
                              df: DataFrame,
-                             cols: list[str]) -> DataFrame:
+                             cols: List[str]) -> DataFrame:
         """
         Apply the identity on each df column, using its self value as the
         argument.
@@ -232,7 +232,7 @@ class Processor:
             return pd.DataFrame({'empty': []})
 
     def generate_config(self, initial_state, partial_state_updates, exo_proc
-                       ) -> list[tuple[list[callable], list[callable]]]:
+                       ) -> List[tuple[list[callable], List[callable]]]:
 
         def no_update_handler(bdf, sdf):
             if (bdf.empty == False) and (sdf.empty == True):

@@ -7,7 +7,6 @@ from testing.models.param_sweep import genesis_states as genesis_states_a
 from testing.models.param_sweep import env_process as env_process_a
 from testing.models.param_sweep import partial_state_update_blocks as psubs_a
 
-
 def append_model_id(model_ids, sim_config, genesis_states, env_process, psubs):
     exp_copy = deepcopy(exp)
     for mod_id in model_ids:
