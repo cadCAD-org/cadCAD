@@ -3,6 +3,7 @@ import pprint
 from cadCAD import experiment
 from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
+from typing import Dict, List
 
 pp = pprint.PrettyPrinter(indent=4)
 

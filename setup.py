@@ -41,5 +41,5 @@ setup(name=name,
             "pytz",
             "six"
       ],
-      python_requires='>=3.10.0'
+      python_requires='>=3.8.0'
 )

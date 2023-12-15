@@ -1,7 +1,7 @@
 import unittest
-import pandas as pd
-from tabulate import tabulate
-from pandas._testing import assert_frame_equal
+import pandas as pd # type: ignore
+from tabulate import tabulate # type: ignore
+from pandas._testing import assert_frame_equal # type: ignore
 
 
 def compare_results(result_diff):
