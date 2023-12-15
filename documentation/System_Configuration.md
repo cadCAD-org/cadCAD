@@ -10,9 +10,9 @@ subsequent release by a class that returns the original representation in ver. `
 * The conversion utilities have been provided to restore its original representation of configurations with 
 runs >= 1
     * System Configuration Conversions:
-        * Configuration as List of Configuration Objects (as in ver. `0.3.1`) 
+        * Configuration as list of Configuration Objects (as in ver. `0.3.1`) 
         * New: System Configuration as a Pandas DataFrame
-        * New: System Configuration as List of Dictionaries
+        * New: System Configuration as list of Dictionaries
 
 ## Conversions
 ##### Note: The following applies as a result of simulation execution
@@ -22,7 +22,7 @@ runs >= 1
 from cadCAD.configuration.utils import configs_as_objs, configs_as_dataframe, configs_as_dicts
 ```
 
-#### System Configurations as List of Configuration Objects
+#### System Configurations as list of Configuration Objects
 Example:
 * `configs` is temporarily returned in a flattened format and reformatted into its intended format. 
 * `Configuration` objects at `0x10790e470` and `0x1143dd630` are reconstituted into objects at `0x10790e7b8` 
@@ -74,7 +74,7 @@ configs_df = configs_as_dataframe(configs)
 configs_df
 ```
 
-#### System Configurations as List of Dictionaries
+#### System Configurations as list of Dictionaries
 ```python
 configs_dicts: list = configs_as_dicts(configs)
 pprint(configs_dicts[0]['sim_config'])

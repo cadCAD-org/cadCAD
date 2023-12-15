@@ -90,19 +90,12 @@ class Experiment(object):
             sim_config = t[0]
             sim_config['subset_id'] = subset_id
             sim_config['subset_window'] = self.subset_window
-            N = sim_config['N']
-            if N > 1:
-                for n in range(N):
-                    sim_config['simulation_id'] = self.simulation_id
-                    sim_config['run_id'] = n
-                    sim_config['N'] = 1
-                    new_sim_configs.append(deepcopy(sim_config))
-                del sim_config
-            else:
+            N: int = sim_config['N']
+            for n in range(0, N):
                 sim_config['simulation_id'] = self.simulation_id
-                sim_config['run_id'] = 0
-                new_sim_configs.append(deepcopy(sim_config))
-
+                sim_config['run_id'] = n
+                sim_config['N'] = 1
+                new_sim_configs.append((sim_config.copy()))
             sim_cnt_local += 1
 
         if model_id == None:
@@ -128,7 +121,7 @@ class Experiment(object):
                 if run_id >= max_runs:
                     sim_config['N'] = run_id - (max_runs - 1)
 
-            self.exp_window = deepcopy(self.exp_window)
+            self.exp_window = self.exp_window.copy()
             config = Configuration(
                 exp_creation_ts=self.exp_creation_ts,
 
@@ -192,19 +185,19 @@ class Identity:
     def p_identity(self, var_dict, sub_step, sL, s, **kwargs):
         return self.beh_id_return_val
 
-    def policy_identity(self, k: str) -> Callable:
+    def policy_identity(self, k: str) -> callable:
         return self.p_identity
 
     def no_state_identity(self, var_dict, sub_step, sL, s, _input, **kwargs):
         return None
 
-    def state_identity(self, k: str) -> Callable:
+    def state_identity(self, k: str) -> callable:
         return lambda var_dict, sub_step, sL, s, _input, **kwargs: (k, s[k])
 
     # state_identity = cloudpickle.dumps(state_identity)
 
     def apply_identity_funcs(self,
-                             identity: Callable,
+                             identity: callable,
                              df: DataFrame,
                              cols: List[str]) -> DataFrame:
         """
@@ -239,7 +232,7 @@ class Processor:
             return pd.DataFrame({'empty': []})
 
     def generate_config(self, initial_state, partial_state_updates, exo_proc
-                       ) -> List[Tuple[List[Callable], List[Callable]]]:
+                       ) -> List[tuple[list[callable], List[callable]]]:
 
         def no_update_handler(bdf, sdf):
             if (bdf.empty == False) and (sdf.empty == True):

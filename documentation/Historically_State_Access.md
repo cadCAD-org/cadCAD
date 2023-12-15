@@ -5,11 +5,11 @@ The current state (values of state variables) is accessed through the `s` list. 
 variable values, they may be accessed through the state history list, `sH`. Accessing the state history should be 
 implemented without creating unintended feedback loops on the current state.
 
-The 3rd parameter of state and policy update functions (labeled as `sH` of type `List[List[dict]]`) provides access to 
+The 3rd parameter of state and policy update functions (labeled as `sH` of type `list[list[dict]]`) provides access to 
 past Partial State Update Block (PSUB) given a negative offset number. `access_block` is used to access past PSUBs 
-(`List[dict]`) from `sH`. For example, an offset of `-2` denotes the second to last PSUB.
+(`list[dict]`) from `sH`. For example, an offset of `-2` denotes the second to last PSUB.
 
-#### Exclusion List
+#### Exclusion list
 Create a list of states to exclude from the reported PSU.
 ```python
 exclusion_list = [

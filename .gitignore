@@ -39,3 +39,6 @@ simulations/validation
 simulations/poc/local/
 simulations/regression_tests/poc
 simulations/regression_tests/poc_configs
+dist/*
+testing/tests/import_cadCAD.nbconvert.ipynb
+testing/tests/cadCAD_memory_address.json

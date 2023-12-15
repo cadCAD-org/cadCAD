@@ -31,7 +31,7 @@ exp.append_model(
 Parameters: `append_model`
 * **model_id** : str - OPTIONAL: System Model label
 * **initial_state** : _dict_ - [State Variables](#State-Variables) and their initial values
-* **partial_state_update_blocks** : List[dict[dict]] - List of [Partial State Update Blocks](#Partial-State-Update-Blocks)
+* **partial_state_update_blocks** : List[dict[dict]] - list of [Partial State Update Blocks](#Partial-State-Update-Blocks)
 * **policy_ops** : List[functions] - See [Policy Aggregation](Policy_Aggregation.md) 
 * **sim_configs** - See [System Model Parameter Sweep](System_Model_Parameter_Sweep.md)
 * **user_id** : str - OPTIONAL: Configuration User ID
@@ -203,7 +203,7 @@ impact the State Update Functions and Policy Functions in that PSUB - only those
 
 ![](https://i.imgur.com/9rlX9TG.png)
 
-Partial State Update Blocks are passed to `append_model` as a List of Python `dicts` where the `dict_keys` are named 
+Partial State Update Blocks are passed to `append_model` as a list of Python `dicts` where the `dict_keys` are named 
 `"policies"` and `"variables"` and the values are also Python `dicts` where the keys are the names of the policy and 
 state update functions and the values are the functions.
 
