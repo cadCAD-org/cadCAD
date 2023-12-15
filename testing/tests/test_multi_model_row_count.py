@@ -6,7 +6,7 @@ from cadCAD.engine import ExecutionMode, ExecutionContext, Executor
 from testing.models import param_sweep, policy_aggregation
 import pytest
 from dataclasses import dataclass
-
+from testing.utils import assertEqual
 
 @dataclass
 class MultiModelRowCountResults():
@@ -103,14 +103,6 @@ def multi_model_row_count():
                                      model_A_rows,
                                      model_B_rows,
                                      model_C_rows)
-
-
-
-def assertEqual(_1, _2, _3=None):
-    if _3 == None:
-        assert _1 == _2
-    else:
-        assert _1 == _2, _3
 
 
 def test_row_count(multi_model_row_count: MultiModelRowCountResults):

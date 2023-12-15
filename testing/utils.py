@@ -19,3 +19,11 @@ def gen_metric_row(row, cols):
 
 def gen_metric_dict(df, cols):
     return dict([gen_metric_row(row, cols) for index, row in df.iterrows()])
+
+
+
+def assertEqual(_1, _2, _3=None):
+    if _3 == None:
+        assert _1 == _2
+    else:
+        assert _1 == _2, _3
