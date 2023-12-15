@@ -21,7 +21,7 @@ provided.
 """
 
 name = "cadCAD"
-version = "0.4.28"
+version = "0.4.29"
 
 setup(name=name,
       version=version,
@@ -38,7 +38,8 @@ setup(name=name,
             "dill",
             "pathos",
             "numpy",
-            "pytz"     
-             ],
-      python_requires='>=3.6.13'
+            "pytz",
+            "six"
+      ],
+      python_requires='>=3.10.0'
 )
