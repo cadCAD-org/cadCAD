@@ -1,9 +1,9 @@
 from typing import Dict, Callable, List, Tuple
-from pandas.core.frame import DataFrame
+from pandas.core.frame import DataFrame # type: ignore
 from datetime import datetime
 from collections import deque
 from copy import deepcopy
-import pandas as pd
+import pandas as pd # type: ignore
 
 from cadCAD.utils import key_filter
 from cadCAD.configuration.utils import exo_update_per_ts, configs_as_objs

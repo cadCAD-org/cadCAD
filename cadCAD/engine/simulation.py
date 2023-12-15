@@ -55,7 +55,12 @@ class Executor:
             return result
 
         col_results = get_col_results(sweep_dict, sub_step, sL, s, funcs)
-        key_set = list(set(list(reduce(lambda a, b: a + b, list(map(lambda x: list(x.keys()), col_results))))))
+        try:
+            reducer_arg = list(map(lambda x: list(x.keys()), col_results))
+        except:
+            raise ValueError("There is a Policy Function that has not properly returned a Dictionary")
+        reducer_function = lambda a, b: a + b
+        key_set = list(set(reduce(reducer_function, reducer_arg)))
         new_dict = {k: [] for k in key_set}
         for d in col_results:
             for k in d.keys():
@@ -146,10 +151,16 @@ class Executor:
             for k in source:
                 if k not in destination:
                     destination[k] = source[k]
-            del source
+            del source  
             return destination
 
-        last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, dict(generate_record(state_funcs)))
+        try:
+            new_state_vars = dict(generate_record(state_funcs))
+        except (ValueError, TypeError):
+            raise ValueError("There is a State Update Function which is not returning an proper tuple")
+
+
+        last_in_copy: Dict[str, Any] = transfer_missing_fields(last_in_obj, new_state_vars)
         last_in_copy: Dict[str, Any] = self.apply_env_proc(sweep_dict, env_processes, last_in_copy)
         last_in_copy['substep'], last_in_copy['timestep'], last_in_copy['run'] = sub_step, time_step, run
 
