@@ -1,18 +1,29 @@
 # Changelog:
 
+### 0.5.0 - December 18 2023
 
-### February 15, 2023
-* **Fixes:** 
-    - Package has been cleaned-up for working with Python 3.10
-### 0.4.29.1
+#### New User Features
 
-#### Changes
-- Parallel executor uses the context manager handling the Process Pool lifetime
+- Added toggle for enabling users to deactivate deepcopying. This is done by passing an additional object on the `ExecutionContext`, eg. `ExecutionContext(mode, additional_objs={'deepcopy_off': True})`
 
-### 0.4.29
+#### New Submodules
 
-- Merged repo with the `cadCAD_tweaked`, which includes performance improvements
-- Python 3.10 compatible
+- A collection of type annotations for encapsuling `cadCAD` projects is now implemented through the `cadCAD.types` submodules
+- Added `cadCAD.tools` as a submodule, which is originated from the `cadCAD_tools` Python package. This submodule contains several helper functions for making the simulation experience more straightforward as well as a collection of performance profiling tools.
+- Added `cadCAD.diagram` as a submodule, which is originated from the `cadCAD_diagram` Python package. This submodule contains functions for programatically generating block diagrams from existing models.
+- More informative error messages when policies and SUFs are wrongly implemented. (Issues #288 and #258)
+
+#### Backend Improvements
+
+- Merged repo with the `cadCAD_legacy_devel`, which includes performance improvements. In particular, simulations will start up faster due to code optimizations.
+- `cadCAD` now uses `pytest` as the testing framework. This was made possible by isolating the existing tests and wrapping them into functions. 
+
+#### Fixes
+
+- cadCAD is now Python 3.10+ compatible (Issue #306 and #301)
+- Proper support for `ExecutionMode.single_mode` (Issue #253 and #254)
+
+
 ### September 28, 2021
 #### New Features:
 * **ver. ≥ `0.4.28`:**
