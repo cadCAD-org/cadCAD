@@ -175,8 +175,13 @@ def test_mc_single_experiment(mode):
 
 @pytest.mark.parametrize("mode", ["local_proc", "single_proc", "multi_proc"])
 def test_unique_single_experiment(mode):
-    experiment_assertions(create_experiment(
-        N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), mode)
+    if mode == "multi_proc":
+            with pytest.raises(ValueError) as e_info:
+                experiment_assertions(create_experiment(
+                    N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), mode)
+    else:
+        experiment_assertions(create_experiment(
+                    N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), mode)
 
 
 def experiment_assertions(exp, mode=None):

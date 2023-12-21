@@ -51,11 +51,15 @@ def test_row_count_single(N_sim, N_sw, N_r, N_t, N_s):
     assert len(run_experiment(create_experiments(*args), 'single_proc')) == expected_rows(*args)
 
 
-@pytest.mark.parametrize("N_sim,N_sw,N_r,N_t,N_s", CONFIG_SIGNATURES_TO_TEST[:-1])
+@pytest.mark.parametrize("N_sim,N_sw,N_r,N_t,N_s", CONFIG_SIGNATURES_TO_TEST)
 def test_row_count_multi(N_sim, N_sw, N_r, N_t, N_s):
     args = (N_sim, N_sw, N_r, N_t, N_s)
-    assert len(run_experiment(create_experiments(*args), 'multi_proc')) == expected_rows(*args)
 
+    if N_sim == 1 and N_sw == 1 and N_r == 1:
+        with pytest.raises(ValueError) as e_info:
+            assert len(run_experiment(create_experiments(*args), 'multi_proc')) == expected_rows(*args)
+    else:
+        assert len(run_experiment(create_experiments(*args), 'multi_proc')) == expected_rows(*args)
 
 @pytest.mark.parametrize("N_sim,N_sw,N_r,N_t,N_s", CONFIG_SIGNATURES_TO_TEST)
 def test_row_count_local(N_sim, N_sw, N_r, N_t, N_s):
