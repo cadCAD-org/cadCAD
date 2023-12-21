@@ -1,6 +1,5 @@
 from typing import Any, Callable, Dict, List, Tuple
-from copy import deepcopy
-from types import MappingProxyType
+from copy import deepcopy, copy
 from functools import reduce
 from funcy import curry # type: ignore
 
@@ -161,7 +160,7 @@ class Executor:
 
         if type(additional_objs) == dict:
             if additional_objs.get('deepcopy_off', False) == True:
-                last_in_obj = MappingProxyType(sL[-1])
+                last_in_obj = copy(sL[-1])
                 if len(additional_objs) == 1:
                     additional_objs = None 
                     # XXX: drop the additional objects if only used for deepcopy
