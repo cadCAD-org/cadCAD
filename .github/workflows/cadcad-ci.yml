@@ -40,9 +40,10 @@ jobs:
         pip install -r requirements.txt
 
     - name: Build cadCAD
+      shell: cmd
       run: |
         python setup.py bdist_wheel
-        python -m pip install dist\*.whl --force-reinstall
+        for %%x in ("dist\*.whl") do python -m pip install %%x --force-reinstall
 
     - name: Run tests
       run: |
