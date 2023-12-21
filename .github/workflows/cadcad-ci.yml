@@ -42,7 +42,7 @@ jobs:
     - name: Build cadCAD
       run: |
         python setup.py bdist_wheel
-        for %x in (dir dist\*.whl) do python -m pip install %x --force-reinstall
+        for %%x in (dist\*.whl) do (python -m pip install %%x --force-reinstall)
 
     - name: Run tests
       run: |
