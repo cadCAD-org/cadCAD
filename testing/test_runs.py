@@ -158,42 +158,25 @@ def create_experiment(N_RUNS=2, N_TIMESTEPS=3, params: dict = SWEEP_PARAMS):
     )
     return exp
 
+@pytest.mark.parametrize("mode", ["local_proc", "single_proc", "multi_proc"])
+def test_mc_sweep_experiment(mode):
+    experiment_assertions(create_experiment(
+        N_RUNS=2, N_TIMESTEPS=2, params=SWEEP_PARAMS), mode)
 
-def test_mc_sweep_experiment():
+@pytest.mark.parametrize("mode", ["local_proc", "single_proc", "multi_proc"])
+def test_unique_sweep_experiment(mode):
     experiment_assertions(create_experiment(
-        N_RUNS=2, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.local_mode)
-    experiment_assertions(create_experiment(
-        N_RUNS=2, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.single_mode)
-    experiment_assertions(create_experiment(
-        N_RUNS=2, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.multi_mode)
+        N_RUNS=1, N_TIMESTEPS=2, params=SWEEP_PARAMS), mode)
 
+@pytest.mark.parametrize("mode", ["local_proc", "single_proc", "multi_proc"])
+def test_mc_single_experiment(mode):
+    experiment_assertions(create_experiment(
+        N_RUNS=2, N_TIMESTEPS=2, params=SINGLE_PARAMS), mode)
 
-def test_unique_sweep_experiment():
+@pytest.mark.parametrize("mode", ["local_proc", "single_proc", "multi_proc"])
+def test_unique_single_experiment(mode):
     experiment_assertions(create_experiment(
-        N_RUNS=1, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.local_mode)
-    experiment_assertions(create_experiment(
-        N_RUNS=1, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.single_mode)
-    experiment_assertions(create_experiment(
-        N_RUNS=1, N_TIMESTEPS=2, params=SWEEP_PARAMS), ExecutionMode.multi_mode)
-
-
-def test_mc_single_experiment():
-    experiment_assertions(create_experiment(
-        N_RUNS=2, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.local_mode)
-    experiment_assertions(create_experiment(
-        N_RUNS=2, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.single_mode)
-    experiment_assertions(create_experiment(
-        N_RUNS=2, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.multi_mode)
-
-
-def test_unique_single_experiment():
-    experiment_assertions(create_experiment(
-        N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.local_mode)
-    experiment_assertions(create_experiment(
-        N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.single_mode)
-    with pytest.raises(ValueError) as e_info:
-        experiment_assertions(create_experiment(
-            N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), ExecutionMode.multi_mode)
+        N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), mode)
 
 
 def experiment_assertions(exp, mode=None):
