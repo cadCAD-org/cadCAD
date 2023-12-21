@@ -12,6 +12,42 @@ permissions:
   contents: read
 
 jobs:
+  windows-build:
+    continue-on-error: true
+
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+
+    - name: Install test and build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install jupyter
+        pip install -r requirements.txt
+
+    - name: Build cadCAD
+      run: |
+        python setup.py bdist_wheel
+        for %x in (dir dist\*.whl) do python -m pip install %x --force-reinstall
+
+    - name: Run tests
+      run: |
+        python -m pytest
+
   build:
     continue-on-error: true
 
