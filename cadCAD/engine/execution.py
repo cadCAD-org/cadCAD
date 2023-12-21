@@ -26,20 +26,18 @@ def single_proc_exec(
     additional_objs=None
 ) -> List:
     
-
+    
     if not isinstance(var_dict_list, Sequence):
         var_dict_list = list([var_dict_list])
 
+    raw_params = (
+        simulation_execs, states_lists, configs_structs, env_processes_list,
+        Ts, SimIDs, Ns, SubsetIDs, SubsetWindows, var_dict_list)
+    
     results: List = []
-    for var_dict in var_dict_list:
-        print(f'Execution Mode: single_threaded')
-        raw_params: List[List] = [
-            simulation_execs, states_lists, configs_structs, env_processes_list,
-            Ts, SimIDs, Ns, SubsetIDs, SubsetWindows
-        ]
-        simulation_exec, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window = list(
-            map(lambda x: x.pop(), raw_params)
-        )
+    print(f'Execution Mode: single_threaded')
+    for raw_param in zip(*raw_params):
+        simulation_exec, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, var_dict = raw_param
         result = simulation_exec(
             var_dict, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, configured_n, additional_objs
         )

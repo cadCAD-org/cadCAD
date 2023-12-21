@@ -104,7 +104,7 @@ def exo_update_per_ts(ep):
         else:
             return y, s[y]
 
-    return {es: ep_decorator(f, es) for es, f in ep.items()}
+    return {es: ep_decorator(f, es) for es, f in ep.items()} # type: ignore
 
 
 def trigger_condition(s, pre_conditions, cond_opp):

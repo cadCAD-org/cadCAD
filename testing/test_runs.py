@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 from cadCAD.engine import Executor, ExecutionContext, ExecutionMode
 from cadCAD.configuration import Experiment
 from cadCAD.configuration.utils import env_trigger, var_substep_trigger, config_sim, psub_list
@@ -7,6 +7,7 @@ import pandas as pd  # type: ignore
 import types
 import inspect
 import pytest
+from pandas import DataFrame
 
 
 def describe_or_return(v: object) -> object:
@@ -63,8 +64,8 @@ def assign_params(_df: pd.DataFrame, configs) -> pd.DataFrame:
 
 SWEEP_PARAMS: Dict[str, List] = {
     'alpha': [1],
-    'beta': [lambda x: 2 * x, lambda x: x],
-    'gamma': [3, 4],
+    'beta': [lambda x: 2 * x, lambda x: x, lambda x: x / 2],
+    'gamma': [3, 4, 5],
     'omega': [7]
 }
 
@@ -184,7 +185,7 @@ def test_unique_single_experiment(mode):
                     N_RUNS=1, N_TIMESTEPS=2, params=SINGLE_PARAMS), mode)
 
 
-def experiment_assertions(exp, mode=None):
+def experiment_assertions(exp: Experiment, mode: Optional[str]=None) -> None:
     if mode == None:
         mode = ExecutionMode().local_mode
     exec_context = ExecutionContext(mode)
