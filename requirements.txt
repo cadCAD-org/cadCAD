@@ -6,6 +6,8 @@ tabulate>=0.8.7
 wheel>=0.38.1
 pandas>=1.1.5
 funcy>=1.16
+# Add support for Python3.10, see: https://github.com/cadCAD-org/cadCAD/issues/340
+fn @ git+https://github.com/cadCAD-org/fn.py@py3.10-support
 dill>=0.3.4
 pathos>=0.2.8
 numpy>=1.22.0
