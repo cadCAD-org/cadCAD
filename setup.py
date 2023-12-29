@@ -33,6 +33,6 @@ setup(
     author_email="info@block.science",
     license="LICENSE.txt",
     packages=find_packages(),
-    install_requires=["pandas", "funcy", "dill", "pathos", "numpy", "pytz", "six"],
+    install_requires=["pandas", "funcy", "dill", "pathos", "numpy", "pytz", "six", "tqdm"],
     python_requires=">=3.9.0",
 )
