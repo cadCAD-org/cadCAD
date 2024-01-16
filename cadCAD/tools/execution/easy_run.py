@@ -41,6 +41,7 @@ def easy_run(
     assign_params: Union[bool, set] = True,
     drop_substeps=True,
     exec_mode='local',
+    deepcopy_off=False,
 ) -> pd.DataFrame:
     """
     Run cadCAD simulations without headaches.
@@ -64,7 +65,7 @@ def easy_run(
         _exec_mode = ExecutionMode().local_mode
     elif exec_mode == 'single':
         _exec_mode = ExecutionMode().single_mode
-    exec_context = ExecutionContext(_exec_mode)
+    exec_context = ExecutionContext(_exec_mode, additional_objs={'deepcopy_off': deepcopy_off})
     executor = Executor(exec_context=exec_context, configs=configs)
 
     # Execute the cadCAD experiment
