@@ -25,15 +25,23 @@ def run_experiment(exp: Experiment, mode: str):
     return records
 
 
-def param_count_test_generator(provided_params):
+def param_count_test_suf_generator(provided_params):
     def s_test_param_count(params, _2, _3, _4, _5):
         assert params.keys() == provided_params.keys(), 'Params are not matching'
+        return ('varA', None)
+    return s_test_param_count
 
+
+def param_count_test_policy_generator(provided_params):
+    def p_test_param_count(params, _2, _3, _4):
+        assert params.keys() == provided_params.keys(), 'Params are not matching'
+        return {'sigA': None}
+    return p_test_param_count
 
 def create_experiments(N_simulations=3, N_sweeps=3, N_runs=3, N_timesteps=3, N_substeps=3, params={}) -> Experiment:
 
     INITIAL_STATE = {'varA': None}
-    PSUBs = [{'policies': {}, 'variables': {'varA': param_count_test_generator(params)}}] * N_substeps
+    PSUBs = [{'policies': {'sigA': param_count_test_policy_generator(params)}, 'variables': {'varA': param_count_test_suf_generator(params)}}] * N_substeps
 
     SIM_CONFIG = config_sim(
         {
