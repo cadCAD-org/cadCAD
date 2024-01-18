@@ -1,4 +1,4 @@
-from typing import Callable, Dict, List, Any, Tuple
+from typing import Callable, Dict, List, Any, Tuple, Sequence
 from pathos.multiprocessing import ProcessPool # type: ignore
 from collections import Counter
 from cadCAD.types import *
@@ -11,41 +11,38 @@ EnvProcessesType = Dict[str, callable]
 
 
 def single_proc_exec(
-    simulation_execs: List[ExecutorFunction],
-    var_dict_list: List[Parameters],
-    states_lists: List[StateHistory],
-    configs_structs: List[StateUpdateBlocks],
-    env_processes_list: List[EnvProcesses],
-    Ts: List[TimeSeq],
-    SimIDs: List[SimulationID],
-    Ns: List[Run],
-    ExpIDs: List[int],
-    SubsetIDs: List[SubsetID],
-    SubsetWindows: List[SubsetWindow],
-    configured_n: List[N_Runs],
+    simulation_execs: Sequence[ExecutorFunction],
+    var_dict_list: Union[Sequence[Parameters], Parameters],
+    states_lists: Sequence[StateHistory],
+    configs_structs: Sequence[StateUpdateBlocks],
+    env_processes_list: Sequence[EnvProcesses],
+    Ts: Sequence[TimeSeq],
+    SimIDs: Sequence[SimulationID],
+    Ns: Sequence[Run],
+    ExpIDs: Sequence[int],
+    SubsetIDs: Sequence[SubsetID],
+    SubsetWindows: Sequence[SubsetWindow],
+    configured_n: Sequence[N_Runs],
     additional_objs=None
-):
+) -> List:
     
-    # HACK for making it run with N_Runs=1
-    if type(var_dict_list) == list:
-        var_dict_list = var_dict_list[0]
+    
+    if not isinstance(var_dict_list, Sequence):
+        var_dict_list = list([var_dict_list])
 
-    print(f'Execution Mode: single_threaded')
-    raw_params: List[List] = [
+    raw_params = (
         simulation_execs, states_lists, configs_structs, env_processes_list,
-        Ts, SimIDs, Ns, SubsetIDs, SubsetWindows
-    ]
-    simulation_exec, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window = list(
-        map(lambda x: x.pop(), raw_params)
-    )
-    result = simulation_exec(
-        var_dict_list, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, configured_n, additional_objs
-    )
-    return flatten(result)
-
-
-
-
+        Ts, SimIDs, Ns, SubsetIDs, SubsetWindows, var_dict_list)
+    
+    results: List = []
+    print(f'Execution Mode: single_threaded')
+    for raw_param in zip(*raw_params):
+        simulation_exec, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, var_dict = raw_param
+        result = simulation_exec(
+            var_dict, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, configured_n, additional_objs
+        )
+        results.append(flatten(result))
+    return flatten(results)
 
 def parallelize_simulations(
     simulation_execs: List[ExecutorFunction],

@@ -4,9 +4,9 @@
  / ___/ __` / __  / /   / /| | / / / /
 / /__/ /_/ / /_/ / /___/ ___ |/ /_/ /
 \___/\__,_/\__,_/\____/_/  |_/_____/
-by cadCAD                  ver. 0.5.0
+by cadCAD                  ver. 0.5.1
 ======================================
-       Complex Adaptive Dynamics       
+       Complex Adaptive Dynamics
        o       i        e
        m       d        s
        p       e        i
@@ -15,12 +15,12 @@ by cadCAD                  ver. 0.5.0
        e
        r
 ```
-***cadCAD*** is a Python package that assists in the processes of designing, testing and validating complex systems 
-through simulation, with support for Monte Carlo methods, A/B testing and parameter sweeping. 
+***cadCAD*** is a Python package that assists in the processes of designing, testing and validating complex systems
+through simulation, with support for Monte Carlo methods, A/B testing and parameter sweeping.
 
 # Getting Started
 
-#### Change Log: [ver. 0.5.0](CHANGELOG.md)
+#### Change Log: [ver. 0.5.1](CHANGELOG.md)
 
 [Previous Stable Release (No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
 
@@ -44,10 +44,10 @@ $ source ~/cadcad/bin/activate
 $
 ```
 
-## 1. Installation: 
-Requires [>= Python 3.6.13](https://www.python.org/downloads/) 
+## 1. Installation:
+Requires [>= Python 3.9.0](https://www.python.org/downloads/)
 
-**Option A:** Install Using **[pip](https://pypi.org/project/cadCAD/)** 
+**Option A:** Install Using **[pip](https://pypi.org/project/cadCAD/)**
 ```bash
 pip3 install cadCAD
 ```

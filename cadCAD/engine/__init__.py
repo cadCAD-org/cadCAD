@@ -1,5 +1,5 @@
 from time import time
-from typing import Callable, Dict, List, Any, Tuple, Union
+from typing import Callable, Dict, List, Any, Tuple, Union, Sequence, Mapping
 from tqdm.auto import tqdm
 
 from cadCAD.utils import flatten
@@ -147,18 +147,50 @@ class Executor:
                               eps,
                               sessions: List[SessionDict],
                               remote_threshold: int):
+            
+            # if list of lists of lists of dicts: do flatten
+            # if list of dicts: do not flatetn
+            # else raise error
+
+
+            init: bool = isinstance(simulations, Sequence)
+            failed_1 = False
+            failed_2 = False
+            
+            try:
+                init: bool = isinstance(simulations, Sequence)
+                dont_flatten = init & isinstance(simulations[0], Mapping)
+                do_flatten = not dont_flatten
+            except:
+                failed_1 = True
+                do_flatten = True
+
+            try:
+                do_flatten = init & isinstance(simulations[0], Sequence)
+                do_flatten &= isinstance(simulations[0][0], Sequence)
+                do_flatten &= isinstance(simulations[0][0][0], Mapping)
+            except:
+                failed_2 = True
+                do_flatten = False
+
+            if failed_1 and failed_2:
+                raise ValueError('Invalid simulation results (Executor output is not list[dict] or list[list[list[dict]]])')
+
+
             flat_timesteps, tensor_fields = [], []
             for sim_result, psu, ep in tqdm(list(zip(simulations, psus, eps)),
                                             total=len(simulations),
                                             desc='Flattening results'):
-                flat_timesteps.append(flatten(sim_result))
+                if do_flatten:
+                    flat_timesteps.append(flatten(sim_result))
                 tensor_fields.append(create_tensor_field(psu, ep))
+                
+            if do_flatten:
+                flat_simulations = flatten(flat_timesteps)
+            else:
+                flat_simulations = simulations
 
-            flat_simulations = flatten(flat_timesteps)
-            if config_amt == 1:
-                return simulations, tensor_fields, sessions
-            elif config_amt > 1:
-                return flat_simulations, tensor_fields, sessions
+            return flat_simulations, tensor_fields, sessions
 
         final_result = None
         original_N = len(configs_as_dicts(self.configs))

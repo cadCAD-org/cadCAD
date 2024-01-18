@@ -1,4 +1,4 @@
-from typing import TypedDict, Callable, Union, Dict, List, Tuple, Iterator
+from typing import TypedDict, Callable, Union, Dict, List, Tuple, Iterable
 from collections import deque
 
 State = Dict[str, object]
@@ -20,18 +20,18 @@ class StateUpdateBlock(TypedDict):
 StateUpdateBlocks = List[StateUpdateBlock]
 
 class ConfigurationDict(TypedDict):
-    T: Iterator # Generator for the timestep variable
+    T: Iterable # Generator for the timestep variable
     N: int # Number of MC Runs
     M: Union[Parameters, SweepableParameters] # Parameters / List of Parameter to Sweep
 
 TargetValue = object
 EnvProcess: Callable[[State, SweepableParameters, TargetValue], TargetValue]
 EnvProcesses = Dict[str, Callable]
-TimeSeq = Iterator
+TimeSeq = Iterable
 SimulationID = int
 Run = int
 SubsetID = int
-SubsetWindow = Iterator
+SubsetWindow = Iterable
 N_Runs = int
 
 ExecutorFunction = Callable[[Parameters, StateHistory, StateUpdateBlocks, EnvProcesses, TimeSeq, SimulationID, Run, SubsetID, SubsetWindow, N_Runs], object]
