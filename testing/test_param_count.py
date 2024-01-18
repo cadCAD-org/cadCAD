@@ -12,14 +12,9 @@ P_single_swp = {'pA': [1, 2, 3], 'pB': [1], 'pC': [3]}
 P_all_swp = {'pA': [1, 2, 3], 'pB': [1, 2, 3], 'pC': [1, 2, 3]}
 Ps = [P_no_lst, P_single_lst, P_single_swp, P_all_swp]
 
-BASE_CONFIG_SIGNATURES_TO_TEST = [(3, 3, 3, 3, 3), (1, 3, 3, 3, 3),
+CONFIG_SIGNATURES_TO_TEST = [(3, 3, 3, 3, 3), (1, 3, 3, 3, 3),
  (3, 1, 3, 3, 3), (1, 1, 3, 3, 3),
  (3, 3, 1, 3, 3), (1, 3, 1, 3, 3), (1, 1, 1, 3, 3)]
-
-CONFIG_SIGNATURES_TO_TEST = []
-for p in Ps:
-    for config in BASE_CONFIG_SIGNATURES_TO_TEST:
-        CONFIG_SIGNATURES_TO_TEST.append(config + tuple([p]))
 
 
 def run_experiment(exp: Experiment, mode: str):
@@ -65,14 +60,14 @@ def expected_rows(N_simulations, N_sweeps, N_runs, N_timesteps, N_substeps,P) ->
     return N_simulations * N_sweeps *  N_runs * (N_timesteps * N_substeps + 1)
 
 
-@pytest.mark.parametrize("N_sim,N_sw,N_r,N_t,N_s", BASE_CONFIG_SIGNATURES_TO_TEST)
+@pytest.mark.parametrize("N_sim,N_sw,N_r,N_t,N_s", CONFIG_SIGNATURES_TO_TEST)
 @pytest.mark.parametrize("P", Ps)
 def test_row_count_single(N_sim, N_sw, N_r, N_t, N_s, P):
     args = (N_sim, N_sw, N_r, N_t, N_s, P)
     assert len(run_experiment(create_experiments(*args), 'single_proc')) == expected_rows(*args)
 
 
-@pytest.mark.parametrize("N_sim,N_sw,N_r,N_t,N_s", BASE_CONFIG_SIGNATURES_TO_TEST)
+@pytest.mark.parametrize("N_sim,N_sw,N_r,N_t,N_s", CONFIG_SIGNATURES_TO_TEST)
 @pytest.mark.parametrize("P", Ps)
 def test_row_count_multi(N_sim, N_sw, N_r, N_t, N_s, P):
     args = (N_sim, N_sw, N_r, N_t, N_s, P)
@@ -84,7 +79,7 @@ def test_row_count_multi(N_sim, N_sw, N_r, N_t, N_s, P):
         assert len(run_experiment(create_experiments(*args), 'multi_proc')) == expected_rows(*args)
 
 
-@pytest.mark.parametrize("N_sim,N_sw,N_r,N_t,N_s", BASE_CONFIG_SIGNATURES_TO_TEST)
+@pytest.mark.parametrize("N_sim,N_sw,N_r,N_t,N_s", CONFIG_SIGNATURES_TO_TEST)
 @pytest.mark.parametrize("P", Ps)
 def test_row_count_local(N_sim, N_sw, N_r, N_t, N_s, P):
     args = (N_sim, N_sw, N_r, N_t, N_s, P)
