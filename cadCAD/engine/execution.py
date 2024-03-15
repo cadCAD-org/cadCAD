@@ -6,6 +6,7 @@ from cadCAD.types import *
 from cadCAD.utils import flatten
 import tempfile
 import pickle
+import dill
 
 VarDictType = Dict[str, List[object]]
 StatesListsType = List[dict[str, object]]
@@ -69,7 +70,7 @@ def process_executor(params):
     )]
     temp_file = tempfile.NamedTemporaryFile(delete=False)
     with open(temp_file.name, 'wb') as f:  # Note 'wb' for binary writing mode
-        pickle.dump(result, f)
+        dill.dump(result, f)
     return temp_file.name
 
 
@@ -77,7 +78,7 @@ def file_handler(filenames: List[str]) -> List:
     combined_results = []
     for file_name in filenames:
         with open(file_name, 'rb') as f:  # Note 'rb' for binary reading mode
-            result = pickle.load(f)
+            result = dill.load(f)
             combined_results.append(result)
             result = None
         f.close()
