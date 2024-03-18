@@ -49,20 +49,6 @@ def single_proc_exec(
 
 
 def process_executor(params):
-    if len_configs_structs > 1:
-        with ProcessPool(processes=len_configs_structs) as pp:
-            results = pp.map(
-                lambda t: t[0](t[1], t[2], t[3], t[4], t[5],
-                               t[6], t[7], t[8], t[9], configured_n), params
-            )
-    else:
-        t = params[0]
-        results = t[0](t[1], t[2], t[3], t[4], t[5], t[6],
-                       t[7], t[8], t[9], configured_n)
-    return results
-
-
-def process_executor(params):
     simulation_exec, var_dict, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, configured_n = params
 
     result = [simulation_exec(
