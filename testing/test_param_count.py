@@ -3,9 +3,6 @@ from cadCAD.configuration.utils import config_sim
 from cadCAD.engine import Executor, ExecutionContext, ExecutionMode
 import pytest
 
-
-
-
 P_no_lst = {'pA': 1, 'pB': 2, 'pC': 3}
 P_single_lst = {'pA': [1], 'pB': [1], 'pC': [3]}
 P_single_swp = {'pA': [4, 5, 6], 'pB': [1], 'pC': [3]}
