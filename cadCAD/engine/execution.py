@@ -7,7 +7,6 @@ from cadCAD.utils import flatten, lazy_flatten
 import tempfile
 import pickle
 import sys
-from pympler import asizeof
 from memory_profiler import profile
 import dill
 
@@ -115,7 +114,9 @@ def parallelize_simulations(
 ):
 
     print(f'Execution Mode: parallelized')
-    lazy_eval = additional_objs['lazy_eval']
+    lazy_eval = False
+    if (additional_objs):
+        lazy_eval = additional_objs.get('lazy_eval', False)
 
     params = [
         (sim_exec, var_dict, states_list, config, env_processes,

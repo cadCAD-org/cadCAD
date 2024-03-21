@@ -241,7 +241,7 @@ class Executor:
                 ExpIDs, SubsetIDs, SubsetWindows, original_N, self.additional_objs
             )
 
-            if (self.additional_objs is not None and self.additional_objs['lazy_eval']):
+            if (self.additional_objs is not None and self.additional_objs.get('lazy_eval', False)):
                 final_result = get_final_results_lazy(
                     simulations_results, partial_state_updates, eps, sessions, remote_threshold)
             else:
