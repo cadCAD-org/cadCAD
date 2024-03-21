@@ -2,14 +2,14 @@ from functools import reduce
 from collections import defaultdict
 from itertools import product
 import warnings
-from typing import Union
+from typing import Any, Generator, Union
 from cadCAD.types import *
 from typing import List, Dict, Union
 
 import functools
 import operator
 
-from pandas import DataFrame # type: ignore
+from pandas import DataFrame  # type: ignore
 
 
 class SilentDF(DataFrame):
@@ -33,7 +33,8 @@ def arrange_cols(df: DataFrame, reverse=False) -> DataFrame:
     """
     session_metrics = ['session_id', 'user_id', 'simulation_id', 'run_id']
     sys_metrics = ['run', 'timestep', 'substep']
-    result_cols = list(set(df.columns) - set(session_metrics) - set(sys_metrics))
+    result_cols = list(set(df.columns) -
+                       set(session_metrics) - set(sys_metrics))
     result_cols.sort(reverse=reverse)
     return df[session_metrics + sys_metrics + result_cols]
 
@@ -75,6 +76,7 @@ def tupalize(k: object, vs: Union[list, dict]):
         l.append((k, vs))
     return l
 
+
 def flattenDict(l: dict) -> list:
     """
     >>> flattenDict({1: [1, 2, 3], 4: 5})
@@ -90,6 +92,32 @@ def flatten(l: Union[list, dict]):
         return functools.reduce(operator.iconcat, l, [])
     elif isinstance(l, dict):
         return flattenDict(l)
+
+
+# Incremental version of flatten with type hints
+def lazy_tupalize(k: Any, vs: Union[Iterable[Any], Any]) -> Generator[tuple, None, None]:
+    if isinstance(vs, Iterable) and not isinstance(vs, str):
+        for v in vs:
+            yield (k, v)
+    else:
+        yield (k, vs)
+
+
+def lazy_flattenDict(d: Dict[Any, Any]) -> Generator[Dict[Any, Any], None, None]:
+    flat_list = (lazy_tupalize(k, vs) for k, vs in d.items())
+    for items in product(*flat_list):
+        yield dict(items)
+
+
+def lazy_flatten(l: Union[Iterable[Any], Dict[Any, Any]]) -> Generator[Any, None, None]:
+    if isinstance(l, Iterable) and not isinstance(l, (str, dict)):
+        for item in l:
+            if isinstance(item, Iterable) and not isinstance(item, (str, dict)):
+                yield from lazy_flatten(item)
+            else:
+                yield item
+    elif isinstance(l, dict):
+        yield from lazy_flattenDict(l)
 
 
 def flatMap(f, collection):
