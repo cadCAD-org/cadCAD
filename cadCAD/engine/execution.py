@@ -1,11 +1,14 @@
 import os
-from typing import Callable, Dict, List, Any, Tuple, Sequence
+from typing import Callable, Dict, Generator, List, Any, Tuple, Sequence
 from pathos.multiprocessing import ProcessPool  # type: ignore
 from collections import Counter
 from cadCAD.types import *
-from cadCAD.utils import flatten
+from cadCAD.utils import flatten, lazy_flatten
 import tempfile
 import pickle
+import sys
+from pympler import asizeof
+from memory_profiler import profile
 import dill
 
 VarDictType = Dict[str, List[object]]
@@ -54,13 +57,35 @@ def process_executor(params):
     result = [simulation_exec(
         var_dict, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, configured_n
     )]
+    return result
+
+
+def process_executor_disk(params):
+    simulation_exec, var_dict, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, configured_n = params
+
+    result = [simulation_exec(
+        var_dict, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, configured_n
+    )]
     temp_file = tempfile.NamedTemporaryFile(delete=False)
     with open(temp_file.name, 'wb') as f:  # Note 'wb' for binary writing mode
         dill.dump(result, f)
     return temp_file.name
 
 
-def file_handler(filenames: List[str]) -> List:
+@profile
+def file_handler_inc(filenames: List[str]) -> Generator[List, None, None]:
+    # combined_results = []
+    for file_name in filenames:
+        with open(file_name, 'rb') as f:  # Note 'rb' for binary reading mode
+            result = dill.load(f)
+            yield result  # Yield the loaded result for immediate processing
+
+        f.close()
+        os.remove(file_name)  # Clean up temporary file
+
+
+@profile
+def file_handler(filenames: List[str]) -> Generator[List, None, None]:
     combined_results = []
     for file_name in filenames:
         with open(file_name, 'rb') as f:  # Note 'rb' for binary reading mode
@@ -69,10 +94,10 @@ def file_handler(filenames: List[str]) -> List:
             result = None
         f.close()
         os.remove(file_name)  # Clean up temporary file
-        del result  # Delete the result from memory after processing
     return combined_results
 
 
+@profile
 def parallelize_simulations(
     simulation_execs: List[ExecutorFunction],
     var_dict_list: List[Parameters],
@@ -90,6 +115,7 @@ def parallelize_simulations(
 ):
 
     print(f'Execution Mode: parallelized')
+    lazy_eval = additional_objs['lazy_eval']
 
     params = [
         (sim_exec, var_dict, states_list, config, env_processes,
@@ -99,10 +125,16 @@ def parallelize_simulations(
             env_processes_list, Ts, SimIDs, Ns, SubsetIDs, SubsetWindows)
     ]
 
-    with ProcessPool(maxtasksperchild=1) as pool:
-        temp_files = pool.map(process_executor, params)
+    if (lazy_eval):
+        with ProcessPool(maxtasksperchild=1) as pool:
+            temp_files = pool.map(process_executor_disk, params)
+        generator = file_handler_inc(temp_files)
+        return lazy_flatten(generator)
 
-    return flatten(file_handler(temp_files))
+    with ProcessPool(maxtasksperchild=1) as pool:
+        results = pool.map(process_executor, params)
+
+    return flatten(results)
 
 
 def local_simulations(
