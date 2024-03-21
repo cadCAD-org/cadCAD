@@ -7,6 +7,7 @@ wheel>=0.38.1
 pandas>=1.1.5
 funcy>=1.16
 dill>=0.3.4
+memory-profiler==0.61.0
 pathos>=0.2.8
 numpy>=1.22.0
 pytz>=2021.1
