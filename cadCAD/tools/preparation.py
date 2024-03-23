@@ -26,7 +26,7 @@ def sweep_cartesian_product(sweep_params: SweepableParameters) -> SweepableParam
     transpose_cartesian_product = zip(*cartesian_product)
     zipped_sweep_params = zip(sweep_params.keys(), transpose_cartesian_product)
     sweep_dict = dict(zipped_sweep_params)
-    sweep_dict = {k: tuple(v) for k, v in sweep_dict.items()}
+    sweep_dict = {k: list(v) for k, v in sweep_dict.items()}
     return sweep_dict
 
 
