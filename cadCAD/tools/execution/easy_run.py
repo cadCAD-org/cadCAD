@@ -16,6 +16,8 @@ def describe_or_return(v: object) -> object:
         return f'function: {v.__name__}'
     elif isinstance(v, types.LambdaType) and v.__name__ == '<lambda>':
         return f'lambda: {inspect.signature(v)}'
+    elif isinstance(v, list):
+        return str(v)
     else:
         return v
 

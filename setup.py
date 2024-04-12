@@ -1,7 +1,9 @@
 from setuptools import find_packages, setup
 
-short_description = "cadCAD: a differential games based simulation software package for research, validation, and \
+short_description = (
+    "cadCAD: a differential games based simulation software package for research, validation, and \
         Computer Aided Design of economic systems"
+)
 
 long_description = """
 cadCAD (complex adaptive systems computer-aided design) is a python based, unified modeling framework for stochastic
@@ -21,7 +23,7 @@ provided.
 """
 
 name = "cadCAD"
-version = "0.5.1"
+version = "0.5.2"
 
 setup(
     name=name,
@@ -33,6 +35,15 @@ setup(
     author_email="info@block.science",
     license="LICENSE.txt",
     packages=find_packages(),
-    install_requires=["pandas", "funcy", "dill", "pathos", "numpy", "pytz", "six", "tqdm"],
+    install_requires=[
+        "pandas",
+        "funcy",
+        "dill",
+        "pathos",
+        "numpy",
+        "pytz",
+        "six",
+        "tqdm",
+    ],
     python_requires=">=3.9.0",
 )
