@@ -126,7 +126,7 @@ class Experiment(object):
                 exp_creation_ts=self.exp_creation_ts,
 
                 sim_config=sim_config,
-                initial_state=initial_state,
+                initial_state=deepcopy(initial_state),
                 seeds=seeds,
                 exogenous_states=exogenous_states,
                 env_processes=env_processes,
