@@ -104,7 +104,8 @@ class Executor:
         t1 = time()
         for x in tqdm(self.configs,
                       total=len(self.configs),
-                      desc="Initializing configurations"):
+                      desc="Initializing configurations",
+                      disable=self.supress_print):
             sessions.append(
                 {
                     'user_id': x.user_id, 'experiment_id': x.experiment_id, 'session_id': x.session_id,
@@ -182,7 +183,8 @@ class Executor:
             flat_timesteps, tensor_fields = [], []
             for sim_result, psu, ep in tqdm(list(zip(simulations, psus, eps)),
                                             total=len(simulations),
-                                            desc='Flattening results'):
+                                            desc='Flattening results',
+                                            disable=self.supress_print):
                 if do_flatten:
                     flat_timesteps.append(flatten(sim_result))
                 tensor_fields.append(create_tensor_field(psu, ep))
