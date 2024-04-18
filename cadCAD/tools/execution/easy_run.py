@@ -44,6 +44,7 @@ def easy_run(
     drop_substeps=True,
     exec_mode='local',
     deepcopy_off=False,
+    supress_print=False
 ) -> pd.DataFrame:
     """
     Run cadCAD simulations without headaches.
@@ -69,7 +70,7 @@ def easy_run(
     elif exec_mode == 'single':
         _exec_mode = ExecutionMode().single_mode
     exec_context = ExecutionContext(_exec_mode, additional_objs={'deepcopy_off': deepcopy_off})
-    executor = Executor(exec_context=exec_context, configs=configs)
+    executor = Executor(exec_context=exec_context, configs=configs, supress_print=supress_print)
 
     # Execute the cadCAD experiment
     (records, tensor_field, _) = executor.execute()
