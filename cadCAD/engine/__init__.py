@@ -70,7 +70,7 @@ class ExecutionContext:
 
 class Executor:
     def __init__(self,
-                 exec_context: ExecutionContext, configs: List[Configuration], sc=None, empty_return=False
+                 exec_context: ExecutionContext, configs: List[Configuration], sc=None, empty_return=False, supress_print=False
                  ) -> None:
         self.sc = sc
         self.SimExecutor = SimExecutor
@@ -79,6 +79,7 @@ class Executor:
         self.additional_objs = exec_context.additional_objs
         self.configs = configs
         self.empty_return = empty_return
+        self.supress_print = supress_print
 
     def execute(self) -> Tuple[object, object, Dict[str, object]]:
         if self.empty_return is True:
@@ -97,12 +98,14 @@ class Executor:
         config_idx = 0
 
         # Execution Info
-        print_exec_info(self.exec_context, configs_as_objs(self.configs))
+        if self.supress_print is False:
+            print_exec_info(self.exec_context, configs_as_objs(self.configs))
 
         t1 = time()
         for x in tqdm(self.configs,
                       total=len(self.configs),
-                      desc="Initializing configurations"):
+                      desc="Initializing configurations",
+                      disable=self.supress_print):
             sessions.append(
                 {
                     'user_id': x.user_id, 'experiment_id': x.experiment_id, 'session_id': x.session_id,
@@ -180,7 +183,8 @@ class Executor:
             flat_timesteps, tensor_fields = [], []
             for sim_result, psu, ep in tqdm(list(zip(simulations, psus, eps)),
                                             total=len(simulations),
-                                            desc='Flattening results'):
+                                            desc='Flattening results',
+                                            disable=self.supress_print):
                 if do_flatten:
                     flat_timesteps.append(flatten(sim_result))
                 tensor_fields.append(create_tensor_field(psu, ep))
@@ -209,8 +213,9 @@ class Executor:
             else:
                 raise ValueError("Invalid execution mode specified")
 
-
-            print("Execution Method: " + self.exec_method.__name__)
+            if self.supress_print is False:
+                print("Execution Method: " + self.exec_method.__name__)
+                
             simulations_results = self.exec_method(
                 sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts, SimIDs, RunIDs,
                 ExpIDs, SubsetIDs, SubsetWindows, original_N, self.additional_objs
@@ -219,7 +224,8 @@ class Executor:
             final_result = get_final_results(
                 simulations_results, partial_state_updates, eps, sessions, remote_threshold)
         elif self.exec_context == ExecutionMode.distributed:
-            print("Execution Method: " + self.exec_method.__name__)
+            if self.supress_print is False:
+                print("Execution Method: " + self.exec_method.__name__)
             simulations_results = self.exec_method(
                 sim_executors, var_dict_list, states_lists, configs_structs, env_processes_list, Ts,
                 SimIDs, RunIDs, ExpIDs, SubsetIDs, SubsetWindows, original_N, self.sc
@@ -228,6 +234,7 @@ class Executor:
                 simulations_results, partial_state_updates, eps, sessions)
 
         t2 = time()
-        print(f"Total execution time: {t2 - t1 :.2f}s")
+        if self.supress_print is False:
+            print(f"Total execution time: {t2 - t1 :.2f}s")
 
         return final_result

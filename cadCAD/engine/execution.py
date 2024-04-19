@@ -35,7 +35,6 @@ def single_proc_exec(
         Ts, SimIDs, Ns, SubsetIDs, SubsetWindows, var_dict_list)
     
     results: List = []
-    print(f'Execution Mode: single_threaded')
     for raw_param in zip(*raw_params):
         simulation_exec, states_list, config, env_processes, T, sim_id, N, subset_id, subset_window, var_dict = raw_param
         result = simulation_exec(
@@ -60,7 +59,6 @@ def parallelize_simulations(
     additional_objs=None
 ):
 
-    print(f'Execution Mode: parallelized')
     params = list(
         zip(
             simulation_execs, var_dict_list, states_lists, configs_structs, env_processes_list,
