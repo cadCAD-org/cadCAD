@@ -4,7 +4,7 @@
  / ___/ __` / __  / /   / /| | / / / /
 / /__/ /_/ / /_/ / /___/ ___ |/ /_/ /
 \___/\__,_/\__,_/\____/_/  |_/_____/
-by cadCAD                  ver. 0.5.1
+by cadCAD                  ver. 0.5.3
 ======================================
        Complex Adaptive Dynamics
        o       i        e
@@ -20,9 +20,7 @@ through simulation, with support for Monte Carlo methods, A/B testing and parame
 
 # Getting Started
 
-#### Change Log: [ver. 0.5.1](CHANGELOG.md)
-
-[Previous Stable Release (No Longer Supported)](https://github.com/cadCAD-org/cadCAD/tree/b9cc6b2e4af15d6361d60d6ec059246ab8fbf6da)
+#### Change Log: [ver. 0.5.3](CHANGELOG.md)
 
 ## 0. Pre-installation Virtual Environments with [`venv`](https://docs.python.org/3/library/venv.html) (Optional):
 If you wish to create an easy to use virtual environment to install cadCAD within, please use python's built in `venv` package.
