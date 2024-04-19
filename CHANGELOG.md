@@ -1,5 +1,24 @@
 # Changelog:
 
+## 0.5.3 - April 19, 2024
+
+### Bugs fixed
+
+- Solve issue on which nested initial states are being copied from one run to another ([#357](https://github.com/cadCAD-org/cadCAD/pull/357));
+- Created add_parameter_labels ([#360](https://github.com/cadCAD-org/cadCAD/pull/360));
+- Add supress_print attribute to the Executor class for silencing prints and tqdm ([#361](https://github.com/cadCAD-org/cadCAD/pull/361));
+
+## 0.5.2 - April 11, 2024
+
+### Bugs fixed
+
+- fix: easy supports list/array/sequence type as parameter ([#348](https://github.com/cadCAD-org/cadCAD/pull/348));
+- Update setup.py to include tqdm package ([#342](https://github.com/cadCAD-org/cadCAD/pull/342));
+- Debug M dictionairy unpacking in utils ([#343](https://github.com/cadCAD-org/cadCAD/pull/343));
+- Add test for counting the parameters argument inside policies and SUFs ([#345](https://github.com/cadCAD-org/cadCAD/pull/345));
+- Fix sweep_cartesian_product such that it works nicely with easy_run ([#355](https://github.com/cadCAD-org/cadCAD/pull/355));
+- Update easy_run.py ([#356](https://github.com/cadCAD-org/cadCAD/pull/356));
+
 ## 0.5.1 - December 21, 2023
 
 ### Bugs fixed
