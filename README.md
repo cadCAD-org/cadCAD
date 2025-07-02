@@ -45,12 +45,12 @@ $
 ## 1. Installation:
 Requires [>= Python 3.9.0](https://www.python.org/downloads/)
 
-**Option A:** Install Using **[pip](https://pypi.org/project/cadCAD/)**
+**Option A:** Install Using **[pip](https://pypi.org/project/cadCAD/)** :
 ```bash
 pip3 install cadCAD
 ```
 
-**Option B:** Build From Source
+**Option B:** Build From Source :
 ```
 pip3 install -r requirements.txt
 python3 setup.py sdist bdist_wheel
